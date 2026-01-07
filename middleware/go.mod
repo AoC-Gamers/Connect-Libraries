@@ -18,7 +18,3 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 )
-
-replace github.com/AoC-Gamers/connect-libraries/auth-lib => ../auth-lib
-
-replace github.com/AoC-Gamers/connect-libraries/errors => ../errors
