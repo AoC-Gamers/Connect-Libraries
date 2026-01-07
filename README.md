@@ -19,27 +19,7 @@
 
 ## 🚀 Instalación
 
-Este es un repositorio privado. Configura Go para acceder a repositorios privados:
-
-### 1. Configurar GOPRIVATE
-
-```bash
-go env -w GOPRIVATE=github.com/AoC-Gamers/*
-```
-
-### 2. Configurar credenciales de Git
-
-Opción A - HTTPS con token:
-```bash
-git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
-```
-
-Opción B - SSH (recomendado):
-```bash
-git config --global url."git@github.com:".insteadOf "https://github.com/"
-```
-
-### 3. Usar en tus proyectos
+### Usar en tus proyectos
 
 ```go
 // go.mod
@@ -144,4 +124,4 @@ connect-libraries/
 
 ## 📄 Licencia
 
-Privado - AoC Gamers © 2026
+AoC Gamers © 2026
