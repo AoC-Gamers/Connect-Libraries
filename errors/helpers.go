@@ -5,6 +5,11 @@ import (
 	"net/http"
 )
 
+// Error message constants
+const (
+	MsgValidationFailed = "validation failed"
+)
+
 // ============================================
 // Authentication & Authorization Helpers
 // ============================================
@@ -135,7 +140,7 @@ func RespondConflict(w http.ResponseWriter, reason string) {
 // RespondValidationError responde con error de validación
 func RespondValidationError(w http.ResponseWriter, field, reason string) {
 	RespondError(w, http.StatusBadRequest, CodeValidationError,
-		"validation failed",
+		MsgValidationFailed,
 		fmt.Sprintf("Field '%s': %s", field, reason),
 		map[string]interface{}{
 			"field":  field,
@@ -146,7 +151,7 @@ func RespondValidationError(w http.ResponseWriter, field, reason string) {
 // RespondValidationErrors responde con múltiples errores de validación
 func RespondValidationErrors(w http.ResponseWriter, errors map[string]string) {
 	RespondError(w, http.StatusBadRequest, CodeValidationError,
-		"validation failed",
+		MsgValidationFailed,
 		"Multiple validation errors occurred",
 		map[string]interface{}{
 			"errors": errors,
@@ -156,7 +161,7 @@ func RespondValidationErrors(w http.ResponseWriter, errors map[string]string) {
 // RespondValidationErrorWithDetail responde con error de validación con solo un mensaje de detalle
 func RespondValidationErrorWithDetail(w http.ResponseWriter, detail string) {
 	RespondError(w, http.StatusBadRequest, CodeValidationError,
-		"validation failed", detail, nil)
+		MsgValidationFailed, detail, nil)
 }
 
 // RespondBadRequest responde con bad request genérico

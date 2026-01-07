@@ -164,13 +164,9 @@ func (c *Client) CreateOwnershipDemotionNotification(ctx context.Context, req mo
 func (c *Client) doRequest(ctx context.Context, method, path string, reqBody, respBody interface{}) error {
 	url := c.baseURL + path
 
-	var bodyReader io.Reader
-	if reqBody != nil {
-		bodyBytes, err := json.Marshal(reqBody)
-		if err != nil {
-			return fmt.Errorf("marshal request: %w", err)
-		}
-		bodyReader = bytes.NewReader(bodyBytes)
+	bodyReader, err := c.marshalRequestBody(reqBody)
+	if err != nil {
+		return err
 	}
 
 	req, err := http.NewRequestWithContext(ctx, method, url, bodyReader)
@@ -178,13 +174,8 @@ func (c *Client) doRequest(ctx context.Context, method, path string, reqBody, re
 		return fmt.Errorf("create request: %w", err)
 	}
 
-	// Set headers
-	req.Header.Set("X-API-Key", c.apiKey)
-	if reqBody != nil {
-		req.Header.Set("Content-Type", "application/json")
-	}
+	c.setRequestHeaders(req, reqBody)
 
-	// Perform request
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		log.Error().
@@ -196,7 +187,6 @@ func (c *Client) doRequest(ctx context.Context, method, path string, reqBody, re
 	}
 	defer resp.Body.Close()
 
-	// Read response body
 	respBodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Error().
@@ -208,48 +198,85 @@ func (c *Client) doRequest(ctx context.Context, method, path string, reqBody, re
 		return fmt.Errorf("read response: %w", err)
 	}
 
-	// Check status code
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		// Try to parse error message
-		var errMsg string
-		var errResp map[string]interface{}
-		if json.Unmarshal(respBodyBytes, &errResp) == nil {
-			if msg, ok := errResp["error"].(string); ok {
-				errMsg = msg
-			} else if msg, ok := errResp["message"].(string); ok {
-				errMsg = msg
-			}
-		}
-		if errMsg == "" {
-			errMsg = string(respBodyBytes)
-		}
-
-		log.Error().
-			Str("method", method).
-			Str("path", path).
-			Int("status", resp.StatusCode).
-			Str("error", errMsg).
-			Msg("Connect-RT internal API error")
-
-		return errors.NewInternalError(resp.StatusCode, "Connect-RT", path, errMsg)
+	if err := c.checkStatusCode(resp.StatusCode, method, path, respBodyBytes); err != nil {
+		return err
 	}
 
-	// Parse response body if needed
-	if respBody != nil && len(respBodyBytes) > 0 {
-		if err := json.Unmarshal(respBodyBytes, respBody); err != nil {
-			bodyPreview := string(respBodyBytes)
-			if len(bodyPreview) > 200 {
-				bodyPreview = bodyPreview[:200] + "..."
-			}
-			log.Error().
-				Err(err).
-				Str("method", method).
-				Str("path", path).
-				Int("status", resp.StatusCode).
-				Str("body_preview", bodyPreview).
-				Msg("Connect-RT failed to parse response JSON")
-			return fmt.Errorf("unmarshal response: %w", err)
+	return c.parseResponseBody(respBody, respBodyBytes, method, path, resp.StatusCode)
+}
+
+// marshalRequestBody marshals the request body to JSON
+func (c *Client) marshalRequestBody(reqBody interface{}) (io.Reader, error) {
+	if reqBody == nil {
+		return nil, nil
+	}
+
+	bodyBytes, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, fmt.Errorf("marshal request: %w", err)
+	}
+	return bytes.NewReader(bodyBytes), nil
+}
+
+// setRequestHeaders sets the required headers for the request
+func (c *Client) setRequestHeaders(req *http.Request, reqBody interface{}) {
+	req.Header.Set("X-API-Key", c.apiKey)
+	if reqBody != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+}
+
+// checkStatusCode validates the HTTP status code and returns an error if unsuccessful
+func (c *Client) checkStatusCode(statusCode int, method, path string, respBodyBytes []byte) error {
+	if statusCode >= 200 && statusCode < 300 {
+		return nil
+	}
+
+	errMsg := c.extractErrorMessage(respBodyBytes)
+
+	log.Error().
+		Str("method", method).
+		Str("path", path).
+		Int("status", statusCode).
+		Str("error", errMsg).
+		Msg("Connect-RT internal API error")
+
+	return errors.NewInternalError(statusCode, "Connect-RT", path, errMsg)
+}
+
+// extractErrorMessage extracts error message from response body
+func (c *Client) extractErrorMessage(respBodyBytes []byte) string {
+	var errResp map[string]interface{}
+	if json.Unmarshal(respBodyBytes, &errResp) == nil {
+		if msg, ok := errResp["error"].(string); ok {
+			return msg
 		}
+		if msg, ok := errResp["message"].(string); ok {
+			return msg
+		}
+	}
+	return string(respBodyBytes)
+}
+
+// parseResponseBody unmarshals the response body into the provided interface
+func (c *Client) parseResponseBody(respBody interface{}, respBodyBytes []byte, method, path string, statusCode int) error {
+	if respBody == nil || len(respBodyBytes) == 0 {
+		return nil
+	}
+
+	if err := json.Unmarshal(respBodyBytes, respBody); err != nil {
+		bodyPreview := string(respBodyBytes)
+		if len(bodyPreview) > 200 {
+			bodyPreview = bodyPreview[:200] + "..."
+		}
+		log.Error().
+			Err(err).
+			Str("method", method).
+			Str("path", path).
+			Int("status", statusCode).
+			Str("body_preview", bodyPreview).
+			Msg("Connect-RT failed to parse response JSON")
+		return fmt.Errorf("unmarshal response: %w", err)
 	}
 
 	return nil

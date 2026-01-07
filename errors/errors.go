@@ -5,6 +5,12 @@ import (
 	"net/http"
 )
 
+// HTTP header constants
+const (
+	HeaderContentType = "Content-Type"
+	MimeJSON          = "application/json"
+)
+
 // ErrorResponse representa una respuesta de error estructurada
 // Basado en RFC 7807 (Problem Details for HTTP APIs) simplificado
 type ErrorResponse struct {
@@ -36,7 +42,7 @@ func RespondError(w http.ResponseWriter, status int, code ErrorCode, message, de
 		Meta:   meta,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(HeaderContentType, MimeJSON)
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(resp)
 }
@@ -55,7 +61,7 @@ func RespondWithDetail(w http.ResponseWriter, status int, code ErrorCode, messag
 // RespondLegacyError mantiene compatibilidad con el formato antiguo {"error": "message"}
 // Útil durante la transición para no romper clientes existentes
 func RespondLegacyError(w http.ResponseWriter, status int, message string) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(HeaderContentType, MimeJSON)
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(map[string]string{"error": message})
 }
@@ -63,7 +69,7 @@ func RespondLegacyError(w http.ResponseWriter, status int, message string) {
 // RespondJSON es un helper para respuestas exitosas
 // Incluido aquí para mantener consistencia en el paquete
 func RespondJSON(w http.ResponseWriter, status int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(HeaderContentType, MimeJSON)
 	w.WriteHeader(status)
 	if data != nil {
 		_ = json.NewEncoder(w).Encode(data)

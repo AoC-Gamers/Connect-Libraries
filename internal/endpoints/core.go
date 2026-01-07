@@ -3,6 +3,10 @@ package endpoints
 // Connect-Core internal API endpoints
 // Base URL: /core/internal
 
+const (
+	PathCoreMissionByID = "/core/internal/missions/{id}"
+)
+
 var (
 	// User Management
 	CoreSyncUser = Endpoint{
@@ -15,7 +19,7 @@ var (
 
 	// Mission Management
 	CoreGetMission = Endpoint{
-		Path:        "/core/internal/missions/{id}",
+		Path:        PathCoreMissionByID,
 		Method:      "GET",
 		Description: "Get mission by ID",
 		RequiresKey: true,
@@ -31,7 +35,7 @@ var (
 	}
 
 	CoreUpdateMission = Endpoint{
-		Path:        "/core/internal/missions/{id}",
+		Path:        PathCoreMissionByID,
 		Method:      "PUT",
 		Description: "Update a mission",
 		RequiresKey: true,
@@ -39,7 +43,7 @@ var (
 	}
 
 	CoreDeleteMission = Endpoint{
-		Path:        "/core/internal/missions/{id}",
+		Path:        PathCoreMissionByID,
 		Method:      "DELETE",
 		Description: "Delete a mission",
 		RequiresKey: true,

@@ -9,6 +9,8 @@ import (
 	errors "github.com/AoC-Gamers/connect-libraries/errors"
 )
 
+const errParseResponse = "could not parse response: %v"
+
 func TestErrorResponse(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -69,36 +71,9 @@ func TestErrorResponse(t *testing.T) {
 			rr := httptest.NewRecorder()
 			tt.handler(rr)
 
-			// Check status code
-			if status := rr.Code; status != tt.expectedStatus {
-				t.Errorf("handler returned wrong status code: got %v want %v", status, tt.expectedStatus)
-			}
-
-			// Check content type
-			if ct := rr.Header().Get("Content-Type"); ct != "application/json" {
-				t.Errorf("handler returned wrong content type: got %v want application/json", ct)
-			}
-
-			// Parse response
-			var response errors.ErrorResponse
-			if err := json.Unmarshal(rr.Body.Bytes(), &response); err != nil {
-				t.Fatalf("could not parse response: %v", err)
-			}
-
-			// Check code
-			if response.Code != tt.expectedCode {
-				t.Errorf("handler returned wrong code: got %v want %v", response.Code, tt.expectedCode)
-			}
-
-			// Check error message
-			if response.Error != tt.expectedError {
-				t.Errorf("handler returned wrong error message: got %v want %v", response.Error, tt.expectedError)
-			}
-
-			// Check status in response
-			if response.Status != tt.expectedStatus {
-				t.Errorf("handler returned wrong status in response: got %v want %v", response.Status, tt.expectedStatus)
-			}
+			validateHTTPResponse(t, rr, tt.expectedStatus)
+			response := parseErrorResponse(t, rr)
+			validateErrorResponse(t, response, tt.expectedCode, tt.expectedError, tt.expectedStatus)
 		})
 	}
 }
@@ -169,7 +144,7 @@ func TestDetailedError(t *testing.T) {
 
 	var response errors.ErrorResponse
 	if err := json.Unmarshal(rr.Body.Bytes(), &response); err != nil {
-		t.Fatalf("could not parse response: %v", err)
+		t.Fatalf(errParseResponse, err)
 	}
 
 	// Check detail is present
@@ -198,7 +173,7 @@ func TestLegacyError(t *testing.T) {
 
 	var response map[string]string
 	if err := json.Unmarshal(rr.Body.Bytes(), &response); err != nil {
-		t.Fatalf("could not parse response: %v", err)
+		t.Fatalf(errParseResponse, err)
 	}
 
 	if response["error"] != "invalid request" {
@@ -208,5 +183,39 @@ func TestLegacyError(t *testing.T) {
 	// Legacy format should not have other fields
 	if len(response) != 1 {
 		t.Errorf("expected only 'error' field, got %d fields", len(response))
+	}
+}
+
+// Helper functions to reduce cognitive complexity
+
+func validateHTTPResponse(t *testing.T, rr *httptest.ResponseRecorder, expectedStatus int) {
+	t.Helper()
+	if status := rr.Code; status != expectedStatus {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, expectedStatus)
+	}
+	if ct := rr.Header().Get("Content-Type"); ct != "application/json" {
+		t.Errorf("handler returned wrong content type: got %v want application/json", ct)
+	}
+}
+
+func parseErrorResponse(t *testing.T, rr *httptest.ResponseRecorder) errors.ErrorResponse {
+	t.Helper()
+	var response errors.ErrorResponse
+	if err := json.Unmarshal(rr.Body.Bytes(), &response); err != nil {
+		t.Fatalf(errParseResponse, err)
+	}
+	return response
+}
+
+func validateErrorResponse(t *testing.T, response errors.ErrorResponse, expectedCode errors.ErrorCode, expectedError string, expectedStatus int) {
+	t.Helper()
+	if response.Code != expectedCode {
+		t.Errorf("handler returned wrong code: got %v want %v", response.Code, expectedCode)
+	}
+	if response.Error != expectedError {
+		t.Errorf("handler returned wrong error message: got %v want %v", response.Error, expectedError)
+	}
+	if response.Status != expectedStatus {
+		t.Errorf("handler returned wrong status in response: got %v want %v", response.Status, expectedStatus)
 	}
 }
