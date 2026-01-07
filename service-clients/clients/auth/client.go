@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/AoC-Gamers/connect-libraries/internal/endpoints"
-	"github.com/AoC-Gamers/connect-libraries/internal/errors"
-	"github.com/AoC-Gamers/connect-libraries/internal/models"
+	"github.com/AoC-Gamers/connect-libraries/core-types/endpoints"
+	"github.com/AoC-Gamers/connect-libraries/core-types/errors"
+	"github.com/AoC-Gamers/connect-libraries/core-types/models"
 	"github.com/rs/zerolog/log"
 )
 
