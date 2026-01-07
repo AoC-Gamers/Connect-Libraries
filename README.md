@@ -59,24 +59,47 @@ go mod tidy
 
 ## 📝 Versionado
 
-Este repositorio usa **versionado semántico unificado** para todas las librerías.
+Este repositorio usa **versionado independiente por biblioteca** siguiendo Semantic Versioning.
 
-- **v1.0.0** - Release inicial
-- **v1.1.0** - Nuevas features
-- **v1.0.1** - Bug fixes
+Cada biblioteca tiene su propio ciclo de versiones con tags en el formato `<librería>/v<versión>`:
 
-### Crear nueva versión
+- `apikey/v1.0.0`, `apikey/v1.0.1`, `apikey/v1.1.0`, ...
+- `auth-lib/v1.0.0`, `auth-lib/v1.0.1`, `auth-lib/v1.1.0`, ...
+- `errors/v1.0.0`, `errors/v1.0.1`, `errors/v1.1.0`, ...
+- etc.
+
+### Crear nueva versión de una biblioteca
 
 ```bash
-git tag v1.1.0
-git push origin v1.1.0
+# Ejemplo: Nueva versión de auth-lib
+cd auth-lib
+# Actualizar CHANGELOG.md con los cambios
+git add .
+git commit -m "feat(auth-lib): nueva funcionalidad"
+git tag auth-lib/v1.1.0
+git push origin auth-lib/v1.1.0
 ```
 
 ### Actualizar en proyectos
 
 ```bash
+# Actualizar a una versión específica
 go get github.com/AoC-Gamers/connect-libraries/auth-lib@v1.1.0
+
+# O usar la última versión
+go get -u github.com/AoC-Gamers/connect-libraries/auth-lib
+
 go mod tidy
+```
+
+### Consultar versiones disponibles
+
+```bash
+# Ver todas las versiones de una biblioteca
+go list -m -versions github.com/AoC-Gamers/connect-libraries/auth-lib
+
+# Ver tags en GitHub
+git ls-remote --tags origin | grep auth-lib
 ```
 
 ## 🏗️ Estructura del Repositorio
@@ -84,18 +107,40 @@ go mod tidy
 ```
 connect-libraries/
 ├── apikey/              # Autenticación API Keys
+│   ├── CHANGELOG.md     # Historial de versiones
+│   └── ...
 ├── auth-lib/            # Autenticación JWT
+│   ├── CHANGELOG.md
+│   └── ...
 ├── authz/               # Autorización y roles
+│   ├── CHANGELOG.md
+│   └── ...
 ├── core-types/          # Tipos compartidos
+│   ├── CHANGELOG.md
+│   └── ...
 ├── errors/              # Manejo de errores
+│   ├── CHANGELOG.md
+│   └── ...
 ├── middleware/          # Middlewares HTTP
+│   ├── CHANGELOG.md
+│   └── ...
 ├── migrate/             # Migraciones PostgreSQL
+│   ├── CHANGELOG.md
+│   └── ...
 ├── nats/                # Cliente NATS/JetStream
+│   ├── CHANGELOG.md
+│   └── ...
 ├── service-clients/     # Clientes HTTP inter-servicios
+│   ├── CHANGELOG.md
+│   └── ...
 ├── testhelpers/         # Utilidades de testing
+│   ├── CHANGELOG.md
+│   └── ...
 ├── .gitignore
 └── README.md
 ```
+
+> **Nota**: Cada biblioteca mantiene su propio CHANGELOG.md con su historial de versiones independiente.
 
 ## 📄 Licencia
 
