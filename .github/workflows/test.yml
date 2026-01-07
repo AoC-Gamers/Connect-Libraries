@@ -1,0 +1,43 @@
+name: Test Libraries
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.24']
+        library:
+          - auth-lib
+          - errors
+          - middleware
+          - apikey
+          - internal
+          - migrate
+          - nats
+          - testhelpers
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+    
+    - name: Test ${{ matrix.library }}
+      working-directory: ./${{ matrix.library }}
+      run: |
+        go mod download
+        go test -v -race -coverprofile=coverage.txt ./...
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./${{ matrix.library }}/coverage.txt
+        flags: ${{ matrix.library }}
