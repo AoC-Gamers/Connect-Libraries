@@ -1,63 +1,51 @@
-# Connect Middleware
+# Middleware
 
-Middlewares de autenticación y autorización reutilizables para el ecosistema Connect Backend.
+**Módulo:** `github.com/AoC-Gamers/connect-libraries/middleware`
 
-## Propósito
+## 📋 Descripción
 
-Proporcionar middlewares estándar para autenticación JWT, validación de roles, API keys y CORS que funcionen con diferentes frameworks web (Gin, Chi, net/http).
+Middlewares HTTP reutilizables para autenticación, autorización y protección de APIs en todos los microservicios Connect. Proporciona middlewares estándar para JWT, validación de roles/permisos, API keys y CORS con soporte multi-framework.
 
-## Características
+## 📦 Contenido
 
-- ✅ **Multi-framework:** Gin, Chi, net/http
-- ✅ **JWT Authentication:** Middleware estándar usando connect-auth-lib
-- ✅ **Role-based Authorization:** Validación de roles y permisos
-- ✅ **API Key Protection:** Para endpoints internos
-- ✅ **CORS Management:** Configuración flexible de CORS
-- ✅ **Context Injection:** Inyección consistente de claims en contexto
+### `chi/`
+Middlewares para framework Chi (usado en Connect-Auth):
+- **auth.go** - Autenticación JWT
+- **permissions.go** - Validación de permisos
+- **apikey.go** - Protección con API keys
 
-## Estructura
+## 🔧 Uso
 
-```
-connect-middleware/
-├── go.mod
-├── README.md
-├── gin/
-│   ├── auth.go       # JWT auth middleware para Gin
-│   ├── roles.go      # Role validation para Gin
-│   └── apikey.go     # API key middleware para Gin
-├── chi/
-│   ├── auth.go       # JWT auth middleware para Chi
-│   ├── permissions.go # Permission validation para Chi
-│   └── apikey.go     # API key middleware para Chi
-├── http/
-│   ├── auth.go       # JWT auth middleware para net/http
-│   ├── cors.go       # CORS middleware para net/http
-│   └── apikey.go     # API key middleware para net/http
-└── common/
-    ├── extractor.go  # Token extractors comunes
-    └── validators.go # Validadores comunes
-```
+### Con Chi (Connect-Auth)
 
-## Uso por Framework
-
-### Gin (Connect-Core)
 ```go
-import "github.com/AoC-Gamers/Connect-Backend/connect-middleware/gin"
+import "github.com/AoC-Gamers/connect-libraries/middleware/chi"
 
-router.Use(ginmw.RequireAuth(authConfig))
-router.Use(ginmw.RequireAdmin())
-```
-
-### Chi (Connect-Auth)
-```go
-import "github.com/AoC-Gamers/Connect-Backend/connect-middleware/chi"
-
+// Autenticación JWT
 r.Use(chimw.RequireAuth(cfg))
+
+// Validación de permisos
 r.Use(chimw.RequirePermission("WEB__ADMIN"))
+
+// Protección con API key
+r.Use(chimw.RequireAPIKey(apiKeyValidator))
 ```
 
-### net/http (Connect-Lobby, Connect-RT)
-```go
+## ⚙️ Dependencias
+
+- `auth-lib` - Para parsing y validación de JWT
+- `errors` - Para respuestas de error estandarizadas
+- `chi` - Framework Chi router
+
+## ⚡ Características
+
+- ✅ Multi-framework (Chi, con soporte futuro para Gin/net-http)
+- ✅ Autenticación JWT usando auth-lib
+- ✅ Validación de roles y permisos granular
+- ✅ Protección de APIs internas con API keys
+- ✅ Context injection consistente
+- ✅ Token extraction automática (headers, cookies)
+- ✅ Manejo de errores estandarizado
 import "github.com/AoC-Gamers/Connect-Backend/connect-middleware/http"
 
 handler = httpmw.JWTAuth(config)(handler)

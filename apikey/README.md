@@ -1,79 +1,65 @@
-# Connect API Key
+# API Key
 
-Sistema de autenticación por API Key para comunicación interna entre microservicios Connect.
+**Módulo:** `github.com/AoC-Gamers/connect-libraries/apikey`
 
-## Características
+## 📋 Descripción
 
-- ✅ **Multi-framework:** Gin, Chi, net/http
-- ✅ **Environment Integration:** Carga automática desde variables de entorno (.env)
-- ✅ **Connect Services:** Mapeo automático de servicios Connect (Auth, Core, Lobby, RT)  
-- ✅ **Development Mode:** Auto-generación de claves para desarrollo
-- ✅ **Production Ready:** Validación estricta y logging seguro
-- ✅ **Granular Control:** Middleware por servicio específico
-- ✅ **Observability:** Logs y debugging integrado
+Sistema de autenticación por API Key para comunicación interna segura entre microservicios del sistema Connect. Proporciona validación automática de claves de servicio con soporte para múltiples entornos (desarrollo/producción) y logging integrado.
 
-## Estructura
+## 📦 Contenido
 
-```
-connect-apikey/
-├── go.mod
-├── README.md
-├── validator.go         # Validador principal
-├── env.go              # Helpers para variables de entorno
-├── init.go             # Inicialización automática
-├── gin/
-│   ├── middleware.go   # Middleware básico para Gin
-│   └── connect.go      # Helpers específicos Connect para Gin
-├── chi/
-│   └── middleware.go   # Middleware para Chi
-└── http/
-    └── middleware.go   # Middleware para net/http
-```
+- **apikey.go** - Tipos y estructuras principales
+- **validator.go** - Validador de API Keys
+- **env.go** - Helpers para variables de entorno
+- **config_helper.go** - Utilidades de configuración
+- **init.go** - Inicialización automática
 
-## Uso Básico
-
-### 🚀 Integración Automática (Recomendado)
+## 🔧 Uso
 
 ```go
-import ginapi "github.com/AoC-Gamers/Connect-Backend/libraries/connect-apikey/gin"
-
-// Carga automática desde variables de entorno (.env)
-router.Use(ginapi.RequireConnectAPIKey())
-
-// Middleware específico por servicio
-router.Use(ginapi.RequireAuthService())     // Solo Connect-Auth
-router.Use(ginapi.RequireLobbyService())    // Solo Connect-Lobby
-```
-
-### 🔧 Configuración Manual
-
-```go
-import apikey "github.com/AoC-Gamers/Connect-Backend/libraries/connect-apikey"
+import "github.com/AoC-Gamers/connect-libraries/apikey"
 
 // Configuración manual
-validator := apikey.NewValidator(map[string]string{
-    "connect-core-key-123": "connect-core",
-    "connect-lobby-key-456": "connect-lobby",
-})
+config := apikey.Config{
+    APIKeys: map[string]string{
+        "auth":  "secret-auth-key",
+        "core":  "secret-core-key",
+        "lobby": "secret-lobby-key",
+        "rt":    "secret-rt-key",
+    },
+}
 
-// Uso con Gin
-import ginapi "github.com/AoC-Gamers/Connect-Backend/libraries/connect-apikey/gin"
-router.Use(ginapi.RequireAPIKey(validator))
+// Validar API Key
+isValid := apikey.Validate(apiKey, "auth")
+
+// Carga automática desde variables de entorno
+// CONNECT_AUTH_API_KEY=xxx
+// CONNECT_CORE_API_KEY=xxx
+apikey.InitFromEnv()
+
 ```
 
-### 🌍 Variables de Entorno
+## 🌍 Variables de Entorno
 
 Configura estas variables en tu `.env`:
 
 ```bash
-AUTH_API_KEY=connect-auth-internal-key
-CORE_API_KEY=connect-core-internal-key  
-LOBBY_API_KEY=connect-lobby-internal-key
-RT_API_KEY=connect-rt-internal-key
+CONNECT_AUTH_API_KEY=secret-auth-key
+CONNECT_CORE_API_KEY=secret-core-key
+CONNECT_LOBBY_API_KEY=secret-lobby-key
+CONNECT_RT_API_KEY=secret-rt-key
 ```
 
-## Formatos Soportados
+## ⚙️ Dependencias
 
-- `X-API-Key: <key>` (header)
-- `Authorization: Bearer <key>` (header)
-- `api_key=<key>` (query parameter)
+- `errors` - Sistema de manejo de errores estandarizado
+- `zerolog` - Logging estructurado
+
+## ⚡ Características
+
+- ✅ Validación de API Keys para servicios internos
+- ✅ Carga automática desde variables de entorno
+- ✅ Soporte para múltiples servicios Connect
+- ✅ Logging integrado con zerolog
+- ✅ Modo desarrollo con auto-generación de claves
+- ✅ Validación estricta en producción

@@ -1,38 +1,34 @@
-# Connect Errors Library
+# Errors
 
-**Standardized Error Responses for Connect Backend Services**
+**Módulo:** `github.com/AoC-Gamers/connect-libraries/errors`
 
-Biblioteca compartida que implementa respuestas de error estructuradas siguiendo RFC 7807 (Problem Details for HTTP APIs) para todos los microservicios del ecosistema Connect Backend.
+## 📋 Descripción
 
-## 🎯 Características
+Sistema de manejo de errores estandarizado para todos los microservicios Connect. Implementa respuestas estructuradas siguiendo RFC 7807 (Problem Details for HTTP APIs) con soporte para errores públicos (APIs cliente) e internos (comunicación entre servicios).
 
-- ✅ Respuestas de error estructuradas y consistentes
-- ✅ Códigos de error estandarizados  
-- ✅ Metadata extensible para debugging
-- ✅ Compatible con RFC 7807
-- ✅ Helpers para casos de uso comunes
-- ✅ **Sistema de errores internos para comunicación entre servicios**
-- ✅ **Logging automático con zerolog**
-- ✅ **Detección automática de servicios**
+## 📦 Contenido
 
-## 📦 Instalación
+- **errors.go** - Tipos y estructuras de error principales
+- **codes.go** - Códigos de error estandarizados
+- **helpers.go** - Helpers para casos de uso comunes (validación, permisos, etc.)
+- **internal.go** - Sistema de errores internos para comunicación entre servicios
+- **types.ts** - Definiciones TypeScript para frontend
+- **EXAMPLES.md** - Ejemplos de uso completos
+- **INTERNAL_ERRORS_GUIDE.md** - Guía de errores internos
 
-```go
-import "github.com/AoC-Gamers/Connect-Backend/libraries/connect-errors"
-```
+## � Uso
 
-## 🚀 Uso Básico
-
-### Respuestas de Error para APIs Públicas
+### Respuestas de Error Públicas (APIs cliente)
 
 ```go
 import (
     "net/http"
-    errors "github.com/AoC-Gamers/Connect-Backend/libraries/connect-errors"
+    "github.com/AoC-Gamers/connect-libraries/errors"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    errors.RespondError(w, http.StatusBadRequest, errors.CodeValidationError, 
+    errors.RespondError(w, http.StatusBadRequest, 
+        errors.CodeValidationError, 
         "invalid mission name", 
         "Mission name exceeds 128 characters",
         map[string]interface{}{
@@ -41,19 +37,20 @@ func handler(w http.ResponseWriter, r *http.Request) {
         },
     )
 }
+
+// Helper predefinido
+errors.RespondPermissionDenied(w, scopeID, "WEB", "WEB__MISSION_VIEW", false)
 ```
 
-### Errores Internos entre Servicios (NUEVO)
+### Errores Internos (Comunicación entre servicios)
 
 ```go
 import (
     "github.com/gin-gonic/gin"
-    errors "github.com/AoC-Gamers/Connect-Backend/libraries/connect-errors"
+    "github.com/AoC-Gamers/connect-libraries/errors"
 )
 
 func internalHandler(c *gin.Context) {
-    userID := c.Param("id")
-    
     // Validación
     if userID == "" {
         errors.RespondInternalValidation(c, "user_id", "parameter is required")
@@ -69,15 +66,6 @@ func internalHandler(c *gin.Context) {
     
     c.JSON(200, user)
 }
-```
-
-### Helpers Predefinidos
-
-```go
-// Permission Denied (APIs públicas)
-errors.RespondPermissionDenied(w, scopeID, "WEB", "WEB__MISSION_VIEW", false)
-
-// Service Forbidden (APIs internas)
 errors.RespondInternalForbidden(c, []string{"connect-auth"}, "connect-rt")
 
 // Not Found
@@ -89,47 +77,70 @@ errors.RespondMembershipNotFound(w, scopeID, "WEB", userID)
 // Token Expired
 errors.RespondTokenExpired(w)
 
-// Policy Version Mismatch
-errors.RespondPolicyVersionMismatch(w, tokenVersion, currentVersion)
-
-// Internal Server Error (APIs públicas)
-errors.RespondInternalError(w, "database connection failed")
 ```
 
-## 📁 Estructura del Proyecto
+## 📋 Códigos de Error Estandarizados
 
-- `codes.go` - Códigos de error estandarizados
-- `errors.go` - Funciones base y estructura ErrorResponse (RFC 7807)
-- `helpers.go` - Helpers para APIs públicas y casos de uso comunes
-- `internal.go` - **Sistema de errores internos para comunicación entre servicios**
-- `INTERNAL_ERRORS_GUIDE.md` - **Guía completa del sistema de errores internos**
+### Authentication & Authorization
+- `UNAUTHORIZED` - Usuario no autenticado
+- `TOKEN_EXPIRED` - Token JWT expirado
+- `TOKEN_INVALID` - Token JWT inválido
+- `POLICY_VERSION_MISMATCH` - Versión de política desactualizada
+- `PERMISSION_DENIED` - Permisos insuficientes
+- `INSUFFICIENT_PERMISSIONS` - Falta de permisos específicos
 
-## 📋 Estructura de Respuesta
+### Validation & Input
+- `VALIDATION_ERROR` - Error de validación de entrada
+- `INVALID_INPUT` - Entrada inválida
+- `MISSING_FIELD` - Campo requerido faltante
 
-Todas las respuestas de error siguen este formato:
+### Resources
+- `NOT_FOUND` - Recurso no encontrado
+- `ALREADY_EXISTS` - Recurso ya existe
+- `CONFLICT` - Conflicto de estado
+
+### Server & Database
+- `INTERNAL_ERROR` - Error interno del servidor
+- `DATABASE_ERROR` - Error de base de datos
+- `SERVICE_UNAVAILABLE` - Servicio no disponible
+
+## 📁 Estructura de Respuesta (RFC 7807)
 
 ```json
 {
-  "error": "short error message",
-  "code": "ERROR_CODE",
+  "error": "permission denied",
+  "code": "PERMISSION_DENIED",
   "status": 403,
-  "detail": "Detailed explanation of what went wrong",
+  "detail": "User lacks required permission for this resource",
   "meta": {
     "scope_id": 1,
-    "required_permission": "WEB__MISSION_VIEW"
+    "required_permission": "WEB__MISSION_VIEW",
+    "has_permission": false
   }
 }
 ```
 
-## 🏷️ Códigos de Error Disponibles
+## ⚙️ Dependencias
 
-### Authentication & Authorization
-- `UNAUTHORIZED`
-- `TOKEN_EXPIRED`
-- `TOKEN_INVALID`
-- `POLICY_VERSION_MISMATCH`
-- `PERMISSION_DENIED`
-- `INSUFFICIENT_PERMISSIONS`
+- `zerolog` - Logging estructurado automático
+- `gin-gonic/gin` - Soporte para framework Gin (opcional)
+
+## ⚡ Características
+
+- ✅ RFC 7807 compliant (Problem Details)
+- ✅ Códigos de error estandarizados
+- ✅ Metadata extensible para debugging
+- ✅ Sistema dual: errores públicos + internos
+- ✅ Logging automático con zerolog
+- ✅ Detección automática de servicios
+- ✅ Helpers predefinidos para casos comunes
+- ✅ Compatible con Gin, Chi, net/http
+- ✅ TypeScript definitions incluidas
+
+## 📚 Documentación Adicional
+
+- Ver [EXAMPLES.md](EXAMPLES.md) para más ejemplos
+- Ver [INTERNAL_ERRORS_GUIDE.md](INTERNAL_ERRORS_GUIDE.md) para errores internos
 
 ### Resource Errors
 - `NOT_FOUND`

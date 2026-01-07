@@ -1,53 +1,57 @@
-# connect-nats
+# NATS
 
-Biblioteca compartida para conexiones NATS estandarizadas en todos los servicios Connect.
+**Módulo:** `github.com/AoC-Gamers/connect-libraries/nats`
 
-## Características
+## 📋 Descripción
 
-✅ **Configuración unificada** - Misma lógica de conexión en Auth, Core, RT y Lobby  
-✅ **Autenticación múltiple** - Soporta token, credenciales y usuario/contraseña  
-✅ **TLS opcional** - Configuración segura para producción  
-✅ **Reconexión automática** - Manejo robusto de desconexiones  
-✅ **Logging estandarizado** - Usa zerolog consistentemente  
-✅ **Non-blocking** - Los servicios continúan funcionando si NATS falla
+Cliente NATS/JetStream estandarizado para comunicación asíncrona entre microservicios Connect. Proporciona configuración unificada, autenticación múltiple y reconexión automática.
 
-## Instalación
+## 📦 Contenido
 
-```bash
-go get github.com/AoC-Gamers/Connect-Backend/libraries/connect-nats
-```
+- **config.go** - Configuración de conexión NATS
+- **jetstream.go** - Helpers para JetStream
+- **publisher.go** - Publisher de eventos estandarizado
 
-## Uso Básico
+## 🔧 Uso
 
 ```go
-package main
+import connectnats "github.com/AoC-Gamers/connect-libraries/nats"
 
-import (
-    connectnats "github.com/AoC-Gamers/Connect-Backend/libraries/connect-nats"
-)
-
-func main() {
-    // Usar configuración por defecto (lee variables de entorno)
-    conn, err := connectnats.Connect(nil)
-    if err != nil {
-        // Manejar error - el servicio puede continuar sin NATS
-        log.Warn().Err(err).Msg("NATS unavailable")
-        return
-    }
-    defer conn.Close()
-
-    // Usar la conexión...
+// Conectar con configuración por defecto
+conn, err := connectnats.Connect(nil)
+if err != nil {
+    log.Warn().Err(err).Msg("NATS unavailable")
+    return
 }
-```
+defer conn.Close()
 
-## Configuración Personalizada
-
-```go
+// Configuración personalizada
 cfg := &connectnats.Config{
     URL:           "nats://nats-shared:4222",
     ClientID:      "connect-auth-1",
     ReconnectWait: 2,
-    MaxReconnects: -1, // Infinito
+    MaxReconnects: -1,
+    Token:         "secret-token",
+}
+conn, err := connectnats.Connect(cfg)
+```
+
+## ⚙️ Dependencias
+
+- `nats.go` - Cliente NATS oficial
+- `zerolog` - Logging estructurado
+
+## ⚡ Características
+
+- ✅ Configuración unificada para todos los servicios
+- ✅ Autenticación múltiple (token, credenciales, user/pass)
+- ✅ TLS opcional para producción
+- ✅ Reconexión automática con backoff
+- ✅ Non-blocking (servicios continúan si NATS falla)
+- ✅ JetStream support integrado
+- ✅ Publisher de eventos estandarizado
+- ✅ Logging de conexiones y errores
+
     Timeout:       10 * time.Second,
 }
 

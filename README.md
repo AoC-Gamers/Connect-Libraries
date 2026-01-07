@@ -6,14 +6,16 @@
 
 | Librería | Descripción | Versión |
 |----------|-------------|---------|
-| [auth-lib](./auth-lib/) | JWT & Claims Management | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
-| [errors](./errors/) | Standardized Error Responses (RFC 7807) | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
-| [middleware](./middleware/) | Framework Middlewares (Gin/Chi/HTTP) | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
-| [apikey](./apikey/) | API Key Validation & Environment Integration | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
-| [internal](./internal/) | Internal Shared Utilities | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
-| [migrate](./migrate/) | Database Migration Utilities | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
-| [nats](./nats/) | NATS Connection Manager | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
-| [testhelpers](./testhelpers/) | Testing Utilities | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [apikey](./apikey/) | Autenticación y validación de API Keys | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [auth-lib](./auth-lib/) | Sistema de autenticación JWT y permisos | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [authz](./authz/) | Sistema de autorización y roles (RBAC) | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [core-types](./core-types/) | Tipos compartidos: endpoints, modelos y errores | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [errors](./errors/) | Manejo de errores estandarizado (RFC 7807) | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [middleware](./middleware/) | Middlewares HTTP para framework Chi | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [migrate](./migrate/) | Sistema de migraciones para PostgreSQL | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [nats](./nats/) | Cliente NATS con soporte JetStream | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [service-clients](./service-clients/) | Clientes HTTP para comunicación entre servicios | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [testhelpers](./testhelpers/) | Utilidades para testing y mocks | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
 
 ## 🚀 Instalación
 
@@ -77,34 +79,20 @@ go get github.com/AoC-Gamers/connect-libraries/auth-lib@v1.1.0
 go mod tidy
 ```
 
-## 🔧 Desarrollo Local
-
-Para trabajar con las librerías localmente sin publicar cambios, usa `replace` directives:
-
-```go
-// En tu proyecto Connect-Auth/go.mod
-require (
-    github.com/AoC-Gamers/connect-libraries/auth-lib v1.0.0
-)
-
-// Solo para desarrollo
-replace github.com/AoC-Gamers/connect-libraries/auth-lib => ../connect-libraries/auth-lib
-```
-
-**Recuerda:** Comenta o elimina las directivas `replace` antes de hacer commit en producción.
-
 ## 🏗️ Estructura del Repositorio
 
 ```
 connect-libraries/
-├── auth-lib/       # JWT & Claims
-├── errors/          # Errores estandarizados
-├── middleware/      # Middlewares HTTP
-├── apikey/          # Validación API Keys
-├── internal/        # Utilidades internas
-├── migrate/         # Migraciones DB
-├── nats/            # Cliente NATS
-├── testhelpers/             # Testing utilities
+├── apikey/              # Autenticación API Keys
+├── auth-lib/            # Autenticación JWT
+├── authz/               # Autorización y roles
+├── core-types/          # Tipos compartidos
+├── errors/              # Manejo de errores
+├── middleware/          # Middlewares HTTP
+├── migrate/             # Migraciones PostgreSQL
+├── nats/                # Cliente NATS/JetStream
+├── service-clients/     # Clientes HTTP inter-servicios
+├── testhelpers/         # Utilidades de testing
 ├── .gitignore
 └── README.md
 ```

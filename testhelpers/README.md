@@ -1,52 +1,40 @@
-# Test Helpers Library
+# Test Helpers
 
-Librería compartida de utilidades para testing reutilizable por todos los módulos del backend (Connect-Core, Connect-Auth, Connect-Lobby, Connect-RT).
+**Módulo:** `github.com/AoC-Gamers/connect-libraries/testhelpers`
 
-## Filosofía de diseño
+## 📋 Descripción
 
-Esta librería usa **únicamente tipos públicos** y no depende de paquetes `internal` de ningún módulo. Esto permite que sea verdaderamente compartida y reutilizable.
+Utilidades de testing compartidas para todos los microservicios Connect. Proporciona helpers para crear mocks de base de datos, fixtures y otros recursos de testing comunes con cleanup automático.
 
-## Helpers disponibles
+## 📦 Contenido
 
-### NewMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock)
+- **helpers.go** - Helpers principales para testing
 
-Crea una base de datos mock usando sqlmock para código que usa `database/sql` directamente (sin sqlx).
-El cleanup es automático vía `t.Cleanup()`.
+## 🔧 Uso
 
-**Ejemplo:**
+### Mock de Base de Datos (database/sql)
+
 ```go
-import th "github.com/AoC-Gamers/Connect-Backend/libraries/testhelpers"
+import th "github.com/AoC-Gamers/connect-libraries/testhelpers"
 
 func TestMyHandler(t *testing.T) {
     db, mock := th.NewMockDB(t)
-    // No need to defer db.Close() - cleanup is automatic
+    // Cleanup automático - no necesita defer
     
     mock.ExpectQuery("SELECT ...").WillReturnRows(...)
     
     handler := NewHandler(db)
-    // ...
-    
-    // No need to call mock.ExpectationsWereMet() - done automatically
+    // Expectations verificadas automáticamente
 }
 ```
 
-**Ventajas:**
-- Cleanup completamente automático
-- Verifica expectations automáticamente
-- Reduce boilerplate en tests
+### Mock de Base de Datos (sqlx)
 
-### NewSQLMock(t *testing.T) (*sqlx.DB, sqlmock.Sqlmock, func())
-
-Crea una base de datos mock usando sqlmock para tests unitarios de repositorios.
-
-**Ejemplo:**
 ```go
-import th "github.com/AoC-Gamers/Connect-Backend/libraries/testhelpers"
-
 func TestMyRepo(t *testing.T) {
     db, mock, cleanup := th.NewSQLMock(t)
     defer cleanup()
-
+    
     mock.ExpectQuery("SELECT ...").WillReturnRows(...)
     
     repo := NewRepo(db)

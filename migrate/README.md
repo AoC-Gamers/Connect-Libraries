@@ -1,53 +1,60 @@
-# connect-migrate
+# Migrate
 
-Librería compartida para migraciones de base de datos en el ecosistema Connect.
+**Módulo:** `github.com/AoC-Gamers/connect-libraries/migrate`
 
-## Características
+## 📋 Descripción
 
-- ✅ Configuración estandarizada vía variables de entorno
-- ✅ Soporte para PostgreSQL con driver pgx/v5
-- ✅ Sistema de tracking de migraciones (schema_migrations)
-- ✅ Sistema de datos iniciales opcional (data_sql/)
-- ✅ Verificación de tablas críticas post-migración
-- ✅ Logging estructurado con zerolog
-- ✅ Idempotente (puede ejecutarse múltiples veces)
+Sistema estandarizado de migraciones de base de datos para PostgreSQL utilizado por todos los microservicios Connect. Proporciona tracking de versiones, datos iniciales opcionales y verificación post-migración.
 
-## Uso
+## 📦 Contenido
 
-### 1. Crear migrator en tu servicio
+- **migrator.go** - Motor principal de migraciones
+- **logger.go** - Configuración de logging
+- **fixtures.go** - Sistema de datos iniciales (fixtures)
+
+## 🔧 Uso
 
 ```go
-package main
+import "github.com/AoC-Gamers/connect-libraries/migrate"
 
-import (
-    "github.com/AoC-Gamers/Connect-Backend/libraries/connect-migrate"
-)
+// Configurar logger
+migrate.SetupLogger()
 
-func main() {
-    // Configurar logger
-    migrate.SetupLogger()
+// Crear configuración del migrator
+config := migrate.Config{
+    ServiceName:    "Connect-Auth",
+    SchemaName:     "auth",
+    MigrationsDir:  "migrations_sql",
+    DataDir:        "data_sql",
+    ApplyData:      true,
+    CriticalTables: []string{"users", "roles", "permissions"},
+}
 
-    // Crear configuración del migrator
-    config := migrate.Config{
-        ServiceName:    "Connect-Auth",
-        SchemaName:     "auth",
-        MigrationsDir:  "migrations_sql",
-        DataDir:        "data_sql",      // Opcional: datos iniciales
-        ApplyData:      true,            // Opcional: aplicar datos automáticamente
-        CriticalTables: []string{
-            "users",
-            "roles",
-            "permissions",
-        },
-    }
+// Crear y ejecutar migrator
+migrator, err := migrate.New(config)
+if err != nil {
+    log.Fatal().Err(err).Msg("Failed to create migrator")
+}
 
-    // Crear migrator
-    migrator, err := migrate.New(config)
-    if err != nil {
-        log.Fatal().Err(err).Msg("Failed to create migrator")
-    }
+if err := migrator.Run(); err != nil {
+    log.Fatal().Err(err).Msg("Migration failed")
+}
+```
 
-    // Conectar a la base de datos
+## ⚙️ Dependencias
+
+- `pgx/v5` - Driver PostgreSQL
+- `zerolog` - Logging estructurado
+
+## ⚡ Características
+
+- ✅ Tracking automático de versiones (schema_migrations)
+- ✅ Sistema de fixtures/datos iniciales
+- ✅ Verificación de tablas críticas post-migración
+- ✅ Idempotente (ejecutable múltiples veces)
+- ✅ Configuración vía variables de entorno
+- ✅ Logging detallado de cada paso
+- ✅ Soporte para múltiples schemas
     if err := migrator.Connect(); err != nil {
         log.Fatal().Err(err).Msg("Failed to connect to database")
     }
