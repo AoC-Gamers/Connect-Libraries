@@ -77,13 +77,6 @@ jobs:
     - name: Run tests
       working-directory: ./${{ matrix.library }}
       run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
-    
-    - name: Upload coverage
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./${{ matrix.library }}/coverage.txt
-        flags: ${{ matrix.library }}
-        token: ${{ secrets.CODECOV_TOKEN }}
 
   security:
     name: Security Scan
