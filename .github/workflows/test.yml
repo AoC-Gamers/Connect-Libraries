@@ -1,4 +1,4 @@
-name: Test Libraries
+name: CI
 
 on:
   push:
@@ -7,19 +7,54 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: ['1.24']
         library:
+          - apikey
           - auth-lib
+          - authz
+          - core-types
           - errors
           - middleware
-          - apikey
-          - internal
           - migrate
           - nats
+          - service-clients
+          - testhelpers
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+        cache-dependency-path: ${{ matrix.library }}/go.sum
+    
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v6
+      with:
+        version: latest
+        working-directory: ${{ matrix.library }}
+        args: --timeout=5m
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: ['1.23', '1.24']
+        library:
+          - apikey
+          - auth-lib
+          - authz
+          - core-types
+          - errors
+          - middleware
+          - migrate
+          - nats
+          - service-clients
           - testhelpers
 
     steps:
@@ -29,15 +64,47 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
+        cache-dependency-path: ${{ matrix.library }}/go.sum
     
-    - name: Test ${{ matrix.library }}
+    - name: Download dependencies
       working-directory: ./${{ matrix.library }}
-      run: |
-        go mod download
-        go test -v -race -coverprofile=coverage.txt ./...
+      run: go mod download
+    
+    - name: Verify dependencies
+      working-directory: ./${{ matrix.library }}
+      run: go mod verify
+    
+    - name: Run tests
+      working-directory: ./${{ matrix.library }}
+      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
     
     - name: Upload coverage
       uses: codecov/codecov-action@v4
       with:
         file: ./${{ matrix.library }}/coverage.txt
         flags: ${{ matrix.library }}
+        token: ${{ secrets.CODECOV_TOKEN }}
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Gosec Security Scanner
+      uses: securego/gosec@master
+      with:
+        args: './...'
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'

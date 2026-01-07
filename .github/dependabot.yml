@@ -1,0 +1,111 @@
+version: 2
+
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Go modules - apikey
+  - package-ecosystem: "gomod"
+    directory: "/apikey"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "apikey"
+
+  # Go modules - auth-lib
+  - package-ecosystem: "gomod"
+    directory: "/auth-lib"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "auth-lib"
+
+  # Go modules - authz
+  - package-ecosystem: "gomod"
+    directory: "/authz"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "authz"
+
+  # Go modules - core-types
+  - package-ecosystem: "gomod"
+    directory: "/core-types"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "core-types"
+
+  # Go modules - errors
+  - package-ecosystem: "gomod"
+    directory: "/errors"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "errors"
+
+  # Go modules - middleware
+  - package-ecosystem: "gomod"
+    directory: "/middleware"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "middleware"
+
+  # Go modules - migrate
+  - package-ecosystem: "gomod"
+    directory: "/migrate"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "migrate"
+
+  # Go modules - nats
+  - package-ecosystem: "gomod"
+    directory: "/nats"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "nats"
+
+  # Go modules - service-clients
+  - package-ecosystem: "gomod"
+    directory: "/service-clients"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "service-clients"
+
+  # Go modules - testhelpers
+  - package-ecosystem: "gomod"
+    directory: "/testhelpers"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "go"
+      - "testhelpers"
