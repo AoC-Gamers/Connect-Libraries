@@ -6,106 +6,163 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
+    open-pull-requests-limit: 10
     labels:
       - "dependencies"
       - "github-actions"
+    commit-message:
+      prefix: "deps(actions)"
+      prefix-development: "chore(actions)"
 
   # Go modules - apikey
   - package-ecosystem: "gomod"
     directory: "/apikey"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "apikey"
+    commit-message:
+      prefix: "deps(apikey)"
 
   # Go modules - auth-lib
   - package-ecosystem: "gomod"
     directory: "/auth-lib"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "auth-lib"
+    commit-message:
+      prefix: "deps(auth-lib)"
 
   # Go modules - authz
   - package-ecosystem: "gomod"
     directory: "/authz"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "authz"
+    commit-message:
+      prefix: "deps(authz)"
 
   # Go modules - core-types
   - package-ecosystem: "gomod"
     directory: "/core-types"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "core-types"
+    commit-message:
+      prefix: "deps(core-types)"
 
   # Go modules - errors
   - package-ecosystem: "gomod"
     directory: "/errors"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "errors"
+    commit-message:
+      prefix: "deps(errors)"
 
   # Go modules - middleware
   - package-ecosystem: "gomod"
     directory: "/middleware"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "middleware"
+    commit-message:
+      prefix: "deps(middleware)"
 
   # Go modules - migrate
   - package-ecosystem: "gomod"
     directory: "/migrate"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "migrate"
+    commit-message:
+      prefix: "deps(migrate)"
 
   # Go modules - nats
   - package-ecosystem: "gomod"
     directory: "/nats"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "nats"
+    commit-message:
+      prefix: "deps(nats)"
 
   # Go modules - service-clients
   - package-ecosystem: "gomod"
     directory: "/service-clients"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "service-clients"
+    commit-message:
+      prefix: "deps(service-clients)"
 
   # Go modules - testhelpers
   - package-ecosystem: "gomod"
     directory: "/testhelpers"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Santiago"
     labels:
       - "dependencies"
       - "go"
       - "testhelpers"
+    commit-message:
+      prefix: "deps(testhelpers)"
