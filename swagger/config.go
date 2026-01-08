@@ -5,6 +5,16 @@ type Config struct {
 	// Service information
 	ServiceName string
 	Version     string
+	Description string
+	
+	// Contact information
+	ContactName  string
+	ContactURL   string
+	ContactEmail string
+	
+	// License information
+	LicenseName string
+	LicenseURL  string
 
 	// Tag rules define how to categorize endpoints
 	// Rules are evaluated in order - first match wins
@@ -66,6 +76,27 @@ func DefaultConfig() *Config {
 func (c *Config) WithServiceInfo(name, version string) *Config {
 	c.ServiceName = name
 	c.Version = version
+	return c
+}
+
+// WithDescription sets the API description
+func (c *Config) WithDescription(description string) *Config {
+	c.Description = description
+	return c
+}
+
+// WithContact sets the contact information
+func (c *Config) WithContact(name, url, email string) *Config {
+	c.ContactName = name
+	c.ContactURL = url
+	c.ContactEmail = email
+	return c
+}
+
+// WithLicense sets the license information
+func (c *Config) WithLicense(name, url string) *Config {
+	c.LicenseName = name
+	c.LicenseURL = url
 	return c
 }
 

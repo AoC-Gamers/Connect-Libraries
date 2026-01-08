@@ -198,6 +198,109 @@ func (d *Detector) ExportJSON() ([]byte, error) {
 	return json.MarshalIndent(d.routes, "", "  ")
 }
 
+// ExportSwaggerSpec exports a complete OpenAPI/Swagger specification
+func (d *Detector) ExportSwaggerSpec() ([]byte, error) {
+	spec := map[string]interface{}{
+		"openapi": "3.0.0",
+		"info": map[string]interface{}{
+			"title":       d.config.ServiceName,
+			"version":     d.config.Version,
+			"description": d.config.Description,
+		},
+		"paths": d.generatePaths(),
+		"components": map[string]interface{}{
+			"securitySchemes": map[string]interface{}{
+				"BearerAuth": map[string]interface{}{
+					"type":         "http",
+					"scheme":       "bearer",
+					"bearerFormat": "JWT",
+					"description":  "JWT authentication token",
+				},
+				"ApiKeyAuth": map[string]interface{}{
+					"type":        "apiKey",
+					"in":          "header",
+					"name":        "X-API-Key",
+					"description": "API Key for service-to-service authentication",
+				},
+			},
+		},
+	}
+
+	// Add contact if configured
+	if d.config.ContactName != "" || d.config.ContactEmail != "" {
+		contact := map[string]interface{}{}
+		if d.config.ContactName != "" {
+			contact["name"] = d.config.ContactName
+		}
+		if d.config.ContactURL != "" {
+			contact["url"] = d.config.ContactURL
+		}
+		if d.config.ContactEmail != "" {
+			contact["email"] = d.config.ContactEmail
+		}
+		spec["info"].(map[string]interface{})["contact"] = contact
+	}
+
+	// Add license if configured
+	if d.config.LicenseName != "" {
+		license := map[string]interface{}{
+			"name": d.config.LicenseName,
+		}
+		if d.config.LicenseURL != "" {
+			license["url"] = d.config.LicenseURL
+		}
+		spec["info"].(map[string]interface{})["license"] = license
+	}
+
+	return json.MarshalIndent(spec, "", "  ")
+}
+
+// generatePaths converts detected routes to OpenAPI paths format
+func (d *Detector) generatePaths() map[string]interface{} {
+	paths := make(map[string]interface{})
+
+	for _, route := range d.routes {
+		if _, exists := paths[route.Path]; !exists {
+			paths[route.Path] = make(map[string]interface{})
+		}
+
+		operation := map[string]interface{}{
+			"summary":     route.Summary,
+			"description": route.Description,
+			"tags":        route.Tags,
+			"responses": map[string]interface{}{
+				"200": map[string]interface{}{
+					"description": "Successful response",
+				},
+				"400": map[string]interface{}{
+					"description": "Bad request",
+				},
+				"401": map[string]interface{}{
+					"description": "Unauthorized",
+				},
+				"500": map[string]interface{}{
+					"description": "Internal server error",
+				},
+			},
+		}
+
+		// Add security if required
+		if len(route.Security) > 0 {
+			security := make([]map[string][]string, 0)
+			for _, sec := range route.Security {
+				security = append(security, map[string][]string{sec: {}})
+			}
+			operation["security"] = security
+		}
+
+		// Add to paths
+		method := strings.ToLower(route.Method)
+		paths[route.Path].(map[string]interface{})[method] = operation
+	}
+
+	return paths
+}
+
 // ServeHTTP serves the detected routes as JSON (for /swagger/routes endpoint)
 func (d *Detector) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
