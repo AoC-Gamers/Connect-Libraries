@@ -15,6 +15,7 @@
 | [migrate](./migrate/) | Sistema de migraciones para PostgreSQL | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
 | [nats](./nats/) | Cliente NATS con soporte JetStream | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
 | [service-clients](./service-clients/) | Clientes HTTP para comunicación entre servicios | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
+| [swagger](./swagger/) | Detección automática de Swagger/OpenAPI | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
 | [testhelpers](./testhelpers/) | Utilidades para testing y mocks | ![Version](https://img.shields.io/badge/version-1.0.0-blue) |
 
 ## 🚀 Instalación
