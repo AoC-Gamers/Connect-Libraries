@@ -6,12 +6,21 @@
 
 ## 🎯 Características
 
+### Auto-Detección (v1.1.0+)
+- ✅ **Path parameters** - Extrae `{id}`, `{steamid}`, etc. automáticamente desde rutas
+- ✅ **Security** - Identifica JWT/ApiKey desde middlewares
+- ✅ **Tags** - Agrupa endpoints según reglas configurables
+
+### Registro Manual (v1.1.0+)
+- ✅ **Query parameters** - Desde structs Go con tags JSON
+- ✅ **Request body schemas** - Reflection completa de structs
+- ✅ **Response schemas** - Documentación con códigos HTTP
+- ✅ **Validaciones** - Extrae constraints desde tags `binding`
+
+### General
 - ✅ **Detección automática** de endpoints desde Chi Router
-- ✅ **Agrupación por contexto** mediante tags configurables
-- ✅ **Detección de seguridad** (JWT, API Keys) desde middlewares
-- ✅ **Configuración flexible** por servicio
-- ✅ **Zero annotations** - no requiere comentarios en código
-- ✅ **Exportación JSON** compatible con OpenAPI
+- ✅ **Zero annotations** - Sin comentarios en código (opcional)
+- ✅ **Exportación JSON** compatible con OpenAPI 3.0
 
 ---
 
@@ -247,7 +256,123 @@ router.Get("/swagger/routes", func(w http.ResponseWriter, r *http.Request) {
 
 ---
 
+## 📋 Registro de Schemas (v1.1.0+)
+
+### Uso Básico
+
+```go
+detector := swagger.NewDetector(swaggerCfg)
+registry := detector.GetSchemaRegistry()
+
+// Request Body
+registry.RegisterRequestBody("/users", "POST",
+    models.CreateUserRequest{},
+    "User creation data",
+    true) // required
+
+// Response
+registry.RegisterResponse("/users", "POST", 201,
+    models.User{},
+    "User created successfully")
+
+// Query Parameters
+registry.RegisterQueryParams("/users", "GET",
+    struct {
+        Page  int    `json:"page" binding:"min=1"`
+        Limit int    `json:"limit" binding:"max=100"`
+        Sort  string `json:"sort"`
+    }{})
+```
+
+### Auto-Detección de Path Parameters
+
+Los parámetros de ruta se detectan automáticamente sin necesidad de registrarlos:
+
+```go
+// Ruta Chi
+r.Get("/users/{id}", GetUserHandler)
+r.Get("/teams/{teamId}/members", GetTeamMembersHandler)
+
+// Se detecta automáticamente:
+// {id} → path parameter tipo "string"
+// {teamId} → path parameter tipo "string"
+```
+
+### Tags Soportados en Structs
+
+```go
+type CreateUserRequest struct {
+    Username string `json:"username" binding:"required,min=3,max=20" description:"Unique username"`
+    Email    string `json:"email" binding:"required,email" description:"Email address"`
+    Age      int    `json:"age,omitempty" binding:"min=18,max=120" description:"User age"`
+}
+```
+
+**Tags disponibles:**
+- `json:"field_name"` - Nombre del campo en JSON
+- `json:"field,omitempty"` - Campo opcional (not required)
+- `binding:"required"` - Campo requerido
+- `binding:"min=X"` - Mínimo (número/longitud)
+- `binding:"max=X"` - Máximo (número/longitud)
+- `binding:"email"` - Validación de email
+- `description:"..."` - Descripción del campo
+
+### Ejemplo Completo: Connect-RT
+
+```go
+func registerEndpointSchemas(detector *swaggerlib.Detector) {
+    registry := detector.GetSchemaRegistry()
+
+    // ===== PRESENCE ENDPOINTS =====
+    
+    // PATCH /rt/presence
+    registry.RegisterRequestBody("/rt/presence", "PATCH",
+        models.UpdatePresenceRequest{},
+        "Update user presence status",
+        true)
+    registry.RegisterResponse("/rt/presence", "PATCH", 200,
+        models.PresenceResponse{},
+        "Presence updated successfully")
+
+    // GET /rt/presence/me
+    registry.RegisterResponse("/rt/presence/me", "GET", 200,
+        models.PresenceResponse{},
+        "Current user presence")
+
+    // GET /rt/internal/presence/{steamid}
+    // {steamid} se detecta automáticamente
+    registry.RegisterResponse("/rt/internal/presence/{steamid}", "GET", 200,
+        models.UserPresence{},
+        "User presence information")
+
+    // POST /rt/internal/presence/batch
+    registry.RegisterRequestBody("/rt/internal/presence/batch", "POST",
+        BatchPresenceRequest{},
+        "List of Steam IDs to query",
+        true)
+    registry.RegisterResponse("/rt/internal/presence/batch", "POST", 200,
+        BatchPresenceResponse{},
+        "Batch presence results")
+}
+```
+
+### Tipos Go → OpenAPI
+
+| Go Type | OpenAPI Type | Format |
+|---------|--------------|--------|
+| `string` | `string` | - |
+| `int`, `int32` | `integer` | `int32` |
+| `int64` | `integer` | `int64` |
+| `float32`, `float64` | `number` | `double` |
+| `bool` | `boolean` | - |
+| `time.Time` | `string` | `date-time` |
+| `[]T` | `array` | - |
+| `struct{}` | `object` | - |
+
+---
+
 ## 🎨 Convenciones de Nombres
+
 
 ### Tags Recomendados por Servicio
 

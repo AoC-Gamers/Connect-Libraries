@@ -13,8 +13,9 @@ import (
 
 // Detector automatically detects and documents endpoints from Chi router
 type Detector struct {
-	config *Config
-	routes []DetectedRoute
+	config  *Config
+	routes  []DetectedRoute
+	schemas *SchemaRegistry
 }
 
 // DetectedRoute represents an automatically detected endpoint
@@ -33,9 +34,15 @@ func NewDetector(config *Config) *Detector {
 		config = DefaultConfig()
 	}
 	return &Detector{
-		config: config,
-		routes: make([]DetectedRoute, 0),
+		config:  config,
+		routes:  make([]DetectedRoute, 0),
+		schemas: NewSchemaRegistry(),
 	}
+}
+
+// GetSchemaRegistry returns the schema registry for manual registration
+func (d *Detector) GetSchemaRegistry() *SchemaRegistry {
+	return d.schemas
 }
 
 // ScanRouter walks the Chi router and automatically detects endpoints
@@ -264,41 +271,98 @@ func (d *Detector) generatePaths() map[string]interface{} {
 			paths[route.Path] = make(map[string]interface{})
 		}
 
-		operation := map[string]interface{}{
-			"summary":     route.Summary,
-			"description": route.Description,
-			"tags":        route.Tags,
-			"responses": map[string]interface{}{
-				"200": map[string]interface{}{
-					"description": "Successful response",
-				},
-				"400": map[string]interface{}{
-					"description": "Bad request",
-				},
-				"401": map[string]interface{}{
-					"description": "Unauthorized",
-				},
-				"500": map[string]interface{}{
-					"description": "Internal server error",
-				},
-			},
-		}
-
-		// Add security if required
-		if len(route.Security) > 0 {
-			security := make([]map[string][]string, 0)
-			for _, sec := range route.Security {
-				security = append(security, map[string][]string{sec: {}})
-			}
-			operation["security"] = security
-		}
-
-		// Add to paths
+		operation := d.buildOperation(route)
 		method := strings.ToLower(route.Method)
 		paths[route.Path].(map[string]interface{})[method] = operation
 	}
 
 	return paths
+}
+
+// buildOperation construye la operación completa para un endpoint
+func (d *Detector) buildOperation(route DetectedRoute) map[string]interface{} {
+	operation := map[string]interface{}{
+		"summary":     route.Summary,
+		"description": route.Description,
+		"tags":        route.Tags,
+	}
+
+	// Agregar parámetros
+	d.addParameters(operation, route)
+
+	// Agregar request body si está registrado
+	if requestBody, exists := d.schemas.GetRequestBody(route.Method, route.Path); exists {
+		operation["requestBody"] = ConvertRequestBodyToSwagger(requestBody)
+	}
+
+	// Agregar responses
+	operation["responses"] = d.buildResponses(route)
+
+	// Agregar security
+	d.addSecurity(operation, route)
+
+	return operation
+}
+
+// addParameters agrega parámetros (path y query) a la operación
+func (d *Detector) addParameters(operation map[string]interface{}, route DetectedRoute) {
+	// AUTO-DETECTAR path params desde la ruta
+	autoPathParams := extractPathParamsFromRoute(route.Path)
+
+	// OBTENER params registrados manualmente
+	manualQueryParams := d.schemas.GetQueryParams(route.Method, route.Path)
+	manualPathParams := d.schemas.GetPathParams(route.Method, route.Path)
+
+	// COMBINAR parámetros (manual override auto)
+	var allParams []ParamSchema
+	if len(manualPathParams) > 0 {
+		allParams = manualPathParams
+	} else {
+		allParams = autoPathParams
+	}
+	allParams = append(allParams, manualQueryParams...)
+
+	// AGREGAR parámetros a la operación
+	if len(allParams) > 0 {
+		operation["parameters"] = ConvertToSwaggerParams(allParams)
+	}
+}
+
+// buildResponses construye las responses combinando defaults y registradas
+func (d *Detector) buildResponses(route DetectedRoute) map[string]interface{} {
+	responses := map[string]interface{}{
+		"400": map[string]interface{}{"description": "Bad request"},
+		"401": map[string]interface{}{"description": "Unauthorized"},
+		"500": map[string]interface{}{"description": "Internal server error"},
+	}
+
+	// OBTENER responses registradas manualmente
+	registeredResponses := d.schemas.GetResponses(route.Method, route.Path)
+
+	// Agregar responses registradas (override defaults)
+	if len(registeredResponses) > 0 {
+		for code, response := range ConvertResponsesToSwagger(registeredResponses) {
+			responses[code] = response
+		}
+	} else {
+		// Si no hay responses registradas, usar default 200
+		responses["200"] = map[string]interface{}{
+			"description": "Successful response",
+		}
+	}
+
+	return responses
+}
+
+// addSecurity agrega seguridad a la operación si es necesaria
+func (d *Detector) addSecurity(operation map[string]interface{}, route DetectedRoute) {
+	if len(route.Security) > 0 {
+		security := make([]map[string][]string, 0)
+		for _, sec := range route.Security {
+			security = append(security, map[string][]string{sec: {}})
+		}
+		operation["security"] = security
+	}
 }
 
 // ServeHTTP serves the detected routes as JSON (for /swagger/routes endpoint)
