@@ -1,4 +1,4 @@
-package swagger
+package schema
 
 import (
 	"reflect"
@@ -65,9 +65,9 @@ func goTypeToSwaggerFormat(t reflect.Type) string {
 	}
 }
 
-// extractPathParamsFromRoute detecta automáticamente path params desde la ruta
+// ExtractPathParamsFromRoute detecta automáticamente path params desde la ruta
 // Ejemplo: "/users/{id}/teams/{teamId}" → ["id", "teamId"]
-func extractPathParamsFromRoute(path string) []ParamSchema {
+func ExtractPathParamsFromRoute(path string) []ParamSchema {
 	params := []ParamSchema{}
 
 	// Buscar patrones {param}
@@ -164,8 +164,8 @@ func splitParamName(name string) []string {
 	return words
 }
 
-// mergeParams combina múltiples listas de parámetros eliminando duplicados
-func mergeParams(paramLists ...[]ParamSchema) []ParamSchema {
+// MergeParams combina múltiples listas de parámetros eliminando duplicados
+func MergeParams(paramLists ...[]ParamSchema) []ParamSchema {
 	seen := make(map[string]bool)
 	result := []ParamSchema{}
 
@@ -180,13 +180,6 @@ func mergeParams(paramLists ...[]ParamSchema) []ParamSchema {
 	}
 
 	return result
-}
-
-// inferEnumFromType intenta detectar enums desde tipos personalizados
-func inferEnumFromType(t reflect.Type) []interface{} {
-	// Esta es una función placeholder para futuras mejoras
-	// Podría analizar constantes definidas en el paquete
-	return nil
 }
 
 // getJSONFieldName obtiene el nombre del campo JSON desde los tags
@@ -224,88 +217,17 @@ func isRequiredField(field reflect.StructField) bool {
 	return jsonTag != "" && !strings.Contains(jsonTag, "omitempty")
 }
 
-// extractValidationRules extrae reglas de validación desde tags
-func extractValidationRules(field reflect.StructField) map[string]interface{} {
-	rules := make(map[string]interface{})
+// parseJSONTag parsea el tag JSON y retorna el nombre y si es omitempty
+func parseJSONTag(tag string) (name string, omitempty bool) {
+	parts := strings.Split(tag, ",")
+	name = parts[0]
 
-	// Extraer desde binding tag
-	if binding := field.Tag.Get("binding"); binding != "" {
-		extractBindingRules(binding, rules)
-	}
-
-	// Extraer desde validate tag
-	if validate := field.Tag.Get("validate"); validate != "" {
-		extractValidateRules(validate, rules)
-	}
-
-	return rules
-}
-
-// extractBindingRules procesa el tag binding
-func extractBindingRules(binding string, rules map[string]interface{}) {
-	parts := strings.Split(binding, ",")
-	for _, part := range parts {
-		if strings.Contains(part, "=") {
-			processKeyValueRule(part, rules)
-		} else {
-			processSimpleRule(part, rules)
+	for _, part := range parts[1:] {
+		if part == "omitempty" {
+			omitempty = true
+			break
 		}
 	}
-}
 
-// extractValidateRules procesa el tag validate
-func extractValidateRules(validate string, rules map[string]interface{}) {
-	parts := strings.Split(validate, ",")
-	for _, part := range parts {
-		if strings.Contains(part, "=") {
-			processKeyValueRule(part, rules)
-		}
-	}
-}
-
-// processKeyValueRule procesa reglas con valor (min=1, max=100)
-func processKeyValueRule(part string, rules map[string]interface{}) {
-	kv := strings.SplitN(part, "=", 2)
-	if len(kv) != 2 {
-		return
-	}
-
-	switch kv[0] {
-	case "min":
-		rules["minimum"] = kv[1]
-	case "max":
-		rules["maximum"] = kv[1]
-	case "len":
-		rules["length"] = kv[1]
-	}
-}
-
-// processSimpleRule procesa reglas sin valor (required, email, url)
-func processSimpleRule(part string, rules map[string]interface{}) {
-	switch part {
-	case "required":
-		rules["required"] = true
-	case "email":
-		rules["format"] = "email"
-	case "url":
-		rules["format"] = "uri"
-	}
-}
-
-// buildArraySchema construye el schema para arrays/slices
-func buildArraySchema(t reflect.Type) map[string]interface{} {
-	elemType := t.Elem()
-
-	schema := map[string]interface{}{
-		"type": "array",
-		"items": map[string]interface{}{
-			"type": goTypeToSwaggerType(elemType),
-		},
-	}
-
-	if format := goTypeToSwaggerFormat(elemType); format != "" {
-		schema["items"].(map[string]interface{})["format"] = format
-	}
-
-	return schema
+	return name, omitempty
 }
