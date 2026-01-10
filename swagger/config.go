@@ -6,12 +6,12 @@ type Config struct {
 	ServiceName string
 	Version     string
 	Description string
-	
+
 	// Contact information
 	ContactName  string
 	ContactURL   string
 	ContactEmail string
-	
+
 	// License information
 	LicenseName string
 	LicenseURL  string
