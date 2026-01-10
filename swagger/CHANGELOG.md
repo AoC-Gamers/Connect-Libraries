@@ -7,6 +7,77 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-01-10
+
+### Added
+- **BuildSchemaFromStruct()** - Genera schemas OpenAPI completos automáticamente desde structs Go
+- **ExtractParamsFromStruct()** - Extrae parámetros con detección automática de tipos y formatos
+- **buildStructProperties()** - Helper para procesar campos de structs en propiedades OpenAPI
+- **buildFieldSchema()** - Helper para construir schema de campos individuales
+- Detección automática de tipos: string, integer (int32/int64), number (float/double), boolean, array, object
+- Detección de formatos especializados: int32, int64, float, double, date-time para `time.Time`
+- Soporte completo para arrays y slices con detección de tipos de elementos
+- Soporte para objetos anidados con recursión completa
+- Nuevos tags soportados: `description`, `example`, `default`
+- Sistema híbrido: detección automática + configuración manual opcional
+- Documentación completa en `HYBRID_DETECTION.md`
+
+### Changed
+- `reflection.go`: Expandido de 235 líneas a 370+ líneas con funciones de detección híbrida
+- Función `goTypeToSwaggerType()` ahora incluida en detección híbrida (no eliminada)
+- Función `goTypeToSwaggerFormat()` mejorada para detectar formatos especializados
+- README.md actualizado con sección de Detección Híbrida y ejemplos completos
+
+### Improved
+- **Organización del código**: Simplificación y limpieza de estructura
+- `swagger.go`: Reducido de 137 a 67 líneas (-70 líneas)
+  - Eliminadas re-exportaciones innecesarias de tipos
+  - Eliminadas constantes no utilizadas
+  - Movidos métodos `ExportJSON()` y `ExportSpec()` desde detector para evitar import cycle
+  - API pública simplificada: solo funciones esenciales
+- `schema/generator.go` → `schema/registry.go`: Renombrado para mejor claridad
+  - Eliminados métodos Register* no utilizados (RegisterQueryParams, RegisterPathParams, RegisterRequestBody, RegisterResponse)
+  - Eliminado método MarshalToJSON() no utilizado
+  - Mantenidos solo métodos Get* (GetRequestBody, GetResponse, GetQueryParams, GetPathParams)
+  - Reducido de ~100 líneas a 55 líneas
+- `detector/detector.go`: Limpieza de dependencias circulares
+  - Eliminadas importaciones de encoding/json y openapi (movidas a swagger.go)
+  - Eliminados métodos ExportJSON(), ExportSpec(), ServeHTTP() (movidos a swagger.go)
+  - Foco exclusivo en lógica de detección de endpoints
+
+### Fixed
+- Import cycle: detector ↔ openapi resuelto moviendo métodos de exportación a swagger.go
+- Claridad de nombres: registry es más descriptivo que generator
+- Separación de responsabilidades: cada paquete con un propósito claro
+
+### Technical
+- Reflection avanzado usando paquete `reflect` de Go
+- Análisis recursivo de tipos para estructuras anidadas
+- Parsing de tags struct usando `reflect.StructTag`
+- Detección de required fields basada en presencia de `omitempty`
+- Zero breaking changes: 100% compatible con v1.2.0
+- Arquitectura mejorada con responsabilidades bien definidas:
+  - `swagger.go` → API pública y exportación
+  - `detector/` → Detección de endpoints desde Chi router
+  - `schema/` → Registro manual y detección híbrida de schemas
+  - `openapi/` → Generación de especificación OpenAPI
+
+### Migration Notes
+```go
+// v1.2.0 y anteriores siguen funcionando sin cambios
+detector := swagger.New(config)
+router.Get("/swagger/routes", detector.ServeHTTP)
+
+// v1.3.0 - Nueva funcionalidad híbrida (opcional)
+import "github.com/AoC-Gamers/connect-libraries/swagger/schema"
+
+// Generar schema automático
+schema := schema.BuildSchemaFromStruct(MyStruct{})
+
+// Extraer parámetros con tipos
+params := schema.ExtractParamsFromStruct(MyParams{}, schema.InQuery)
+```
+
 ## [1.1.0] - 2026-01-10
 
 ### Added

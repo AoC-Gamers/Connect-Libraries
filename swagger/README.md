@@ -6,6 +6,14 @@
 
 ## 🎯 Características
 
+### Detección Híbrida (v1.3.0+)
+- ✅ **Generación automática de schemas** - `BuildSchemaFromStruct()` genera OpenAPI schemas desde tipos Go
+- ✅ **Extracción de parámetros** - `ExtractParamsFromStruct()` detecta tipos, formatos y validaciones
+- ✅ **Detección de tipos** - Conversión automática Go → OpenAPI (string, integer, number, boolean, array, object)
+- ✅ **Formatos especializados** - int32, int64, float, double, date-time para `time.Time`
+- ✅ **Tags estructurales** - Soporte para `json`, `description`, `example`, `default`, `binding`
+- ✅ **Arrays y objetos anidados** - Manejo completo de tipos complejos
+
 ### Auto-Detección (v1.1.0+)
 - ✅ **Path parameters** - Extrae `{id}`, `{steamid}`, etc. automáticamente desde rutas
 - ✅ **Security** - Identifica JWT/ApiKey desde middlewares
@@ -191,7 +199,87 @@ config.SecurityPatterns["MyCustomMiddleware"] = "BearerAuth"
 
 ---
 
-## 📝 Configuración Avanzada
+## � Detección Híbrida (v1.3.0+)
+
+### Generación Automática de Schemas
+
+Genera schemas OpenAPI completos desde structs Go sin necesidad de registro manual:
+
+```go
+import "github.com/AoC-Gamers/connect-libraries/swagger/schema"
+
+type CreateUserRequest struct {
+    Username string    `json:"username" description:"Unique username" example:"john_doe"`
+    Email    string    `json:"email" description:"User email address"`
+    Age      int       `json:"age,omitempty" description:"User age" default:"18"`
+    Premium  bool      `json:"premium" description:"Premium status"`
+    Tags     []string  `json:"tags" description:"User tags"`
+    Profile  Profile   `json:"profile" description:"User profile"`
+}
+
+// Generar schema automáticamente
+schema := schema.BuildSchemaFromStruct(CreateUserRequest{})
+// Retorna: map[string]interface{} con schema OpenAPI 3.0 completo
+```
+
+**El schema generado incluye:**
+- Tipos correctos (string, integer, number, boolean, array, object)
+- Formatos (int32, int64, float, double, date-time)
+- Campos requeridos vs opcionales (basado en `omitempty`)
+- Descripciones, ejemplos y valores por defecto
+- Manejo de arrays con tipos de elementos
+- Objetos anidados completos
+
+### Extracción de Parámetros con Tipos
+
+Extrae parámetros de query, headers, etc. con detección automática de tipos:
+
+```go
+type SearchParams struct {
+    Query    string `json:"q" description:"Search query"`
+    Page     int    `json:"page" description:"Page number" default:"1"`
+    Limit    int    `json:"limit" description:"Results per page" default:"10"`
+    SortDesc bool   `json:"desc" description:"Sort descending"`
+}
+
+// Extraer parámetros con tipos detectados
+params := schema.ExtractParamsFromStruct(SearchParams{}, schema.InQuery)
+// Retorna: []ParamSchema con tipos OpenAPI correctos
+```
+
+**Tipos detectados automáticamente:**
+
+| Go Type | OpenAPI Type | OpenAPI Format |
+|---------|--------------|----------------|
+| `string` | `string` | - |
+| `int`, `int32` | `integer` | `int32` |
+| `int64` | `integer` | `int64` |
+| `float32` | `number` | `float` |
+| `float64` | `number` | `double` |
+| `bool` | `boolean` | - |
+| `time.Time` | `string` | `date-time` |
+| `[]T` | `array` | (detecta tipo de T) |
+
+### Tags Soportados
+
+```go
+type Example struct {
+    Field string `json:"field_name" description:"Field description" example:"sample" default:"value"`
+}
+```
+
+- `json:"name"` - Nombre del campo en JSON
+- `json:"name,omitempty"` - Campo opcional (no required)
+- `description:"..."` - Descripción del campo
+- `example:"..."` - Valor de ejemplo
+- `default:"..."` - Valor por defecto
+- `binding:"required"` - Campo requerido (para validaciones)
+
+Para más detalles y ejemplos completos, ver [HYBRID_DETECTION.md](./HYBRID_DETECTION.md)
+
+---
+
+## �📝 Configuración Avanzada
 
 ### Método Fluent (Recomendado)
 
@@ -455,6 +543,7 @@ config.SkipPaths = []string{"/swagger", "/debug"} // Solo estas se omiten
 
 ## 📚 Recursos
 
+- [Detección Híbrida - Guía Completa](./HYBRID_DETECTION.md)
 - [OpenAPI Specification](https://swagger.io/specification/)
 - [Chi Router Documentation](https://github.com/go-chi/chi)
 - [Convenciones REST](https://restfulapi.net/)

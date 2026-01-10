@@ -182,41 +182,6 @@ func MergeParams(paramLists ...[]ParamSchema) []ParamSchema {
 	return result
 }
 
-// getJSONFieldName obtiene el nombre del campo JSON desde los tags
-func getJSONFieldName(field reflect.StructField) string {
-	tag := field.Tag.Get("json")
-	if tag == "" || tag == "-" {
-		return ""
-	}
-
-	parts := strings.Split(tag, ",")
-	return parts[0]
-}
-
-// isRequiredField determina si un campo es requerido basado en tags
-func isRequiredField(field reflect.StructField) bool {
-	jsonTag := field.Tag.Get("json")
-
-	// Si tiene omitempty, no es requerido
-	if strings.Contains(jsonTag, "omitempty") {
-		return false
-	}
-
-	// Si tiene tag binding con required, es requerido
-	bindingTag := field.Tag.Get("binding")
-	if strings.Contains(bindingTag, "required") {
-		return true
-	}
-
-	// Si es un puntero, generalmente es opcional
-	if field.Type.Kind() == reflect.Ptr {
-		return false
-	}
-
-	// Por defecto, si no tiene omitempty, considerarlo requerido
-	return jsonTag != "" && !strings.Contains(jsonTag, "omitempty")
-}
-
 // parseJSONTag parsea el tag JSON y retorna el nombre y si es omitempty
 func parseJSONTag(tag string) (name string, omitempty bool) {
 	parts := strings.Split(tag, ",")
@@ -230,4 +195,162 @@ func parseJSONTag(tag string) (name string, omitempty bool) {
 	}
 
 	return name, omitempty
+}
+
+// BuildSchemaFromStruct construye un schema JSON desde un struct usando reflection
+func BuildSchemaFromStruct(v interface{}) map[string]interface{} {
+	t := reflect.TypeOf(v)
+	if t == nil {
+		return map[string]interface{}{"type": "object"}
+	}
+
+	// Si es un puntero, obtener el tipo subyacente
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+
+	if t.Kind() != reflect.Struct {
+		// Para tipos primitivos
+		return map[string]interface{}{
+			"type": goTypeToSwaggerType(t),
+		}
+	}
+
+	properties, required := buildStructProperties(t)
+
+	schema := map[string]interface{}{
+		"type":       "object",
+		"properties": properties,
+	}
+
+	if len(required) > 0 {
+		schema["required"] = required
+	}
+
+	return schema
+}
+
+// buildStructProperties construye las propiedades y campos requeridos de un struct
+func buildStructProperties(t reflect.Type) (map[string]interface{}, []string) {
+	properties := make(map[string]interface{})
+	required := []string{}
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+
+		if !field.IsExported() {
+			continue
+		}
+
+		jsonTag := field.Tag.Get("json")
+		if jsonTag == "" || jsonTag == "-" {
+			continue
+		}
+
+		fieldName, omitempty := parseJSONTag(jsonTag)
+		fieldSchema := buildFieldSchema(field)
+
+		properties[fieldName] = fieldSchema
+
+		if !omitempty {
+			required = append(required, fieldName)
+		}
+	}
+
+	return properties, required
+}
+
+// buildFieldSchema construye el schema de un campo individual
+func buildFieldSchema(field reflect.StructField) map[string]interface{} {
+	fieldSchema := map[string]interface{}{
+		"type": goTypeToSwaggerType(field.Type),
+	}
+
+	if format := goTypeToSwaggerFormat(field.Type); format != "" {
+		fieldSchema["format"] = format
+	}
+
+	if desc := field.Tag.Get("description"); desc != "" {
+		fieldSchema["description"] = desc
+	}
+
+	if example := field.Tag.Get("example"); example != "" {
+		fieldSchema["example"] = example
+	}
+
+	// Manejar arrays/slices
+	if field.Type.Kind() == reflect.Slice || field.Type.Kind() == reflect.Array {
+		elemType := field.Type.Elem()
+		fieldSchema["items"] = map[string]interface{}{
+			"type": goTypeToSwaggerType(elemType),
+		}
+		if format := goTypeToSwaggerFormat(elemType); format != "" {
+			fieldSchema["items"].(map[string]interface{})["format"] = format
+		}
+	}
+
+	return fieldSchema
+}
+
+// ExtractParamsFromStruct extrae parámetros desde struct tags usando reflection
+func ExtractParamsFromStruct(v interface{}, location ParamLocation) []ParamSchema {
+	t := reflect.TypeOf(v)
+	if t == nil {
+		return []ParamSchema{}
+	}
+
+	// Si es un puntero, obtener el tipo subyacente
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+
+	if t.Kind() != reflect.Struct {
+		return []ParamSchema{}
+	}
+
+	params := []ParamSchema{}
+
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+
+		// Ignorar campos no exportados
+		if !field.IsExported() {
+			continue
+		}
+
+		// Obtener nombre desde tag json
+		jsonTag := field.Tag.Get("json")
+		if jsonTag == "" || jsonTag == "-" {
+			continue
+		}
+
+		paramName, omitempty := parseJSONTag(jsonTag)
+
+		param := ParamSchema{
+			Name:     paramName,
+			In:       location,
+			Type:     goTypeToSwaggerType(field.Type),
+			Format:   goTypeToSwaggerFormat(field.Type),
+			Required: !omitempty,
+		}
+
+		// Extraer descripción desde tag
+		if desc := field.Tag.Get("description"); desc != "" {
+			param.Description = desc
+		}
+
+		// Extraer default desde tag
+		if def := field.Tag.Get("default"); def != "" {
+			param.Default = def
+		}
+
+		// Extraer ejemplo desde tag
+		if example := field.Tag.Get("example"); example != "" {
+			param.Example = example
+		}
+
+		params = append(params, param)
+	}
+
+	return params
 }
