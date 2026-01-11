@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/AoC-Gamers/Connect-Libraries/audit/core"
+	"github.com/AoC-Gamers/connect-libraries/audit/core"
 )
 
 // FormatPayloadJSON convierte un map a JSON string para el payload
