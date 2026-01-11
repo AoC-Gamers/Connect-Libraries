@@ -1,3 +1,3 @@
-module github.com/AoC-Gamers/Connect-Libraries/audit
+module github.com/AoC-Gamers/connect-libraries/audit
 
 go 1.23.4
