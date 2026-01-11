@@ -24,11 +24,12 @@ const (
 	COMMUNITY__GAMEMODELIST_ADD  uint64 = 1 << 7 // Add a new gamemode to the community's gamemode list
 	COMMUNITY__GAMEMODELIST_EDIT uint64 = 1 << 8 // Edit an existing gamemode in the community's gamemode list
 
-	// Community Management (bits 9-12)
+	// Community Management (bits 9-13)
 	COMMUNITY__INFO_EDIT          uint64 = 1 << 9  // Edit community information
 	COMMUNITY__ANALYTICS          uint64 = 1 << 10 // View community statistics and analytics
 	COMMUNITY__TRANSFER_OWNERSHIP uint64 = 1 << 11 // Transfer community ownership
 	COMMUNITY__SUSPEND            uint64 = 1 << 12 // Suspend or unsuspend this community
+	COMMUNITY__AUDIT_VIEW         uint64 = 1 << 13 // View audit logs for this community
 )
 
 // ============================================
@@ -60,6 +61,7 @@ const (
 	PermCommunityAnalytics         = "COMMUNITY__ANALYTICS"
 	PermCommunityTransferOwnership = "COMMUNITY__TRANSFER_OWNERSHIP"
 	PermCommunitySuspend           = "COMMUNITY__SUSPEND"
+	PermCommunityAuditView         = "COMMUNITY__AUDIT_VIEW"
 )
 
 // ============================================
@@ -96,7 +98,8 @@ var (
 		COMMUNITY__INFO_EDIT |
 		COMMUNITY__ANALYTICS |
 		COMMUNITY__TRANSFER_OWNERSHIP |
-		COMMUNITY__SUSPEND
+		COMMUNITY__SUSPEND |
+		COMMUNITY__AUDIT_VIEW
 )
 
 // Role Presets - Calculated bitmasks for each role

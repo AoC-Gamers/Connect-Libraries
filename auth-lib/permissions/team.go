@@ -10,11 +10,12 @@ const (
 	TEAM__MEMBERSHIP_INVITE uint64 = 1 << 1 // Invite users to the team (membership invite)
 	TEAM__MEMBERSHIP_DELETE uint64 = 1 << 2 // Remove memberships from the team
 
-	// Team Management (bits 3-6)
+	// Team Management (bits 3-7)
 	TEAM__INFO_EDIT          uint64 = 1 << 3 // Edit team information
 	TEAM__LOBBY_CREATE       uint64 = 1 << 4 // Create a lobby associated with the team
 	TEAM__TRANSFER_OWNERSHIP uint64 = 1 << 5 // Transfer team ownership
 	TEAM__SUSPEND            uint64 = 1 << 6 // Suspend or unsuspend this team
+	TEAM__AUDIT_VIEW         uint64 = 1 << 7 // View audit logs for this team
 )
 
 // ============================================
@@ -33,6 +34,7 @@ const (
 	PermTeamLobbyCreate       = "TEAM__LOBBY_CREATE"
 	PermTeamTransferOwnership = "TEAM__TRANSFER_OWNERSHIP"
 	PermTeamSuspend           = "TEAM__SUSPEND"
+	PermTeamAuditView         = "TEAM__AUDIT_VIEW"
 )
 
 // ============================================
@@ -62,7 +64,8 @@ var (
 	TEAM__OWNER = TEAM__MEMBERSHIP_DELETE |
 		TEAM__INFO_EDIT |
 		TEAM__TRANSFER_OWNERSHIP |
-		TEAM__SUSPEND
+		TEAM__SUSPEND |
+		TEAM__AUDIT_VIEW
 )
 
 // Role Presets - Calculated bitmasks for each role

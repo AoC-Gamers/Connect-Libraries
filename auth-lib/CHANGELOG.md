@@ -7,6 +7,20 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-01-11
+
+### Added
+- **Permisos de Auditoría**: Nuevos permisos para visualizar logs de auditoría
+  - `COMMUNITY__AUDIT_VIEW` (bit 13): Permite ver logs de auditoría de comunidades
+  - `TEAM__AUDIT_VIEW` (bit 7): Permite ver logs de auditoría de equipos
+- Permisos incluidos automáticamente en roles OWNER respectivos
+  - `COMMUNITY__OWNER` ahora incluye `COMMUNITY__AUDIT_VIEW`
+  - `TEAM__OWNER` ahora incluye `TEAM__AUDIT_VIEW`
+
+### Technical
+- Nuevas constantes de string: `PermCommunityAuditView`, `PermTeamAuditView`
+- Compatibilidad mantenida con versiones anteriores (backward compatible)
+
 ## [1.0.0] - 2026-01-07
 
 ### Added
