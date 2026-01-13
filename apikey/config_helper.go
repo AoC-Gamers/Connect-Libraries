@@ -59,11 +59,6 @@ func (h *ConfigHelper) ValidateRequired() []string {
 	return missing
 }
 
-// PrintLoadStrategy muestra la estrategia de carga recomendada (deprecated: removed to reduce noise)
-func PrintLoadStrategy() {
-	// Strategy documentation moved to package README
-}
-
 // Usage example for backend services
 /*
 Example usage in Connect-Core/cmd/server/main.go:

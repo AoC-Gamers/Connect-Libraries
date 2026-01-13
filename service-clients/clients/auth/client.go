@@ -76,21 +76,6 @@ func (c *Client) GetWebOwner(ctx context.Context) (*models.WebOwnerResponse, err
 // SCOPE MANAGEMENT
 // ============================================
 
-// CreateScope creates a new scope
-//
-// DEPRECATED: This endpoint no longer exists in Connect-Auth.
-// The auth.scopes table was eliminated. Use AssignRole() instead to create memberships.
-// Scopes are now TEXT format "TYPE:ID" constructed on-demand.
-//
-// Endpoint: POST /auth/internal/scopes (REMOVED)
-func (c *Client) CreateScope(ctx context.Context, req models.CreateScopeRequest) (*models.CreateScopeResponse, error) {
-	var resp models.CreateScopeResponse
-	if err := c.doRequest(ctx, "POST", endpoints.AuthCreateScope.Path, req, &resp); err != nil {
-		return nil, fmt.Errorf("create scope: %w", err)
-	}
-	return &resp, nil
-}
-
 // DeleteScope deletes a scope and all related data
 // Endpoint: DELETE /auth/internal/scopes/{scopeId}
 func (c *Client) DeleteScope(ctx context.Context, scopeID string) error {
