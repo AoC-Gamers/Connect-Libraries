@@ -7,6 +7,12 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-01-25
+
+### Added
+- Endpoint `AuthUpdateMembership` para actualizar membresías
+- Modelos `UpdateMembershipRequest` y `UpdateMembershipResponse` para actualización de membresías
+
 ## [1.0.0] - 2026-01-07
 
 ### Added

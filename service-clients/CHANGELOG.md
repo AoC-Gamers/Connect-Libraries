@@ -7,6 +7,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-01-25
+
+### Added
+- Método `UpdateMembership` en el cliente de Auth para actualizar rol y/o permisos
+
 ## [1.0.0] - 2026-01-07
 
 ### Added
