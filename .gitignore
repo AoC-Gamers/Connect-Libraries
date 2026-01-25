@@ -14,8 +14,8 @@ coverage.txt
 coverage.html
 
 # Go workspace file
-go.work
-go.work.sum
+# go.work
+# go.work.sum
 
 # Dependency directories
 vendor/
