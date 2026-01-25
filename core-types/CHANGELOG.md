@@ -7,6 +7,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-01-25
+
+### Added
+- Campo `team_memberships` en `UserAllMembershipsResponse`
+
 ## [1.1.0] - 2026-01-25
 
 ### Added

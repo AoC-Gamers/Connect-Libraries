@@ -304,5 +304,6 @@ type UserAllMembershipsResponse struct {
 	WebAllowPermissions  uint64               `json:"web_allow_permissions"`
 	WebDenyPermissions   uint64               `json:"web_deny_permissions"`
 	CommunityMemberships []UserMembershipItem `json:"community_memberships"`
+	TeamMemberships      []UserMembershipItem `json:"team_memberships"`
 	TotalMemberships     int                  `json:"total_memberships"`
 }

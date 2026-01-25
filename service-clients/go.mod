@@ -3,7 +3,7 @@ module github.com/AoC-Gamers/connect-libraries/service-clients
 go 1.24.3
 
 require (
-	github.com/AoC-Gamers/connect-libraries/core-types v1.1.0
+	github.com/AoC-Gamers/connect-libraries/core-types v1.2.0
 	github.com/rs/zerolog v1.34.0
 )
 

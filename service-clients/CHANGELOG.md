@@ -7,6 +7,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-01-25
+
+### Changed
+- Actualizada dependencia a `core-types` v1.2.0
+
 ## [1.1.1] - 2026-01-25
 
 ### Changed
