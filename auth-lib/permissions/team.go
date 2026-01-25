@@ -16,6 +16,10 @@ const (
 	TEAM__TRANSFER_OWNERSHIP uint64 = 1 << 5 // Transfer team ownership
 	TEAM__SUSPEND            uint64 = 1 << 6 // Suspend or unsuspend this team
 	TEAM__AUDIT_VIEW         uint64 = 1 << 7 // View audit logs for this team
+
+	// Roles & Permissions (bits 8-9)
+	TEAM__ROLES_VIEW uint64 = 1 << 8 // View roles and permissions for this team
+	TEAM__ROLES_EDIT uint64 = 1 << 9 // Edit roles and permissions for this team
 )
 
 // ============================================
@@ -35,6 +39,10 @@ const (
 	PermTeamTransferOwnership = "TEAM__TRANSFER_OWNERSHIP"
 	PermTeamSuspend           = "TEAM__SUSPEND"
 	PermTeamAuditView         = "TEAM__AUDIT_VIEW"
+
+	// Roles & Permissions
+	PermTeamRolesView = "TEAM__ROLES_VIEW"
+	PermTeamRolesEdit = "TEAM__ROLES_EDIT"
 )
 
 // ============================================
@@ -58,14 +66,16 @@ var (
 
 	// TEAM__STAFF - Team staff permissions
 	TEAM__STAFF = TEAM__MEMBERSHIP_INVITE |
-		TEAM__LOBBY_CREATE
+		TEAM__LOBBY_CREATE |
+		TEAM__ROLES_VIEW
 
 	// TEAM__OWNER - Full team control
 	TEAM__OWNER = TEAM__MEMBERSHIP_DELETE |
 		TEAM__INFO_EDIT |
 		TEAM__TRANSFER_OWNERSHIP |
 		TEAM__SUSPEND |
-		TEAM__AUDIT_VIEW
+		TEAM__AUDIT_VIEW |
+		TEAM__ROLES_EDIT
 )
 
 // Role Presets - Calculated bitmasks for each role
@@ -127,6 +137,9 @@ var TeamPermissionNames = map[uint64]string{
 	TEAM__LOBBY_CREATE:       PermTeamLobbyCreate,
 	TEAM__TRANSFER_OWNERSHIP: PermTeamTransferOwnership,
 	TEAM__SUSPEND:            PermTeamSuspend,
+	TEAM__AUDIT_VIEW:         PermTeamAuditView,
+	TEAM__ROLES_VIEW:         PermTeamRolesView,
+	TEAM__ROLES_EDIT:         PermTeamRolesEdit,
 }
 
 // TeamPermissionKeyToBit maps permission key names to their bit values (reverse lookup)
@@ -138,6 +151,9 @@ var TeamPermissionKeyToBit = map[string]uint8{
 	PermTeamLobbyCreate:       4,
 	PermTeamTransferOwnership: 5,
 	PermTeamSuspend:           6,
+	PermTeamAuditView:         7,
+	PermTeamRolesView:         8,
+	PermTeamRolesEdit:         9,
 }
 
 // GetTeamPermissionName returns the key name of a single permission bit

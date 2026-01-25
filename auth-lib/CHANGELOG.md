@@ -7,6 +7,16 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-01-24
+
+### Added
+- Permisos de Roles para WEB, COMMUNITY y TEAM
+  - `WEB__ROLES_VIEW`, `WEB__ROLES_EDIT`
+  - `COMMUNITY__ROLES_VIEW`, `COMMUNITY__ROLES_EDIT`
+  - `TEAM__ROLES_VIEW`, `TEAM__ROLES_EDIT`
+- Nuevas constantes de string: `PermWebRolesView`, `PermWebRolesEdit`, `PermCommunityRolesView`, `PermCommunityRolesEdit`, `PermTeamRolesView`, `PermTeamRolesEdit`
+- Inclusión de permisos de roles en los grupos STAFF/OWNER correspondientes
+
 ## [1.1.0] - 2026-01-11
 
 ### Added

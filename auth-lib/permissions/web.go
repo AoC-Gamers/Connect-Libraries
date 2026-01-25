@@ -57,6 +57,10 @@ const (
 	WEB__VIEW_AUDIT_LOG uint64 = 1 << 35 // Access audit logs
 	WEB__VIEW_METRICS   uint64 = 1 << 36 // Access platform metrics and statistics
 	WEB__SETTINGS       uint64 = 1 << 37 // Modify platform settings
+
+	// Roles & Permissions (bits 38-39)
+	WEB__ROLES_VIEW uint64 = 1 << 38 // View roles and permissions
+	WEB__ROLES_EDIT uint64 = 1 << 39 // Edit roles and permissions
 )
 
 // ============================================
@@ -117,6 +121,10 @@ const (
 	PermWebViewAuditLog = "WEB__VIEW_AUDIT_LOG"
 	PermWebViewMetrics  = "WEB__VIEW_METRICS"
 	PermWebSettings     = "WEB__SETTINGS"
+
+	// Roles & Permissions
+	PermWebRolesView = "WEB__ROLES_VIEW"
+	PermWebRolesEdit = "WEB__ROLES_EDIT"
 )
 
 // ============================================
@@ -160,7 +168,8 @@ var (
 		WEB__MISSION_SUSPEND |
 		WEB__GAMEMODE_ADD |
 		WEB__GAMEMODE_EDIT |
-		WEB__GAMEMODE_SUSPEND
+		WEB__GAMEMODE_SUSPEND |
+		WEB__ROLES_VIEW
 
 	// WEB__OWNER - Platform ownership (only one owner via .env)
 	WEB__OWNER = WEB__COMMUNITIES_ADD |
@@ -176,7 +185,8 @@ var (
 		WEB__GAMEMODE_DELETE |
 		WEB__VIEW_AUDIT_LOG |
 		WEB__VIEW_METRICS |
-		WEB__SETTINGS
+		WEB__SETTINGS |
+		WEB__ROLES_EDIT
 )
 
 // Role Presets - Calculated bitmasks for each role
@@ -268,6 +278,8 @@ var PermissionNames = map[uint64]string{
 	WEB__VIEW_AUDIT_LOG:                 PermWebViewAuditLog,
 	WEB__VIEW_METRICS:                   PermWebViewMetrics,
 	WEB__SETTINGS:                       PermWebSettings,
+	WEB__ROLES_VIEW:                     PermWebRolesView,
+	WEB__ROLES_EDIT:                     PermWebRolesEdit,
 }
 
 // PermissionKeyToBit maps permission key names to their bit values (reverse lookup)
@@ -309,6 +321,8 @@ var PermissionKeyToBit = map[string]uint8{
 	PermWebViewAuditLog:                 35,
 	PermWebViewMetrics:                  36,
 	PermWebSettings:                     37,
+	PermWebRolesView:                    38,
+	PermWebRolesEdit:                    39,
 }
 
 // GetPermissionName returns the key name of a single permission bit

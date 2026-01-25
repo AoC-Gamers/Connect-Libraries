@@ -188,6 +188,17 @@ func (c *Client) CheckMembership(ctx context.Context, req models.CheckMembership
 	return &resp, nil
 }
 
+// UpdateMembership updates membership role and/or permissions
+// Endpoint: PATCH /auth/internal/memberships/{userId}/{scopeId}
+func (c *Client) UpdateMembership(ctx context.Context, userID, scopeID string, req models.UpdateMembershipRequest) (*models.UpdateMembershipResponse, error) {
+	path := fmt.Sprintf("/auth/internal/memberships/%s/%s", userID, scopeID)
+	var resp models.UpdateMembershipResponse
+	if err := c.doRequest(ctx, "PATCH", path, req, &resp); err != nil {
+		return nil, fmt.Errorf("update membership: %w", err)
+	}
+	return &resp, nil
+}
+
 // ============================================
 // OWNERSHIP TRANSFER
 // ============================================

@@ -30,6 +30,10 @@ const (
 	COMMUNITY__TRANSFER_OWNERSHIP uint64 = 1 << 11 // Transfer community ownership
 	COMMUNITY__SUSPEND            uint64 = 1 << 12 // Suspend or unsuspend this community
 	COMMUNITY__AUDIT_VIEW         uint64 = 1 << 13 // View audit logs for this community
+
+	// Roles & Permissions (bits 14-15)
+	COMMUNITY__ROLES_VIEW uint64 = 1 << 14 // View roles and permissions for this community
+	COMMUNITY__ROLES_EDIT uint64 = 1 << 15 // Edit roles and permissions for this community
 )
 
 // ============================================
@@ -62,6 +66,10 @@ const (
 	PermCommunityTransferOwnership = "COMMUNITY__TRANSFER_OWNERSHIP"
 	PermCommunitySuspend           = "COMMUNITY__SUSPEND"
 	PermCommunityAuditView         = "COMMUNITY__AUDIT_VIEW"
+
+	// Roles & Permissions
+	PermCommunityRolesView = "COMMUNITY__ROLES_VIEW"
+	PermCommunityRolesEdit = "COMMUNITY__ROLES_EDIT"
 )
 
 // ============================================
@@ -90,7 +98,8 @@ var (
 		COMMUNITY__MISSIONLIST_ADD |
 		COMMUNITY__MISSIONLIST_EDIT |
 		COMMUNITY__GAMEMODELIST_ADD |
-		COMMUNITY__GAMEMODELIST_EDIT
+		COMMUNITY__GAMEMODELIST_EDIT |
+		COMMUNITY__ROLES_VIEW
 
 	// COMMUNITY__OWNER - Full community control
 	COMMUNITY__OWNER = COMMUNITY__MEMBERSHIP_INVITE |
@@ -99,7 +108,8 @@ var (
 		COMMUNITY__ANALYTICS |
 		COMMUNITY__TRANSFER_OWNERSHIP |
 		COMMUNITY__SUSPEND |
-		COMMUNITY__AUDIT_VIEW
+		COMMUNITY__AUDIT_VIEW |
+		COMMUNITY__ROLES_EDIT
 )
 
 // Role Presets - Calculated bitmasks for each role
@@ -167,6 +177,9 @@ var CommunityPermissionNames = map[uint64]string{
 	COMMUNITY__ANALYTICS:          PermCommunityAnalytics,
 	COMMUNITY__TRANSFER_OWNERSHIP: PermCommunityTransferOwnership,
 	COMMUNITY__SUSPEND:            PermCommunitySuspend,
+	COMMUNITY__AUDIT_VIEW:         PermCommunityAuditView,
+	COMMUNITY__ROLES_VIEW:         PermCommunityRolesView,
+	COMMUNITY__ROLES_EDIT:         PermCommunityRolesEdit,
 }
 
 // CommunityPermissionKeyToBit maps permission key names to their bit values (reverse lookup)
@@ -184,6 +197,9 @@ var CommunityPermissionKeyToBit = map[string]uint8{
 	PermCommunityAnalytics:         10,
 	PermCommunityTransferOwnership: 11,
 	PermCommunitySuspend:           12,
+	PermCommunityAuditView:         13,
+	PermCommunityRolesView:         14,
+	PermCommunityRolesEdit:         15,
 }
 
 // GetCommunityPermissionName returns the key name of a single permission bit

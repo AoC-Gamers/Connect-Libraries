@@ -89,6 +89,14 @@ var (
 		UsedBy:      []string{"core", "rt"},
 	}
 
+	AuthUpdateMembership = Endpoint{
+		Path:        "/auth/internal/memberships/{userId}/{scopeId}",
+		Method:      "PATCH",
+		Description: "Update membership role and/or permissions",
+		RequiresKey: true,
+		UsedBy:      []string{"core"},
+	}
+
 	// Ownership Transfer
 	AuthInitiateTransfer = Endpoint{
 		Path:        "/auth/internal/scopes/{scopeType}/{entityId}/transfers/initiate",
@@ -186,6 +194,7 @@ func AuthEndpoints() []Endpoint {
 		AuthRemoveRole,
 		AuthCreateMembership,
 		AuthCheckMembership,
+		AuthUpdateMembership,
 		AuthInitiateTransfer,
 		AuthGetPendingTransfer,
 		AuthRespondToTransfer,

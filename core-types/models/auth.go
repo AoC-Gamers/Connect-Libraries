@@ -87,6 +87,19 @@ type CreateMembershipResponse struct {
 	Message string `json:"message,omitempty"`
 }
 
+type UpdateMembershipRequest struct {
+	Role             *string `json:"role,omitempty"`
+	AllowPermissions *uint64 `json:"allow_permissions,omitempty"`
+	DenyPermissions  *uint64 `json:"deny_permissions,omitempty"`
+	PerformedBy      string  `json:"performed_by,omitempty"`
+	Reason           string  `json:"reason,omitempty"`
+}
+
+type UpdateMembershipResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
+}
+
 type CheckMembershipRequest struct {
 	UserID    string `json:"userId"`
 	EntityID  string `json:"entityId"`
