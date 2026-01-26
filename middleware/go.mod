@@ -6,7 +6,7 @@ toolchain go1.24.3
 
 require (
 	github.com/AoC-Gamers/connect-libraries/auth-lib v1.0.0
-	github.com/AoC-Gamers/connect-libraries/errors v1.0.0
+	github.com/AoC-Gamers/connect-libraries/errors v1.0.1
 	github.com/rs/zerolog v1.34.0
 )
 
