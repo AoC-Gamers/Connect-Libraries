@@ -63,7 +63,7 @@ func generateComponents() map[string]interface{} {
 			"ApiKeyAuth": map[string]interface{}{
 				"type":        "apiKey",
 				"in":          "header",
-				"name":        "X-API-Key",
+				"name":        "X-Internal-API-Key",
 				"description": "API Key for service-to-service authentication",
 			},
 		},

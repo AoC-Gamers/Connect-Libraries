@@ -7,6 +7,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-01-25
+
+### Changed
+- Header por defecto de API Key actualizado a X-Internal-API-Key.
+
 ## [1.0.1] - 2026-01-25
 
 ### Changed

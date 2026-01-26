@@ -16,7 +16,7 @@ type Validator struct {
 // Config configuración del sistema de API keys
 type Config struct {
 	Keys        map[string]string `json:"keys"`         // key -> service name
-	HeaderName  string            `json:"header_name"`  // Default: "X-API-Key"
+	HeaderName  string            `json:"header_name"`  // Default: "X-Internal-API-Key"
 	AllowBearer bool              `json:"allow_bearer"` // Allow Authorization: Bearer
 	AllowQuery  bool              `json:"allow_query"`  // Allow ?api_key=
 	QueryParam  string            `json:"query_param"`  // Default: "api_key"
@@ -26,7 +26,7 @@ type Config struct {
 func DefaultConfig() *Config {
 	return &Config{
 		Keys:        make(map[string]string),
-		HeaderName:  "X-API-Key",
+		HeaderName:  "X-Internal-API-Key",
 		AllowBearer: true,
 		AllowQuery:  true,
 		QueryParam:  "api_key",
@@ -79,7 +79,7 @@ func (v *Validator) ExtractAPIKey(r *http.Request, config *Config) string {
 		config = DefaultConfig()
 	}
 
-	// 1. Header personalizado (X-API-Key por defecto)
+	// 1. Header personalizado (X-Internal-API-Key por defecto)
 	if key := r.Header.Get(config.HeaderName); key != "" {
 		return key
 	}
