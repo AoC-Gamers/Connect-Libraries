@@ -7,6 +7,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-01-27
+
+### Changed
+- Desacople de `errors` con `ErrorResponder` inyectable
+
 ## [1.0.2] - 2026-01-25
 
 ### Changed

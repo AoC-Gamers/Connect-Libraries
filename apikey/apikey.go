@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strings"
 
-	errors "github.com/AoC-Gamers/connect-libraries/errors"
 	zlog "github.com/rs/zerolog/log"
 )
 
@@ -33,6 +32,12 @@ func setAuthType(ctx context.Context, authType string) context.Context {
 
 // RequireAPIKey valida que la petición incluya un API Key válido
 func RequireAPIKey(validator *Validator) func(http.Handler) http.Handler {
+	return RequireAPIKeyWithResponder(validator, nil)
+}
+
+// RequireAPIKeyWithResponder permite inyectar un ErrorResponder personalizado
+func RequireAPIKeyWithResponder(validator *Validator, responder ErrorResponder) func(http.Handler) http.Handler {
+	responder = ensureResponder(responder)
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			cfg := DefaultConfig()
@@ -62,7 +67,7 @@ func RequireAPIKey(validator *Validator) func(http.Handler) http.Handler {
 					Str("header", cfg.HeaderName).
 					Msg("❌ API Key validation failed")
 
-				errors.RespondUnauthorized(w, "invalid or missing API key")
+				responder.Unauthorized(w, "invalid or missing API key")
 				return
 			}
 
@@ -83,6 +88,11 @@ func RequireAPIKey(validator *Validator) func(http.Handler) http.Handler {
 
 // RequireConnectAPIKey carga las API keys desde env y retorna el middleware
 func RequireConnectAPIKey() func(http.Handler) http.Handler {
+	return RequireConnectAPIKeyWithResponder(nil)
+}
+
+// RequireConnectAPIKeyWithResponder permite inyectar un ErrorResponder personalizado
+func RequireConnectAPIKeyWithResponder(responder ErrorResponder) func(http.Handler) http.Handler {
 	validator, err := LoadConnectAPIKeys()
 	if err != nil {
 		zlog.Warn().Err(err).Msg("⚠️ Failed to load Connect API keys from environment")
@@ -90,12 +100,18 @@ func RequireConnectAPIKey() func(http.Handler) http.Handler {
 		validator, _ = LoadConnectAPIKeysPermissive()
 	}
 
-	return RequireAPIKey(validator)
+	return RequireAPIKeyWithResponder(validator, responder)
 }
 
 // RequireConnectService middleware que requiere API key de servicios Connect específicos
 // Valida la API key Y verifica que el servicio esté en la lista de permitidos
 func RequireConnectService(allowedServices ...string) func(http.Handler) http.Handler {
+	return RequireConnectServiceWithResponder(nil, allowedServices...)
+}
+
+// RequireConnectServiceWithResponder permite inyectar un ErrorResponder personalizado
+func RequireConnectServiceWithResponder(responder ErrorResponder, allowedServices ...string) func(http.Handler) http.Handler {
+	responder = ensureResponder(responder)
 	validator, err := LoadConnectAPIKeysPermissive()
 	if err != nil {
 		zlog.Warn().Err(err).Msg("⚠️ Failed to load Connect API keys")
@@ -114,13 +130,13 @@ func RequireConnectService(allowedServices ...string) func(http.Handler) http.Ha
 			key := validator.ExtractAPIKey(r, DefaultConfig())
 			serviceName, valid := validator.ValidateKey(key)
 			if !valid {
-				errors.RespondUnauthorized(w, "invalid or missing API key")
+				responder.Unauthorized(w, "invalid or missing API key")
 				return
 			}
 
 			// Verificar si el servicio está en la lista de permitidos
 			if _, ok := allowed[serviceName]; !ok {
-				errors.RespondInsufficientPermissions(w, "service not authorized for this endpoint")
+				responder.InsufficientPermissions(w, "service not authorized for this endpoint")
 				return
 			}
 
@@ -156,7 +172,12 @@ func RequireRTService() func(http.Handler) http.Handler {
 
 // RequireInternalServices middleware para endpoints internos
 func RequireInternalServices() func(http.Handler) http.Handler {
-	return RequireConnectService("connect-auth", "connect-core", "connect-lobby", "connect-rt")
+	return RequireInternalServicesWithResponder(nil)
+}
+
+// RequireInternalServicesWithResponder permite inyectar un ErrorResponder personalizado
+func RequireInternalServicesWithResponder(responder ErrorResponder) func(http.Handler) http.Handler {
+	return RequireConnectServiceWithResponder(responder, "connect-auth", "connect-core", "connect-lobby", "connect-rt")
 }
 
 // AutoAPIKeyMiddleware crea middleware de API key con configuración automática

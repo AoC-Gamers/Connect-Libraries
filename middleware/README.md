@@ -33,14 +33,13 @@ r.Use(chimw.RequireAPIKey(apiKeyValidator))
 
 ## ⚙️ Dependencias
 
-- `auth-lib` - Para parsing y validación de JWT
-- `errors` - Para respuestas de error estandarizadas
+- `authjwt` (interno) - Parsing y validación de JWT
 - `chi` - Framework Chi router
 
 ## ⚡ Características
 
 - ✅ Multi-framework (Chi, con soporte futuro para Gin/net-http)
-- ✅ Autenticación JWT usando auth-lib
+- ✅ Autenticación JWT usando authjwt interno
 - ✅ Validación de roles y permisos granular
 - ✅ Protección de APIs internas con API keys
 - ✅ Context injection consistente
@@ -50,4 +49,25 @@ import "github.com/AoC-Gamers/Connect-Backend/connect-middleware/http"
 
 handler = httpmw.JWTAuth(config)(handler)
 handler = httpmw.RequireRoles("admin")(handler)
+```
+
+## 🧩 Respuestas de error personalizadas
+
+Puedes inyectar un `ErrorResponder` para desacoplarte de cualquier librería de errores:
+
+```go
+type MyResponder struct{}
+
+func (MyResponder) Unauthorized(w http.ResponseWriter, detail string) {
+	// usar tu librería de errores aquí
+}
+
+func (MyResponder) TokenExpired(w http.ResponseWriter) {}
+func (MyResponder) PolicyVersionMismatch(w http.ResponseWriter, tokenVersion, currentVersion int) {}
+func (MyResponder) InsufficientPermissions(w http.ResponseWriter, action string) {}
+
+// Uso
+r.Use(chimw.RequireAuthWithResponder(cfg, MyResponder{}))
+r.Use(chimw.RequireRoleWithResponder(MyResponder{}, "admin"))
+r.Use(chimw.RequirePermissionBitmaskWithResponder(perm, MyResponder{}))
 ```

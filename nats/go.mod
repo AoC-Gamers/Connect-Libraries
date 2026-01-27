@@ -3,16 +3,16 @@ module github.com/AoC-Gamers/connect-libraries/nats
 go 1.24.0
 
 require (
-	github.com/nats-io/nats.go v1.38.0
-	github.com/rs/zerolog v1.33.0
+	github.com/nats-io/nats.go v1.48.0
+	github.com/rs/zerolog v1.34.0
 )
 
 require (
-	github.com/klauspost/compress v1.17.11 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/klauspost/compress v1.18.3 // indirect
+	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/nats-io/nkeys v0.4.9 // indirect
+	github.com/nats-io/nkeys v0.4.14 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/crypto v0.47.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
 )

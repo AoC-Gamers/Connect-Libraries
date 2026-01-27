@@ -7,6 +7,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-01-27
+
+### Changed
+- Actualización de dependencias (go.sum)
+
 ## [1.0.1] - 2026-01-25
 
 ### Changed

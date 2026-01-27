@@ -5,19 +5,24 @@ import (
 	"net/http"
 	"strings"
 
-	contextlib "github.com/AoC-Gamers/connect-libraries/auth-lib/context"
-	authlib "github.com/AoC-Gamers/connect-libraries/auth-lib/jwt"
-	errors "github.com/AoC-Gamers/connect-libraries/errors"
+	"github.com/AoC-Gamers/connect-libraries/middleware/authcontext"
+	"github.com/AoC-Gamers/connect-libraries/middleware/authjwt"
 	"github.com/rs/zerolog/log"
 )
 
-// RequireAuth middleware de autenticación JWT para Chi usando connect-auth-lib
-func RequireAuth(config authlib.AuthConfig) func(http.Handler) http.Handler {
+// RequireAuth middleware de autenticación JWT para Chi
+func RequireAuth(config authjwt.AuthConfig) func(http.Handler) http.Handler {
+	return RequireAuthWithResponder(config, nil)
+}
+
+// RequireAuthWithResponder permite inyectar un ErrorResponder personalizado
+func RequireAuthWithResponder(config authjwt.AuthConfig, responder ErrorResponder) func(http.Handler) http.Handler {
+	responder = ensureResponder(responder)
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenStr := extractToken(r)
 
-			claims, err := authlib.ParseAndValidate(tokenStr, config.JWTSecret, config.PolicyVersionGlobal)
+			claims, err := authjwt.ParseAndValidate(tokenStr, config.JWTSecret, config.PolicyVersionGlobal)
 			if err != nil {
 				// Log del error de autenticación
 				log.Error().
@@ -29,23 +34,23 @@ func RequireAuth(config authlib.AuthConfig) func(http.Handler) http.Handler {
 
 				// Determinar el código de error apropiado
 				if strings.Contains(err.Error(), "expired") {
-					errors.RespondTokenExpired(w)
+					responder.TokenExpired(w)
 				} else if strings.Contains(err.Error(), "policy version") {
-					errors.RespondPolicyVersionMismatch(w, 0, config.PolicyVersionGlobal)
+					responder.PolicyVersionMismatch(w, 0, config.PolicyVersionGlobal)
 				} else {
-					errors.RespondUnauthorized(w, "Missing or invalid authentication token")
+					responder.Unauthorized(w, "Missing or invalid authentication token")
 				}
 				return
 			}
 
 			// Inyectar claims en contexto usando keys estándar
-			ctx := context.WithValue(r.Context(), contextlib.SteamIDKey, claims.GetSteamID())
-			ctx = context.WithValue(ctx, contextlib.RoleKey, claims.GetRole())
-			ctx = context.WithValue(ctx, contextlib.ClaimsKey, claims)
+			ctx := context.WithValue(r.Context(), authcontext.SteamIDKey, claims.GetSteamID())
+			ctx = context.WithValue(ctx, authcontext.RoleKey, claims.GetRole())
+			ctx = context.WithValue(ctx, authcontext.ClaimsKey, claims)
 
 			// Inyectar permisos web para uso en middleware de autorización
-			ctx = context.WithValue(ctx, contextlib.AllowPermissionsKey, claims.AllowPermissions)
-			ctx = context.WithValue(ctx, contextlib.DenyPermissionsKey, claims.DenyPermissions)
+			ctx = context.WithValue(ctx, authcontext.AllowPermissionsKey, claims.AllowPermissions)
+			ctx = context.WithValue(ctx, authcontext.DenyPermissionsKey, claims.DenyPermissions)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
@@ -54,11 +59,17 @@ func RequireAuth(config authlib.AuthConfig) func(http.Handler) http.Handler {
 
 // RequireRole middleware de autorización por roles para Chi
 func RequireRole(allowedRoles ...string) func(http.Handler) http.Handler {
+	return RequireRoleWithResponder(nil, allowedRoles...)
+}
+
+// RequireRoleWithResponder permite inyectar un ErrorResponder personalizado
+func RequireRoleWithResponder(responder ErrorResponder, allowedRoles ...string) func(http.Handler) http.Handler {
+	responder = ensureResponder(responder)
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			claims := GetClaimsFromContext(r)
 			if claims == nil {
-				errors.RespondUnauthorized(w, "authentication required")
+				responder.Unauthorized(w, "authentication required")
 				return
 			}
 
@@ -73,7 +84,7 @@ func RequireRole(allowedRoles ...string) func(http.Handler) http.Handler {
 			}
 
 			if !allowed {
-				errors.RespondInsufficientPermissions(w, "required roles: "+strings.Join(allowedRoles, ", "))
+				responder.InsufficientPermissions(w, "required roles: "+strings.Join(allowedRoles, ", "))
 				return
 			}
 
@@ -87,16 +98,22 @@ func RequireRole(allowedRoles ...string) func(http.Handler) http.Handler {
 
 // RequirePermissionBitmask middleware de autorización por permisos con bitmask uint64
 func RequirePermissionBitmask(permission uint64) func(http.Handler) http.Handler {
+	return RequirePermissionBitmaskWithResponder(permission, nil)
+}
+
+// RequirePermissionBitmaskWithResponder permite inyectar un ErrorResponder personalizado
+func RequirePermissionBitmaskWithResponder(permission uint64, responder ErrorResponder) func(http.Handler) http.Handler {
+	responder = ensureResponder(responder)
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			claims := GetClaimsFromContext(r)
 			if claims == nil {
-				errors.RespondUnauthorized(w, "authentication required")
+				responder.Unauthorized(w, "authentication required")
 				return
 			}
 
 			if !claims.HasPermission(permission) {
-				errors.RespondInsufficientPermissions(w, "required permission bitmask")
+				responder.InsufficientPermissions(w, "required permission bitmask")
 				return
 			}
 
@@ -116,20 +133,20 @@ func RequireStaff() func(http.Handler) http.Handler {
 }
 
 // OptionalAuth middleware que intenta autenticar pero no falla si no hay token
-func OptionalAuth(config authlib.AuthConfig) func(http.Handler) http.Handler {
+func OptionalAuth(config authjwt.AuthConfig) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenStr := extractToken(r)
 			if tokenStr != "" {
-				claims, err := authlib.ParseAndValidate(tokenStr, config.JWTSecret, config.PolicyVersionGlobal)
+				claims, err := authjwt.ParseAndValidate(tokenStr, config.JWTSecret, config.PolicyVersionGlobal)
 				if err == nil {
-					ctx := context.WithValue(r.Context(), contextlib.SteamIDKey, claims.GetSteamID())
-					ctx = context.WithValue(ctx, contextlib.RoleKey, claims.GetRole())
-					ctx = context.WithValue(ctx, contextlib.ClaimsKey, claims)
+					ctx := context.WithValue(r.Context(), authcontext.SteamIDKey, claims.GetSteamID())
+					ctx = context.WithValue(ctx, authcontext.RoleKey, claims.GetRole())
+					ctx = context.WithValue(ctx, authcontext.ClaimsKey, claims)
 
 					// Inyectar permisos web para uso en middleware de autorización
-					ctx = context.WithValue(ctx, contextlib.AllowPermissionsKey, claims.AllowPermissions)
-					ctx = context.WithValue(ctx, contextlib.DenyPermissionsKey, claims.DenyPermissions)
+					ctx = context.WithValue(ctx, authcontext.AllowPermissionsKey, claims.AllowPermissions)
+					ctx = context.WithValue(ctx, authcontext.DenyPermissionsKey, claims.DenyPermissions)
 
 					r = r.WithContext(ctx)
 				}

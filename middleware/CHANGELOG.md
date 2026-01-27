@@ -7,6 +7,12 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-01-27
+
+### Changed
+- Middleware Chi desacoplado de `errors` con `ErrorResponder` inyectable
+- JWT/claims/context movidos a paquetes internos del middleware
+
 ## [1.0.1] - 2026-01-25
 
 ### Changed

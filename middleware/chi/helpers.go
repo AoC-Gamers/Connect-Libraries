@@ -3,13 +3,13 @@ package chi
 import (
 	"net/http"
 
-	contextlib "github.com/AoC-Gamers/connect-libraries/auth-lib/context"
-	authlib "github.com/AoC-Gamers/connect-libraries/auth-lib/jwt"
+	"github.com/AoC-Gamers/connect-libraries/middleware/authcontext"
+	"github.com/AoC-Gamers/connect-libraries/middleware/authjwt"
 )
 
 // GetSteamIDFromContext obtiene el SteamID del contexto de Chi
 func GetSteamIDFromContext(r *http.Request) string {
-	if value := r.Context().Value(contextlib.SteamIDKey); value != nil {
+	if value := r.Context().Value(authcontext.SteamIDKey); value != nil {
 		if steamID, ok := value.(string); ok {
 			return steamID
 		}
@@ -19,7 +19,7 @@ func GetSteamIDFromContext(r *http.Request) string {
 
 // GetRoleFromContext obtiene el rol del contexto de Chi
 func GetRoleFromContext(r *http.Request) string {
-	if value := r.Context().Value(contextlib.RoleKey); value != nil {
+	if value := r.Context().Value(authcontext.RoleKey); value != nil {
 		if role, ok := value.(string); ok {
 			return role
 		}
@@ -28,9 +28,9 @@ func GetRoleFromContext(r *http.Request) string {
 }
 
 // GetClaimsFromContext obtiene los claims completos del contexto de Chi
-func GetClaimsFromContext(r *http.Request) *authlib.Claims {
-	if value := r.Context().Value(contextlib.ClaimsKey); value != nil {
-		if claims, ok := value.(*authlib.Claims); ok {
+func GetClaimsFromContext(r *http.Request) *authjwt.Claims {
+	if value := r.Context().Value(authcontext.ClaimsKey); value != nil {
+		if claims, ok := value.(*authjwt.Claims); ok {
 			return claims
 		}
 	}

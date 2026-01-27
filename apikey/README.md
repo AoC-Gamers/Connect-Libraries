@@ -52,7 +52,6 @@ CONNECT_RT_API_KEY=secret-rt-key
 
 ## ⚙️ Dependencias
 
-- `errors` - Sistema de manejo de errores estandarizado
 - `zerolog` - Logging estructurado
 
 ## ⚡ Características
@@ -63,3 +62,21 @@ CONNECT_RT_API_KEY=secret-rt-key
 - ✅ Logging integrado con zerolog
 - ✅ Modo desarrollo con auto-generación de claves
 - ✅ Validación estricta en producción
+
+## 🧩 Respuestas de error personalizadas
+
+Puedes inyectar un `ErrorResponder` para desacoplarte de cualquier librería de errores:
+
+```go
+type MyResponder struct{}
+
+func (MyResponder) Unauthorized(w http.ResponseWriter, detail string) {
+    // usar tu librería de errores aquí
+}
+
+func (MyResponder) InsufficientPermissions(w http.ResponseWriter, action string) {}
+
+// Uso
+mw := apikey.RequireConnectAPIKeyWithResponder(MyResponder{})
+mwInternal := apikey.RequireInternalServicesWithResponder(MyResponder{})
+```
