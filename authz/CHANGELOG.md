@@ -7,6 +7,12 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-01-27
+
+### Added
+- Módulo de permisos (authz/permissions) con bitmasks, grupos, roles y helpers
+- Constantes WEB/COMMUNITY/TEAM/LOBBY y utilidades de autorización
+
 ## [1.0.0] - 2026-01-07
 
 ### Added
