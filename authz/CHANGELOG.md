@@ -7,6 +7,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-02-07
+
+### Fixed
+- Module path actualizado a `/v2` para Semantic Import Versioning (Go modules)
+
 ## [2.0.0] - 2026-02-06
 
 ### Changed
