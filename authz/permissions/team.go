@@ -5,21 +5,45 @@ package permissions
 // Each constant represents a bit in uint64 (max 64 permissions)
 
 const (
-	// Membership Management (bits 0-2)
-	TEAM__MEMBERSHIP_VIEW   uint64 = 1 << 0 // View membership details from the team interface
-	TEAM__MEMBERSHIP_INVITE uint64 = 1 << 1 // Invite users to the team (membership invite)
-	TEAM__MEMBERSHIP_DELETE uint64 = 1 << 2 // Remove memberships from the team
+	// TeamMembershipInvite invites users to the team (membership invite).
+	TeamMembershipInvite uint64 = 1 << 0
+	// TeamMembershipDelete removes memberships from the team.
+	TeamMembershipDelete uint64 = 1 << 1
 
-	// Team Management (bits 3-7)
-	TEAM__INFO_EDIT          uint64 = 1 << 3 // Edit team information
-	TEAM__LOBBY_CREATE       uint64 = 1 << 4 // Create a lobby associated with the team
-	TEAM__TRANSFER_OWNERSHIP uint64 = 1 << 5 // Transfer team ownership
-	TEAM__SUSPEND            uint64 = 1 << 6 // Suspend or unsuspend this team
-	TEAM__AUDIT_VIEW         uint64 = 1 << 7 // View audit logs for this team
+	// TeamServerAdd adds a server to the team's server list.
+	TeamServerAdd uint64 = 1 << 2
+	// TeamServerEdit edits an existing server in the team's server list.
+	TeamServerEdit uint64 = 1 << 3
+	// TeamServerDelete deletes a server from the team's server list.
+	TeamServerDelete uint64 = 1 << 4
 
-	// Roles & Permissions (bits 8-9)
-	TEAM__ROLES_VIEW uint64 = 1 << 8 // View roles and permissions for this team
-	TEAM__ROLES_EDIT uint64 = 1 << 9 // Edit roles and permissions for this team
+	// TeamMissionListAdd adds a new mission to the team's mission list.
+	TeamMissionListAdd uint64 = 1 << 5
+	// TeamMissionListEdit edits an existing mission in the team's mission list.
+	TeamMissionListEdit uint64 = 1 << 6
+
+	// TeamGamemodeListAdd adds a new gamemode to the team's gamemode list.
+	TeamGamemodeListAdd uint64 = 1 << 7
+	// TeamGamemodeListEdit edits an existing gamemode in the team's gamemode list.
+	TeamGamemodeListEdit uint64 = 1 << 8
+
+	// TeamInfoEdit edits team information.
+	TeamInfoEdit uint64 = 1 << 9
+	// TeamAnalytics views team statistics and analytics.
+	TeamAnalytics uint64 = 1 << 10
+	// TeamTransferOwnership transfers team ownership.
+	TeamTransferOwnership uint64 = 1 << 11
+	// TeamSuspend suspends or unsuspends this team.
+	TeamSuspend uint64 = 1 << 12
+	// TeamAuditView views audit logs for this team.
+	TeamAuditView uint64 = 1 << 13
+	// TeamLobbyCreate creates a lobby associated with the team.
+	TeamLobbyCreate uint64 = 1 << 14
+
+	// TeamRolesView views roles and permissions for this team.
+	TeamRolesView uint64 = 1 << 15
+	// TeamRolesEdit edits roles and permissions for this team.
+	TeamRolesEdit uint64 = 1 << 16
 )
 
 // ============================================
@@ -28,20 +52,44 @@ const (
 // String constants for use with CheckUserPermission() and similar API methods
 
 const (
-	// Membership Management
-	PermTeamMembershipView   = "TEAM__MEMBERSHIP_VIEW"
+	// PermTeamMembershipInvite is the permission key for TEAM__MEMBERSHIP_INVITE.
 	PermTeamMembershipInvite = "TEAM__MEMBERSHIP_INVITE"
+	// PermTeamMembershipDelete is the permission key for TEAM__MEMBERSHIP_DELETE.
 	PermTeamMembershipDelete = "TEAM__MEMBERSHIP_DELETE"
 
-	// Team Management
-	PermTeamInfoEdit          = "TEAM__INFO_EDIT"
-	PermTeamLobbyCreate       = "TEAM__LOBBY_CREATE"
-	PermTeamTransferOwnership = "TEAM__TRANSFER_OWNERSHIP"
-	PermTeamSuspend           = "TEAM__SUSPEND"
-	PermTeamAuditView         = "TEAM__AUDIT_VIEW"
+	// PermTeamServerAdd is the permission key for TEAM__SERVER_ADD.
+	PermTeamServerAdd = "TEAM__SERVER_ADD"
+	// PermTeamServerEdit is the permission key for TEAM__SERVER_EDIT.
+	PermTeamServerEdit = "TEAM__SERVER_EDIT"
+	// PermTeamServerDelete is the permission key for TEAM__SERVER_DELETE.
+	PermTeamServerDelete = "TEAM__SERVER_DELETE"
 
-	// Roles & Permissions
+	// PermTeamMissionListAdd is the permission key for TEAM__MISSIONLIST_ADD.
+	PermTeamMissionListAdd = "TEAM__MISSIONLIST_ADD"
+	// PermTeamMissionListEdit is the permission key for TEAM__MISSIONLIST_EDIT.
+	PermTeamMissionListEdit = "TEAM__MISSIONLIST_EDIT"
+
+	// PermTeamGamemodeListAdd is the permission key for TEAM__GAMEMODELIST_ADD.
+	PermTeamGamemodeListAdd = "TEAM__GAMEMODELIST_ADD"
+	// PermTeamGamemodeListEdit is the permission key for TEAM__GAMEMODELIST_EDIT.
+	PermTeamGamemodeListEdit = "TEAM__GAMEMODELIST_EDIT"
+
+	// PermTeamInfoEdit is the permission key for TEAM__INFO_EDIT.
+	PermTeamInfoEdit = "TEAM__INFO_EDIT"
+	// PermTeamAnalytics is the permission key for TEAM__ANALYTICS.
+	PermTeamAnalytics = "TEAM__ANALYTICS"
+	// PermTeamTransferOwnership is the permission key for TEAM__TRANSFER_OWNERSHIP.
+	PermTeamTransferOwnership = "TEAM__TRANSFER_OWNERSHIP"
+	// PermTeamSuspend is the permission key for TEAM__SUSPEND.
+	PermTeamSuspend = "TEAM__SUSPEND"
+	// PermTeamAuditView is the permission key for TEAM__AUDIT_VIEW.
+	PermTeamAuditView = "TEAM__AUDIT_VIEW"
+	// PermTeamLobbyCreate is the permission key for TEAM__LOBBY_CREATE.
+	PermTeamLobbyCreate = "TEAM__LOBBY_CREATE"
+
+	// PermTeamRolesView is the permission key for TEAM__ROLES_VIEW.
 	PermTeamRolesView = "TEAM__ROLES_VIEW"
+	// PermTeamRolesEdit is the permission key for TEAM__ROLES_EDIT.
 	PermTeamRolesEdit = "TEAM__ROLES_EDIT"
 )
 
@@ -51,9 +99,12 @@ const (
 // String constants for team role identifiers
 
 const (
+	// RoleTeamOwnerKey is the role key for a team owner.
 	RoleTeamOwnerKey = "team_owner"
+	// RoleTeamStaffKey is the role key for a team staff member.
 	RoleTeamStaffKey = "team_staff"
-	RoleTeamUserKey  = "team_user"
+	// RoleTeamUserKey is the role key for a team user.
+	RoleTeamUserKey = "team_user"
 )
 
 // ============================================
@@ -61,116 +112,118 @@ const (
 // ============================================
 // Matches seeds/permissions/team.json groups
 var (
-	// TEAM__BASIC - Basic team membership
-	TEAM__BASIC = TEAM__MEMBERSHIP_VIEW
+	// TeamBasic - Basic team membership
+	TeamBasic uint64 = 0
 
-	// TEAM__STAFF - Team staff permissions
-	TEAM__STAFF = TEAM__MEMBERSHIP_INVITE |
-		TEAM__LOBBY_CREATE |
-		TEAM__ROLES_VIEW
+	// TeamStaff - Team staff permissions
+	TeamStaff = TeamMembershipInvite |
+		TeamServerAdd |
+		TeamServerEdit |
+		TeamServerDelete |
+		TeamMissionListAdd |
+		TeamMissionListEdit |
+		TeamGamemodeListAdd |
+		TeamGamemodeListEdit |
+		TeamLobbyCreate |
+		TeamRolesView
 
-	// TEAM__OWNER - Full team control
-	TEAM__OWNER = TEAM__MEMBERSHIP_DELETE |
-		TEAM__INFO_EDIT |
-		TEAM__TRANSFER_OWNERSHIP |
-		TEAM__SUSPEND |
-		TEAM__AUDIT_VIEW |
-		TEAM__ROLES_EDIT
+	// TeamOwner - Full team control
+	TeamOwner = TeamMembershipDelete |
+		TeamInfoEdit |
+		TeamAnalytics |
+		TeamTransferOwnership |
+		TeamSuspend |
+		TeamAuditView |
+		TeamRolesEdit
 )
 
 // Role Presets - Calculated bitmasks for each role
 var (
-	// RoleTeamUser - Basic team member (TEAM__BASIC group)
-	RoleTeamUser = TEAM__BASIC
+	// RoleTeamUser - Basic team member (TeamBasic group)
+	RoleTeamUser = TeamBasic
 
-	// RoleTeamStaff - Team staff member (TEAM__BASIC + TEAM__STAFF groups)
-	RoleTeamStaff = TEAM__BASIC | TEAM__STAFF
+	// RoleTeamStaff - Team staff member (TeamBasic + TeamStaff groups)
+	RoleTeamStaff = TeamBasic | TeamStaff
 
-	// RoleTeamOwner - Team owner (TEAM__BASIC + TEAM__STAFF + TEAM__OWNER groups)
-	RoleTeamOwner = TEAM__BASIC | TEAM__STAFF | TEAM__OWNER
+	// RoleTeamOwner - Team owner (TeamBasic + TeamStaff + TeamOwner groups)
+	RoleTeamOwner = TeamBasic | TeamStaff | TeamOwner
 )
+
+var teamRolePermissions = map[string]uint64{
+	RoleTeamOwnerKey: RoleTeamOwner,
+	RoleTeamStaffKey: RoleTeamStaff,
+	RoleTeamUserKey:  RoleTeamUser,
+}
+
+var teamRoleNames = map[string]string{
+	RoleTeamOwnerKey: "Team Owner",
+	RoleTeamStaffKey: "Team Staff",
+	RoleTeamUserKey:  "Team User",
+}
 
 // GetTeamRolePermissions returns the permission bitmask for a given team role
 func GetTeamRolePermissions(role string) uint64 {
-	switch role {
-	case RoleTeamOwnerKey:
-		return RoleTeamOwner
-	case RoleTeamStaffKey:
-		return RoleTeamStaff
-	case RoleTeamUserKey:
-		return RoleTeamUser
-	default:
-		return 0 // No permissions for unknown roles
-	}
+	return getRolePermissions(role, teamRolePermissions)
 }
 
 // GetTeamRoleName returns the human-readable name of a team role
 func GetTeamRoleName(role string) string {
-	switch role {
-	case RoleTeamOwnerKey:
-		return "Team Owner"
-	case RoleTeamStaffKey:
-		return "Team Staff"
-	case RoleTeamUserKey:
-		return "Team User"
-	default:
-		return "Unknown"
-	}
+	return getRoleName(role, teamRoleNames)
 }
 
 // IsTeamRoleValid checks if a team role identifier is valid
 func IsTeamRoleValid(role string) bool {
-	switch role {
-	case RoleTeamOwnerKey, RoleTeamStaffKey, RoleTeamUserKey:
-		return true
-	default:
-		return false
-	}
+	return isRoleValid(role, teamRoleNames)
 }
 
 // TeamPermissionNames maps each permission bit to its key name (for debugging/logging)
 var TeamPermissionNames = map[uint64]string{
-	TEAM__MEMBERSHIP_VIEW:    PermTeamMembershipView,
-	TEAM__MEMBERSHIP_INVITE:  PermTeamMembershipInvite,
-	TEAM__MEMBERSHIP_DELETE:  PermTeamMembershipDelete,
-	TEAM__INFO_EDIT:          PermTeamInfoEdit,
-	TEAM__LOBBY_CREATE:       PermTeamLobbyCreate,
-	TEAM__TRANSFER_OWNERSHIP: PermTeamTransferOwnership,
-	TEAM__SUSPEND:            PermTeamSuspend,
-	TEAM__AUDIT_VIEW:         PermTeamAuditView,
-	TEAM__ROLES_VIEW:         PermTeamRolesView,
-	TEAM__ROLES_EDIT:         PermTeamRolesEdit,
+	TeamMembershipInvite:  PermTeamMembershipInvite,
+	TeamMembershipDelete:  PermTeamMembershipDelete,
+	TeamServerAdd:         PermTeamServerAdd,
+	TeamServerEdit:        PermTeamServerEdit,
+	TeamServerDelete:      PermTeamServerDelete,
+	TeamMissionListAdd:    PermTeamMissionListAdd,
+	TeamMissionListEdit:   PermTeamMissionListEdit,
+	TeamGamemodeListAdd:   PermTeamGamemodeListAdd,
+	TeamGamemodeListEdit:  PermTeamGamemodeListEdit,
+	TeamInfoEdit:          PermTeamInfoEdit,
+	TeamAnalytics:         PermTeamAnalytics,
+	TeamTransferOwnership: PermTeamTransferOwnership,
+	TeamSuspend:           PermTeamSuspend,
+	TeamAuditView:         PermTeamAuditView,
+	TeamLobbyCreate:       PermTeamLobbyCreate,
+	TeamRolesView:         PermTeamRolesView,
+	TeamRolesEdit:         PermTeamRolesEdit,
 }
 
 // TeamPermissionKeyToBit maps permission key names to their bit values (reverse lookup)
 var TeamPermissionKeyToBit = map[string]uint8{
-	PermTeamMembershipView:    0,
-	PermTeamMembershipInvite:  1,
-	PermTeamMembershipDelete:  2,
-	PermTeamInfoEdit:          3,
-	PermTeamLobbyCreate:       4,
-	PermTeamTransferOwnership: 5,
-	PermTeamSuspend:           6,
-	PermTeamAuditView:         7,
-	PermTeamRolesView:         8,
-	PermTeamRolesEdit:         9,
+	PermTeamMembershipInvite:  0,
+	PermTeamMembershipDelete:  1,
+	PermTeamServerAdd:         2,
+	PermTeamServerEdit:        3,
+	PermTeamServerDelete:      4,
+	PermTeamMissionListAdd:    5,
+	PermTeamMissionListEdit:   6,
+	PermTeamGamemodeListAdd:   7,
+	PermTeamGamemodeListEdit:  8,
+	PermTeamInfoEdit:          9,
+	PermTeamAnalytics:         10,
+	PermTeamTransferOwnership: 11,
+	PermTeamSuspend:           12,
+	PermTeamAuditView:         13,
+	PermTeamLobbyCreate:       14,
+	PermTeamRolesView:         15,
+	PermTeamRolesEdit:         16,
 }
 
 // GetTeamPermissionName returns the key name of a single permission bit
 func GetTeamPermissionName(permission uint64) string {
-	if name, ok := TeamPermissionNames[permission]; ok {
-		return name
-	}
-	return "UNKNOWN_PERMISSION"
+	return getPermissionName(permission, TeamPermissionNames)
 }
 
 // GetAllTeamPermissionNames returns all permission key names in a bitmask
 func GetAllTeamPermissionNames(mask uint64) []string {
-	var names []string
-	for perm, name := range TeamPermissionNames {
-		if mask&perm != 0 {
-			names = append(names, name)
-		}
-	}
-	return names
+	return getAllPermissionNames(mask, TeamPermissionNames)
 }

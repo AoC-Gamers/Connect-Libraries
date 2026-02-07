@@ -5,62 +5,92 @@ package permissions
 // Each constant represents a bit in uint64 (max 64 permissions)
 
 const (
-	// Community Management (bits 0-6)
-	WEB__COMMUNITY_VIEW                 uint64 = 1 << 0 // View community listing and details from the web
-	WEB__COMMUNITIES_ADD                uint64 = 1 << 2 // Create new communities
-	WEB__COMMUNITIES_EDIT               uint64 = 1 << 3 // Edit community information from web
-	WEB__COMMUNITIES_DELETE             uint64 = 1 << 4 // Delete communities from web
-	WEB__COMMUNITIES_TRANSFER_OWNERSHIP uint64 = 1 << 5 // Transfer ownership of a community
-	WEB__COMMUNITIES_SUSPEND            uint64 = 1 << 6 // Suspend or unsuspend communities
+	// WebCommunityView views community listing and details from the web.
+	WebCommunityView uint64 = 1 << 0
+	// WebCommunitiesAdd creates new communities.
+	WebCommunitiesAdd uint64 = 1 << 2
+	// WebCommunitiesEdit edits community information from the web.
+	WebCommunitiesEdit uint64 = 1 << 3
+	// WebCommunitiesDelete deletes communities from the web.
+	WebCommunitiesDelete uint64 = 1 << 4
+	// WebCommunitiesTransferOwnership transfers ownership of a community.
+	WebCommunitiesTransferOwnership uint64 = 1 << 5
+	// WebCommunitiesSuspend suspends or unsuspends communities.
+	WebCommunitiesSuspend uint64 = 1 << 6
 
-	// Team Management (bits 7-11)
-	WEB__TEAM_VIEW                uint64 = 1 << 7  // View team listing and details from the web
-	WEB__TEAMS_EDIT               uint64 = 1 << 8  // Edit team information from web
-	WEB__TEAMS_DELETE             uint64 = 1 << 9  // Delete teams from web
-	WEB__TEAMS_TRANSFER_OWNERSHIP uint64 = 1 << 10 // Transfer ownership of teams
-	WEB__TEAMS_SUSPEND            uint64 = 1 << 11 // Suspend or unsuspend teams
+	// WebTeamView views team listing and details from the web.
+	WebTeamView uint64 = 1 << 7
+	// WebTeamsEdit edits team information from the web.
+	WebTeamsEdit uint64 = 1 << 8
+	// WebTeamsDelete deletes teams from the web.
+	WebTeamsDelete uint64 = 1 << 9
+	// WebTeamsTransferOwnership transfers ownership of teams.
+	WebTeamsTransferOwnership uint64 = 1 << 10
+	// WebTeamsSuspend suspends or unsuspends teams.
+	WebTeamsSuspend uint64 = 1 << 11
 
-	// Membership Management (bits 12-14)
-	WEB__MEMBERSHIP_VIEW   uint64 = 1 << 12 // View membership details from the web interface
-	WEB__MEMBERSHIP_INVITE uint64 = 1 << 13 // Invite users to scopes (communities, teams, web) via the web interface
-	WEB__MEMBERSHIP_DELETE uint64 = 1 << 14 // Remove memberships from the web interface
+	// WebMembershipView views membership details from the web interface.
+	WebMembershipView uint64 = 1 << 12
+	// WebMembershipInvite invites users to scopes (communities, teams, web) via the web interface.
+	WebMembershipInvite uint64 = 1 << 13
+	// WebMembershipDelete removes memberships from the web interface.
+	WebMembershipDelete uint64 = 1 << 14
 
-	// Sanctions Management (bits 15-19)
-	WEB__SANCTIONS_VIEW    uint64 = 1 << 15 // View sanctions applied to users
-	WEB__SANCTIONS_ADD     uint64 = 1 << 16 // Apply a sanction to a user
-	WEB__SANCTIONS_EDIT    uint64 = 1 << 17 // Edit existing sanctions
-	WEB__SANCTIONS_DELETE  uint64 = 1 << 18 // Remove sanctions from users
-	WEB__SANCTIONS_SUSPEND uint64 = 1 << 19 // Temporarily suspend users via sanctions
+	// WebSanctionsView views sanctions applied to users.
+	WebSanctionsView uint64 = 1 << 15
+	// WebSanctionsAdd applies a sanction to a user.
+	WebSanctionsAdd uint64 = 1 << 16
+	// WebSanctionsEdit edits existing sanctions.
+	WebSanctionsEdit uint64 = 1 << 17
+	// WebSanctionsDelete removes sanctions from users.
+	WebSanctionsDelete uint64 = 1 << 18
+	// WebSanctionsSuspend temporarily suspends users via sanctions.
+	WebSanctionsSuspend uint64 = 1 << 19
 
-	// Mission Management (bits 20-24)
-	WEB__MISSION_VIEW    uint64 = 1 << 20 // View mission listings and details from the web
-	WEB__MISSION_ADD     uint64 = 1 << 21 // Create new missions from the web
-	WEB__MISSION_EDIT    uint64 = 1 << 22 // Edit existing missions from the web
-	WEB__MISSION_DELETE  uint64 = 1 << 23 // Delete missions from the web
-	WEB__MISSION_SUSPEND uint64 = 1 << 24 // Suspend or unsuspend missions from the web
+	// WebMissionView views mission listings and details from the web.
+	WebMissionView uint64 = 1 << 20
+	// WebMissionAdd creates new missions from the web.
+	WebMissionAdd uint64 = 1 << 21
+	// WebMissionEdit edits existing missions from the web.
+	WebMissionEdit uint64 = 1 << 22
+	// WebMissionDelete deletes missions from the web.
+	WebMissionDelete uint64 = 1 << 23
+	// WebMissionSuspend suspends or unsuspends missions from the web.
+	WebMissionSuspend uint64 = 1 << 24
 
-	// Gamemode Management (bits 25-29)
-	WEB__GAMEMODE_VIEW    uint64 = 1 << 25 // View gamemode listings and details from the web
-	WEB__GAMEMODE_ADD     uint64 = 1 << 26 // Create new gamemodes from the web
-	WEB__GAMEMODE_EDIT    uint64 = 1 << 27 // Edit existing gamemodes from the web
-	WEB__GAMEMODE_DELETE  uint64 = 1 << 28 // Delete gamemodes from the web
-	WEB__GAMEMODE_SUSPEND uint64 = 1 << 29 // Suspend or unsuspend gamemodes from the web
+	// WebGamemodeView views gamemode listings and details from the web.
+	WebGamemodeView uint64 = 1 << 25
+	// WebGamemodeAdd creates new gamemodes from the web.
+	WebGamemodeAdd uint64 = 1 << 26
+	// WebGamemodeEdit edits existing gamemodes from the web.
+	WebGamemodeEdit uint64 = 1 << 27
+	// WebGamemodeDelete deletes gamemodes from the web.
+	WebGamemodeDelete uint64 = 1 << 28
+	// WebGamemodeSuspend suspends or unsuspends gamemodes from the web.
+	WebGamemodeSuspend uint64 = 1 << 29
 
-	// Lobby Management (bits 30-34)
-	WEB__LOBBY_VIEW           uint64 = 1 << 30 // View lobby listings and details from the web
-	WEB__LOBBY_CREATE_PUBLIC  uint64 = 1 << 31 // Create new public lobbies from the web
-	WEB__LOBBY_CREATE_PRIVATE uint64 = 1 << 32 // Create new private lobbies from the web
-	WEB__LOBBY_JOIN           uint64 = 1 << 33 // Join lobbies from the web
-	WEB__LOBBY_SPECTATE       uint64 = 1 << 34 // Spectate lobbies from the web
+	// WebLobbyView views lobby listings and details from the web.
+	WebLobbyView uint64 = 1 << 30
+	// WebLobbyCreatePublic creates new public lobbies from the web.
+	WebLobbyCreatePublic uint64 = 1 << 31
+	// WebLobbyCreatePrivate creates new private lobbies from the web.
+	WebLobbyCreatePrivate uint64 = 1 << 32
+	// WebLobbyJoin joins lobbies from the web.
+	WebLobbyJoin uint64 = 1 << 33
+	// WebLobbySpectate spectates lobbies from the web.
+	WebLobbySpectate uint64 = 1 << 34
 
-	// Platform Administration (bits 35-37)
-	WEB__VIEW_AUDIT_LOG uint64 = 1 << 35 // Access audit logs
-	WEB__VIEW_METRICS   uint64 = 1 << 36 // Access platform metrics and statistics
-	WEB__SETTINGS       uint64 = 1 << 37 // Modify platform settings
+	// WebViewAuditLog accesses audit logs.
+	WebViewAuditLog uint64 = 1 << 35
+	// WebViewMetrics accesses platform metrics and statistics.
+	WebViewMetrics uint64 = 1 << 36
+	// WebSettings modifies platform settings.
+	WebSettings uint64 = 1 << 37
 
-	// Roles & Permissions (bits 38-39)
-	WEB__ROLES_VIEW uint64 = 1 << 38 // View roles and permissions
-	WEB__ROLES_EDIT uint64 = 1 << 39 // Edit roles and permissions
+	// WebRolesView views roles and permissions.
+	WebRolesView uint64 = 1 << 38
+	// WebRolesEdit edits roles and permissions.
+	WebRolesEdit uint64 = 1 << 39
 )
 
 // ============================================
@@ -69,61 +99,91 @@ const (
 // String constants for use with CheckUserPermission() and similar API methods
 
 const (
-	// Community Management
-	PermWebCommunityView                = "WEB__COMMUNITY_VIEW"
-	PermWebCommunitiesAdd               = "WEB__COMMUNITIES_ADD"
-	PermWebCommunitiesEdit              = "WEB__COMMUNITIES_EDIT"
-	PermWebCommunitiesDelete            = "WEB__COMMUNITIES_DELETE"
+	// PermWebCommunityView is the permission key for WEB__COMMUNITY_VIEW.
+	PermWebCommunityView = "WEB__COMMUNITY_VIEW"
+	// PermWebCommunitiesAdd is the permission key for WEB__COMMUNITIES_ADD.
+	PermWebCommunitiesAdd = "WEB__COMMUNITIES_ADD"
+	// PermWebCommunitiesEdit is the permission key for WEB__COMMUNITIES_EDIT.
+	PermWebCommunitiesEdit = "WEB__COMMUNITIES_EDIT"
+	// PermWebCommunitiesDelete is the permission key for WEB__COMMUNITIES_DELETE.
+	PermWebCommunitiesDelete = "WEB__COMMUNITIES_DELETE"
+	// PermWebCommunitiesTransferOwnership is the permission key for WEB__COMMUNITIES_TRANSFER_OWNERSHIP.
 	PermWebCommunitiesTransferOwnership = "WEB__COMMUNITIES_TRANSFER_OWNERSHIP"
-	PermWebCommunitiesSuspend           = "WEB__COMMUNITIES_SUSPEND"
+	// PermWebCommunitiesSuspend is the permission key for WEB__COMMUNITIES_SUSPEND.
+	PermWebCommunitiesSuspend = "WEB__COMMUNITIES_SUSPEND"
 
-	// Team Management
-	PermWebTeamView               = "WEB__TEAM_VIEW"
-	PermWebTeamsEdit              = "WEB__TEAMS_EDIT"
-	PermWebTeamsDelete            = "WEB__TEAMS_DELETE"
+	// PermWebTeamView is the permission key for WEB__TEAM_VIEW.
+	PermWebTeamView = "WEB__TEAM_VIEW"
+	// PermWebTeamsEdit is the permission key for WEB__TEAMS_EDIT.
+	PermWebTeamsEdit = "WEB__TEAMS_EDIT"
+	// PermWebTeamsDelete is the permission key for WEB__TEAMS_DELETE.
+	PermWebTeamsDelete = "WEB__TEAMS_DELETE"
+	// PermWebTeamsTransferOwnership is the permission key for WEB__TEAMS_TRANSFER_OWNERSHIP.
 	PermWebTeamsTransferOwnership = "WEB__TEAMS_TRANSFER_OWNERSHIP"
-	PermWebTeamsSuspend           = "WEB__TEAMS_SUSPEND"
+	// PermWebTeamsSuspend is the permission key for WEB__TEAMS_SUSPEND.
+	PermWebTeamsSuspend = "WEB__TEAMS_SUSPEND"
 
-	// Membership Management
-	PermWebMembershipView   = "WEB__MEMBERSHIP_VIEW"
+	// PermWebMembershipView is the permission key for WEB__MEMBERSHIP_VIEW.
+	PermWebMembershipView = "WEB__MEMBERSHIP_VIEW"
+	// PermWebMembershipInvite is the permission key for WEB__MEMBERSHIP_INVITE.
 	PermWebMembershipInvite = "WEB__MEMBERSHIP_INVITE"
+	// PermWebMembershipDelete is the permission key for WEB__MEMBERSHIP_DELETE.
 	PermWebMembershipDelete = "WEB__MEMBERSHIP_DELETE"
 
-	// Sanctions Management
-	PermWebSanctionsView    = "WEB__SANCTIONS_VIEW"
-	PermWebSanctionsAdd     = "WEB__SANCTIONS_ADD"
-	PermWebSanctionsEdit    = "WEB__SANCTIONS_EDIT"
-	PermWebSanctionsDelete  = "WEB__SANCTIONS_DELETE"
+	// PermWebSanctionsView is the permission key for WEB__SANCTIONS_VIEW.
+	PermWebSanctionsView = "WEB__SANCTIONS_VIEW"
+	// PermWebSanctionsAdd is the permission key for WEB__SANCTIONS_ADD.
+	PermWebSanctionsAdd = "WEB__SANCTIONS_ADD"
+	// PermWebSanctionsEdit is the permission key for WEB__SANCTIONS_EDIT.
+	PermWebSanctionsEdit = "WEB__SANCTIONS_EDIT"
+	// PermWebSanctionsDelete is the permission key for WEB__SANCTIONS_DELETE.
+	PermWebSanctionsDelete = "WEB__SANCTIONS_DELETE"
+	// PermWebSanctionsSuspend is the permission key for WEB__SANCTIONS_SUSPEND.
 	PermWebSanctionsSuspend = "WEB__SANCTIONS_SUSPEND"
 
-	// Mission Management
-	PermWebMissionView    = "WEB__MISSION_VIEW"
-	PermWebMissionAdd     = "WEB__MISSION_ADD"
-	PermWebMissionEdit    = "WEB__MISSION_EDIT"
-	PermWebMissionDelete  = "WEB__MISSION_DELETE"
+	// PermWebMissionView is the permission key for WEB__MISSION_VIEW.
+	PermWebMissionView = "WEB__MISSION_VIEW"
+	// PermWebMissionAdd is the permission key for WEB__MISSION_ADD.
+	PermWebMissionAdd = "WEB__MISSION_ADD"
+	// PermWebMissionEdit is the permission key for WEB__MISSION_EDIT.
+	PermWebMissionEdit = "WEB__MISSION_EDIT"
+	// PermWebMissionDelete is the permission key for WEB__MISSION_DELETE.
+	PermWebMissionDelete = "WEB__MISSION_DELETE"
+	// PermWebMissionSuspend is the permission key for WEB__MISSION_SUSPEND.
 	PermWebMissionSuspend = "WEB__MISSION_SUSPEND"
 
-	// Gamemode Management
-	PermWebGamemodeView    = "WEB__GAMEMODE_VIEW"
-	PermWebGamemodeAdd     = "WEB__GAMEMODE_ADD"
-	PermWebGamemodeEdit    = "WEB__GAMEMODE_EDIT"
-	PermWebGamemodeDelete  = "WEB__GAMEMODE_DELETE"
+	// PermWebGamemodeView is the permission key for WEB__GAMEMODE_VIEW.
+	PermWebGamemodeView = "WEB__GAMEMODE_VIEW"
+	// PermWebGamemodeAdd is the permission key for WEB__GAMEMODE_ADD.
+	PermWebGamemodeAdd = "WEB__GAMEMODE_ADD"
+	// PermWebGamemodeEdit is the permission key for WEB__GAMEMODE_EDIT.
+	PermWebGamemodeEdit = "WEB__GAMEMODE_EDIT"
+	// PermWebGamemodeDelete is the permission key for WEB__GAMEMODE_DELETE.
+	PermWebGamemodeDelete = "WEB__GAMEMODE_DELETE"
+	// PermWebGamemodeSuspend is the permission key for WEB__GAMEMODE_SUSPEND.
 	PermWebGamemodeSuspend = "WEB__GAMEMODE_SUSPEND"
 
-	// Lobby Management
-	PermWebLobbyView          = "WEB__LOBBY_VIEW"
-	PermWebLobbyCreatePublic  = "WEB__LOBBY_CREATE_PUBLIC"
+	// PermWebLobbyView is the permission key for WEB__LOBBY_VIEW.
+	PermWebLobbyView = "WEB__LOBBY_VIEW"
+	// PermWebLobbyCreatePublic is the permission key for WEB__LOBBY_CREATE_PUBLIC.
+	PermWebLobbyCreatePublic = "WEB__LOBBY_CREATE_PUBLIC"
+	// PermWebLobbyCreatePrivate is the permission key for WEB__LOBBY_CREATE_PRIVATE.
 	PermWebLobbyCreatePrivate = "WEB__LOBBY_CREATE_PRIVATE"
-	PermWebLobbyJoin          = "WEB__LOBBY_JOIN"
-	PermWebLobbySpectate      = "WEB__LOBBY_SPECTATE"
+	// PermWebLobbyJoin is the permission key for WEB__LOBBY_JOIN.
+	PermWebLobbyJoin = "WEB__LOBBY_JOIN"
+	// PermWebLobbySpectate is the permission key for WEB__LOBBY_SPECTATE.
+	PermWebLobbySpectate = "WEB__LOBBY_SPECTATE"
 
-	// Platform Administration
+	// PermWebViewAuditLog is the permission key for WEB__VIEW_AUDIT_LOG.
 	PermWebViewAuditLog = "WEB__VIEW_AUDIT_LOG"
-	PermWebViewMetrics  = "WEB__VIEW_METRICS"
-	PermWebSettings     = "WEB__SETTINGS"
+	// PermWebViewMetrics is the permission key for WEB__VIEW_METRICS.
+	PermWebViewMetrics = "WEB__VIEW_METRICS"
+	// PermWebSettings is the permission key for WEB__SETTINGS.
+	PermWebSettings = "WEB__SETTINGS"
 
-	// Roles & Permissions
+	// PermWebRolesView is the permission key for WEB__ROLES_VIEW.
 	PermWebRolesView = "WEB__ROLES_VIEW"
+	// PermWebRolesEdit is the permission key for WEB__ROLES_EDIT.
 	PermWebRolesEdit = "WEB__ROLES_EDIT"
 )
 
@@ -133,9 +193,12 @@ const (
 // String constants for web role identifiers
 
 const (
+	// RoleWebOwnerKey is the role key for a web owner.
 	RoleWebOwnerKey = "web_owner"
+	// RoleWebStaffKey is the role key for a web staff member.
 	RoleWebStaffKey = "web_staff"
-	RoleWebUserKey  = "web_user"
+	// RoleWebUserKey is the role key for a web user.
+	RoleWebUserKey = "web_user"
 )
 
 // ============================================
@@ -143,143 +206,132 @@ const (
 // ============================================
 // Matches seeds/permissions/web.json groups
 var (
-	// WEB__BASIC - Basic web user permissions
-	WEB__BASIC = WEB__COMMUNITY_VIEW |
-		WEB__TEAM_VIEW |
-		WEB__SANCTIONS_VIEW |
-		WEB__MISSION_VIEW |
-		WEB__GAMEMODE_VIEW |
-		WEB__LOBBY_VIEW |
-		WEB__LOBBY_CREATE_PUBLIC |
-		WEB__LOBBY_CREATE_PRIVATE |
-		WEB__LOBBY_JOIN |
-		WEB__LOBBY_SPECTATE
+	// WebBasic - Basic web user permissions
+	WebBasic = WebCommunityView |
+		WebTeamView |
+		WebSanctionsView |
+		WebMissionView |
+		WebGamemodeView |
+		WebLobbyView |
+		WebLobbyCreatePublic |
+		WebLobbyCreatePrivate |
+		WebLobbyJoin |
+		WebLobbySpectate
 
-	// WEB__STAFF - Staff management and moderation
-	WEB__STAFF = WEB__TEAMS_EDIT |
-		WEB__TEAMS_DELETE |
-		WEB__SANCTIONS_ADD |
-		WEB__SANCTIONS_EDIT |
-		WEB__SANCTIONS_SUSPEND |
-		WEB__MEMBERSHIP_VIEW |
-		WEB__MEMBERSHIP_INVITE |
-		WEB__MISSION_ADD |
-		WEB__MISSION_EDIT |
-		WEB__MISSION_SUSPEND |
-		WEB__GAMEMODE_ADD |
-		WEB__GAMEMODE_EDIT |
-		WEB__GAMEMODE_SUSPEND |
-		WEB__ROLES_VIEW
+	// WebStaff - Staff management and moderation
+	WebStaff = WebTeamsEdit |
+		WebTeamsDelete |
+		WebSanctionsAdd |
+		WebSanctionsEdit |
+		WebSanctionsSuspend |
+		WebMembershipView |
+		WebMembershipInvite |
+		WebMissionAdd |
+		WebMissionEdit |
+		WebMissionSuspend |
+		WebGamemodeAdd |
+		WebGamemodeEdit |
+		WebGamemodeSuspend |
+		WebRolesView
 
-	// WEB__OWNER - Platform ownership (only one owner via .env)
-	WEB__OWNER = WEB__COMMUNITIES_ADD |
-		WEB__COMMUNITIES_EDIT |
-		WEB__COMMUNITIES_DELETE |
-		WEB__COMMUNITIES_TRANSFER_OWNERSHIP |
-		WEB__COMMUNITIES_SUSPEND |
-		WEB__TEAMS_TRANSFER_OWNERSHIP |
-		WEB__TEAMS_SUSPEND |
-		WEB__MEMBERSHIP_DELETE |
-		WEB__SANCTIONS_DELETE |
-		WEB__MISSION_DELETE |
-		WEB__GAMEMODE_DELETE |
-		WEB__VIEW_AUDIT_LOG |
-		WEB__VIEW_METRICS |
-		WEB__SETTINGS |
-		WEB__ROLES_EDIT
+	// WebOwner - Platform ownership (only one owner via .env)
+	WebOwner = WebCommunitiesAdd |
+		WebCommunitiesEdit |
+		WebCommunitiesDelete |
+		WebCommunitiesTransferOwnership |
+		WebCommunitiesSuspend |
+		WebTeamsTransferOwnership |
+		WebTeamsSuspend |
+		WebMembershipDelete |
+		WebSanctionsDelete |
+		WebMissionDelete |
+		WebGamemodeDelete |
+		WebViewAuditLog |
+		WebViewMetrics |
+		WebSettings |
+		WebRolesEdit
 )
 
 // Role Presets - Calculated bitmasks for each role
 var (
-	// RoleWebUser - Basic web user (WEB__BASIC group)
-	RoleWebUser = WEB__BASIC
+	// RoleWebUser - Basic web user (WebBasic group)
+	RoleWebUser = WebBasic
 
-	// RoleWebStaff - Staff member (WEB__BASIC + WEB__STAFF groups)
-	RoleWebStaff = WEB__BASIC | WEB__STAFF
+	// RoleWebStaff - Staff member (WebBasic + WebStaff groups)
+	RoleWebStaff = WebBasic | WebStaff
 
-	// RoleWebOwner - Platform owner (WEB__BASIC + WEB__STAFF + WEB__OWNER groups)
-	RoleWebOwner = WEB__BASIC | WEB__STAFF | WEB__OWNER
+	// RoleWebOwner - Platform owner (WebBasic + WebStaff + WebOwner groups)
+	RoleWebOwner = WebBasic | WebStaff | WebOwner
 )
+
+var webRolePermissions = map[string]uint64{
+	RoleWebOwnerKey: RoleWebOwner,
+	RoleWebStaffKey: RoleWebStaff,
+	RoleWebUserKey:  RoleWebUser,
+}
+
+var webRoleNames = map[string]string{
+	RoleWebOwnerKey: "Web Owner",
+	RoleWebStaffKey: "Web Staff",
+	RoleWebUserKey:  "Web User",
+}
 
 // GetRolePermissions returns the permission bitmask for a given role
 func GetRolePermissions(role string) uint64 {
-	switch role {
-	case RoleWebOwnerKey:
-		return RoleWebOwner
-	case RoleWebStaffKey:
-		return RoleWebStaff
-	case RoleWebUserKey:
-		return RoleWebUser
-	default:
-		return 0 // No permissions for unknown roles
-	}
+	return getRolePermissions(role, webRolePermissions)
 }
 
 // GetRoleName returns the human-readable name of a role
 func GetRoleName(role string) string {
-	switch role {
-	case RoleWebOwnerKey:
-		return "Web Owner"
-	case RoleWebStaffKey:
-		return "Web Staff"
-	case RoleWebUserKey:
-		return "Web User"
-	default:
-		return "Unknown"
-	}
+	return getRoleName(role, webRoleNames)
 }
 
 // IsRoleValid checks if a role identifier is valid
 func IsRoleValid(role string) bool {
-	switch role {
-	case RoleWebOwnerKey, RoleWebStaffKey, RoleWebUserKey:
-		return true
-	default:
-		return false
-	}
+	return isRoleValid(role, webRoleNames)
 }
 
 // PermissionNames maps each permission bit to its key name (for debugging/logging)
 var PermissionNames = map[uint64]string{
-	WEB__COMMUNITY_VIEW:                 PermWebCommunityView,
-	WEB__COMMUNITIES_ADD:                PermWebCommunitiesAdd,
-	WEB__COMMUNITIES_EDIT:               PermWebCommunitiesEdit,
-	WEB__COMMUNITIES_DELETE:             PermWebCommunitiesDelete,
-	WEB__COMMUNITIES_TRANSFER_OWNERSHIP: PermWebCommunitiesTransferOwnership,
-	WEB__COMMUNITIES_SUSPEND:            PermWebCommunitiesSuspend,
-	WEB__TEAM_VIEW:                      PermWebTeamView,
-	WEB__TEAMS_EDIT:                     PermWebTeamsEdit,
-	WEB__TEAMS_DELETE:                   PermWebTeamsDelete,
-	WEB__TEAMS_TRANSFER_OWNERSHIP:       PermWebTeamsTransferOwnership,
-	WEB__TEAMS_SUSPEND:                  PermWebTeamsSuspend,
-	WEB__MEMBERSHIP_VIEW:                PermWebMembershipView,
-	WEB__MEMBERSHIP_INVITE:              PermWebMembershipInvite,
-	WEB__MEMBERSHIP_DELETE:              PermWebMembershipDelete,
-	WEB__SANCTIONS_VIEW:                 PermWebSanctionsView,
-	WEB__SANCTIONS_ADD:                  PermWebSanctionsAdd,
-	WEB__SANCTIONS_EDIT:                 PermWebSanctionsEdit,
-	WEB__SANCTIONS_DELETE:               PermWebSanctionsDelete,
-	WEB__SANCTIONS_SUSPEND:              PermWebSanctionsSuspend,
-	WEB__MISSION_VIEW:                   PermWebMissionView,
-	WEB__MISSION_ADD:                    PermWebMissionAdd,
-	WEB__MISSION_EDIT:                   PermWebMissionEdit,
-	WEB__MISSION_DELETE:                 PermWebMissionDelete,
-	WEB__MISSION_SUSPEND:                PermWebMissionSuspend,
-	WEB__GAMEMODE_VIEW:                  PermWebGamemodeView,
-	WEB__GAMEMODE_ADD:                   PermWebGamemodeAdd,
-	WEB__GAMEMODE_EDIT:                  PermWebGamemodeEdit,
-	WEB__GAMEMODE_DELETE:                PermWebGamemodeDelete,
-	WEB__GAMEMODE_SUSPEND:               PermWebGamemodeSuspend,
-	WEB__LOBBY_VIEW:                     PermWebLobbyView,
-	WEB__LOBBY_CREATE_PUBLIC:            PermWebLobbyCreatePublic,
-	WEB__LOBBY_CREATE_PRIVATE:           PermWebLobbyCreatePrivate,
-	WEB__LOBBY_JOIN:                     PermWebLobbyJoin,
-	WEB__LOBBY_SPECTATE:                 PermWebLobbySpectate,
-	WEB__VIEW_AUDIT_LOG:                 PermWebViewAuditLog,
-	WEB__VIEW_METRICS:                   PermWebViewMetrics,
-	WEB__SETTINGS:                       PermWebSettings,
-	WEB__ROLES_VIEW:                     PermWebRolesView,
-	WEB__ROLES_EDIT:                     PermWebRolesEdit,
+	WebCommunityView:                PermWebCommunityView,
+	WebCommunitiesAdd:               PermWebCommunitiesAdd,
+	WebCommunitiesEdit:              PermWebCommunitiesEdit,
+	WebCommunitiesDelete:            PermWebCommunitiesDelete,
+	WebCommunitiesTransferOwnership: PermWebCommunitiesTransferOwnership,
+	WebCommunitiesSuspend:           PermWebCommunitiesSuspend,
+	WebTeamView:                     PermWebTeamView,
+	WebTeamsEdit:                    PermWebTeamsEdit,
+	WebTeamsDelete:                  PermWebTeamsDelete,
+	WebTeamsTransferOwnership:       PermWebTeamsTransferOwnership,
+	WebTeamsSuspend:                 PermWebTeamsSuspend,
+	WebMembershipView:               PermWebMembershipView,
+	WebMembershipInvite:             PermWebMembershipInvite,
+	WebMembershipDelete:             PermWebMembershipDelete,
+	WebSanctionsView:                PermWebSanctionsView,
+	WebSanctionsAdd:                 PermWebSanctionsAdd,
+	WebSanctionsEdit:                PermWebSanctionsEdit,
+	WebSanctionsDelete:              PermWebSanctionsDelete,
+	WebSanctionsSuspend:             PermWebSanctionsSuspend,
+	WebMissionView:                  PermWebMissionView,
+	WebMissionAdd:                   PermWebMissionAdd,
+	WebMissionEdit:                  PermWebMissionEdit,
+	WebMissionDelete:                PermWebMissionDelete,
+	WebMissionSuspend:               PermWebMissionSuspend,
+	WebGamemodeView:                 PermWebGamemodeView,
+	WebGamemodeAdd:                  PermWebGamemodeAdd,
+	WebGamemodeEdit:                 PermWebGamemodeEdit,
+	WebGamemodeDelete:               PermWebGamemodeDelete,
+	WebGamemodeSuspend:              PermWebGamemodeSuspend,
+	WebLobbyView:                    PermWebLobbyView,
+	WebLobbyCreatePublic:            PermWebLobbyCreatePublic,
+	WebLobbyCreatePrivate:           PermWebLobbyCreatePrivate,
+	WebLobbyJoin:                    PermWebLobbyJoin,
+	WebLobbySpectate:                PermWebLobbySpectate,
+	WebViewAuditLog:                 PermWebViewAuditLog,
+	WebViewMetrics:                  PermWebViewMetrics,
+	WebSettings:                     PermWebSettings,
+	WebRolesView:                    PermWebRolesView,
+	WebRolesEdit:                    PermWebRolesEdit,
 }
 
 // PermissionKeyToBit maps permission key names to their bit values (reverse lookup)
@@ -327,19 +379,10 @@ var PermissionKeyToBit = map[string]uint8{
 
 // GetPermissionName returns the key name of a single permission bit
 func GetPermissionName(permission uint64) string {
-	if name, ok := PermissionNames[permission]; ok {
-		return name
-	}
-	return "UNKNOWN_PERMISSION"
+	return getPermissionName(permission, PermissionNames)
 }
 
 // GetAllPermissionNames returns all permission key names in a bitmask
 func GetAllPermissionNames(mask uint64) []string {
-	var names []string
-	for perm, name := range PermissionNames {
-		if mask&perm != 0 {
-			names = append(names, name)
-		}
-	}
-	return names
+	return getAllPermissionNames(mask, PermissionNames)
 }

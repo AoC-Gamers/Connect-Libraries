@@ -7,33 +7,43 @@ package permissions
 // Each constant represents a bit in uint64 (max 64 permissions)
 
 const (
-	// Membership Management (bits 0-1)
-	COMMUNITY__MEMBERSHIP_INVITE uint64 = 1 << 0 // Invite users to the community (membership invite)
-	COMMUNITY__MEMBERSHIP_DELETE uint64 = 1 << 1 // Remove memberships from the community
+	// CommunityMembershipInvite invites users to the community (membership invite).
+	CommunityMembershipInvite uint64 = 1 << 0
+	// CommunityMembershipDelete removes memberships from the community.
+	CommunityMembershipDelete uint64 = 1 << 1
 
-	// Server Management (bits 2-4)
-	COMMUNITY__SERVER_ADD    uint64 = 1 << 2 // Add a server to the community's server list
-	COMMUNITY__SERVER_EDIT   uint64 = 1 << 3 // Edit an existing server in the community's server list
-	COMMUNITY__SERVER_DELETE uint64 = 1 << 4 // Delete a server from the community's server list
+	// CommunityServerAdd adds a server to the community's server list.
+	CommunityServerAdd uint64 = 1 << 2
+	// CommunityServerEdit edits an existing server in the community's server list.
+	CommunityServerEdit uint64 = 1 << 3
+	// CommunityServerDelete deletes a server from the community's server list.
+	CommunityServerDelete uint64 = 1 << 4
 
-	// Mission List Management (bits 5-6)
-	COMMUNITY__MISSIONLIST_ADD  uint64 = 1 << 5 // Add a new mission to the community's mission list
-	COMMUNITY__MISSIONLIST_EDIT uint64 = 1 << 6 // Edit an existing mission in the community's mission list
+	// CommunityMissionListAdd adds a new mission to the community's mission list.
+	CommunityMissionListAdd uint64 = 1 << 5
+	// CommunityMissionListEdit edits an existing mission in the community's mission list.
+	CommunityMissionListEdit uint64 = 1 << 6
 
-	// Gamemode List Management (bits 7-8)
-	COMMUNITY__GAMEMODELIST_ADD  uint64 = 1 << 7 // Add a new gamemode to the community's gamemode list
-	COMMUNITY__GAMEMODELIST_EDIT uint64 = 1 << 8 // Edit an existing gamemode in the community's gamemode list
+	// CommunityGamemodeListAdd adds a new gamemode to the community's gamemode list.
+	CommunityGamemodeListAdd uint64 = 1 << 7
+	// CommunityGamemodeListEdit edits an existing gamemode in the community's gamemode list.
+	CommunityGamemodeListEdit uint64 = 1 << 8
 
-	// Community Management (bits 9-13)
-	COMMUNITY__INFO_EDIT          uint64 = 1 << 9  // Edit community information
-	COMMUNITY__ANALYTICS          uint64 = 1 << 10 // View community statistics and analytics
-	COMMUNITY__TRANSFER_OWNERSHIP uint64 = 1 << 11 // Transfer community ownership
-	COMMUNITY__SUSPEND            uint64 = 1 << 12 // Suspend or unsuspend this community
-	COMMUNITY__AUDIT_VIEW         uint64 = 1 << 13 // View audit logs for this community
+	// CommunityInfoEdit edits community information.
+	CommunityInfoEdit uint64 = 1 << 9
+	// CommunityAnalytics views community statistics and analytics.
+	CommunityAnalytics uint64 = 1 << 10
+	// CommunityTransferOwnership transfers community ownership.
+	CommunityTransferOwnership uint64 = 1 << 11
+	// CommunitySuspend suspends or unsuspends this community.
+	CommunitySuspend uint64 = 1 << 12
+	// CommunityAuditView views audit logs for this community.
+	CommunityAuditView uint64 = 1 << 13
 
-	// Roles & Permissions (bits 14-15)
-	COMMUNITY__ROLES_VIEW uint64 = 1 << 14 // View roles and permissions for this community
-	COMMUNITY__ROLES_EDIT uint64 = 1 << 15 // Edit roles and permissions for this community
+	// CommunityRolesView views roles and permissions for this community.
+	CommunityRolesView uint64 = 1 << 14
+	// CommunityRolesEdit edits roles and permissions for this community.
+	CommunityRolesEdit uint64 = 1 << 15
 )
 
 // ============================================
@@ -43,32 +53,42 @@ const (
 // These match the permission keys in Connect-Auth
 
 const (
-	// Membership Management
+	// PermCommunityMembershipInvite is the permission key for COMMUNITY__MEMBERSHIP_INVITE.
 	PermCommunityMembershipInvite = "COMMUNITY__MEMBERSHIP_INVITE"
+	// PermCommunityMembershipDelete is the permission key for COMMUNITY__MEMBERSHIP_DELETE.
 	PermCommunityMembershipDelete = "COMMUNITY__MEMBERSHIP_DELETE"
 
-	// Server Management
-	PermCommunityServerAdd    = "COMMUNITY__SERVER_ADD"
-	PermCommunityServerEdit   = "COMMUNITY__SERVER_EDIT"
+	// PermCommunityServerAdd is the permission key for COMMUNITY__SERVER_ADD.
+	PermCommunityServerAdd = "COMMUNITY__SERVER_ADD"
+	// PermCommunityServerEdit is the permission key for COMMUNITY__SERVER_EDIT.
+	PermCommunityServerEdit = "COMMUNITY__SERVER_EDIT"
+	// PermCommunityServerDelete is the permission key for COMMUNITY__SERVER_DELETE.
 	PermCommunityServerDelete = "COMMUNITY__SERVER_DELETE"
 
-	// Mission List Management
-	PermCommunityMissionlistAdd  = "COMMUNITY__MISSIONLIST_ADD"
-	PermCommunityMissionlistEdit = "COMMUNITY__MISSIONLIST_EDIT"
+	// PermCommunityMissionListAdd is the permission key for COMMUNITY__MISSIONLIST_ADD.
+	PermCommunityMissionListAdd = "COMMUNITY__MISSIONLIST_ADD"
+	// PermCommunityMissionListEdit is the permission key for COMMUNITY__MISSIONLIST_EDIT.
+	PermCommunityMissionListEdit = "COMMUNITY__MISSIONLIST_EDIT"
 
-	// Gamemode List Management
-	PermCommunityGamemodelistAdd  = "COMMUNITY__GAMEMODELIST_ADD"
-	PermCommunityGamemodelistEdit = "COMMUNITY__GAMEMODELIST_EDIT"
+	// PermCommunityGamemodeListAdd is the permission key for COMMUNITY__GAMEMODELIST_ADD.
+	PermCommunityGamemodeListAdd = "COMMUNITY__GAMEMODELIST_ADD"
+	// PermCommunityGamemodeListEdit is the permission key for COMMUNITY__GAMEMODELIST_EDIT.
+	PermCommunityGamemodeListEdit = "COMMUNITY__GAMEMODELIST_EDIT"
 
-	// Community Management
-	PermCommunityInfoEdit          = "COMMUNITY__INFO_EDIT"
-	PermCommunityAnalytics         = "COMMUNITY__ANALYTICS"
+	// PermCommunityInfoEdit is the permission key for COMMUNITY__INFO_EDIT.
+	PermCommunityInfoEdit = "COMMUNITY__INFO_EDIT"
+	// PermCommunityAnalytics is the permission key for COMMUNITY__ANALYTICS.
+	PermCommunityAnalytics = "COMMUNITY__ANALYTICS"
+	// PermCommunityTransferOwnership is the permission key for COMMUNITY__TRANSFER_OWNERSHIP.
 	PermCommunityTransferOwnership = "COMMUNITY__TRANSFER_OWNERSHIP"
-	PermCommunitySuspend           = "COMMUNITY__SUSPEND"
-	PermCommunityAuditView         = "COMMUNITY__AUDIT_VIEW"
+	// PermCommunitySuspend is the permission key for COMMUNITY__SUSPEND.
+	PermCommunitySuspend = "COMMUNITY__SUSPEND"
+	// PermCommunityAuditView is the permission key for COMMUNITY__AUDIT_VIEW.
+	PermCommunityAuditView = "COMMUNITY__AUDIT_VIEW"
 
-	// Roles & Permissions
+	// PermCommunityRolesView is the permission key for COMMUNITY__ROLES_VIEW.
 	PermCommunityRolesView = "COMMUNITY__ROLES_VIEW"
+	// PermCommunityRolesEdit is the permission key for COMMUNITY__ROLES_EDIT.
 	PermCommunityRolesEdit = "COMMUNITY__ROLES_EDIT"
 )
 
@@ -78,9 +98,12 @@ const (
 // String constants for community role identifiers
 
 const (
+	// RoleCommunityOwnerKey is the role key for a community owner.
 	RoleCommunityOwnerKey = "community_owner"
+	// RoleCommunityStaffKey is the role key for a community staff member.
 	RoleCommunityStaffKey = "community_staff"
-	RoleCommunityUserKey  = "community_user"
+	// RoleCommunityUserKey is the role key for a community user.
+	RoleCommunityUserKey = "community_user"
 )
 
 // ============================================
@@ -88,98 +111,87 @@ const (
 // ============================================
 // Matches seeds/permissions/community.json groups
 var (
-	// COMMUNITY__BASIC - Basic community membership (no permissions)
-	COMMUNITY__BASIC uint64 = 0
+	// CommunityBasic - Basic community membership (no permissions)
+	CommunityBasic uint64 = 0
 
-	// COMMUNITY__STAFF - Staff management permissions
-	COMMUNITY__STAFF = COMMUNITY__SERVER_ADD |
-		COMMUNITY__SERVER_EDIT |
-		COMMUNITY__SERVER_DELETE |
-		COMMUNITY__MISSIONLIST_ADD |
-		COMMUNITY__MISSIONLIST_EDIT |
-		COMMUNITY__GAMEMODELIST_ADD |
-		COMMUNITY__GAMEMODELIST_EDIT |
-		COMMUNITY__ROLES_VIEW
+	// CommunityStaff - Staff management permissions
+	CommunityStaff = CommunityServerAdd |
+		CommunityServerEdit |
+		CommunityServerDelete |
+		CommunityMissionListAdd |
+		CommunityMissionListEdit |
+		CommunityGamemodeListAdd |
+		CommunityGamemodeListEdit |
+		CommunityRolesView
 
-	// COMMUNITY__OWNER - Full community control
-	COMMUNITY__OWNER = COMMUNITY__MEMBERSHIP_INVITE |
-		COMMUNITY__MEMBERSHIP_DELETE |
-		COMMUNITY__INFO_EDIT |
-		COMMUNITY__ANALYTICS |
-		COMMUNITY__TRANSFER_OWNERSHIP |
-		COMMUNITY__SUSPEND |
-		COMMUNITY__AUDIT_VIEW |
-		COMMUNITY__ROLES_EDIT
+	// CommunityOwner - Full community control
+	CommunityOwner = CommunityMembershipInvite |
+		CommunityMembershipDelete |
+		CommunityInfoEdit |
+		CommunityAnalytics |
+		CommunityTransferOwnership |
+		CommunitySuspend |
+		CommunityAuditView |
+		CommunityRolesEdit
 )
 
 // Role Presets - Calculated bitmasks for each role
 var (
-	// RoleCommunityUser - Basic community member (COMMUNITY__BASIC group - no permissions)
-	RoleCommunityUser = COMMUNITY__BASIC
+	// RoleCommunityUser - Basic community member (CommunityBasic group - no permissions)
+	RoleCommunityUser = CommunityBasic
 
-	// RoleCommunityStaff - Community staff member (COMMUNITY__BASIC + COMMUNITY__STAFF groups)
-	RoleCommunityStaff = COMMUNITY__BASIC | COMMUNITY__STAFF
+	// RoleCommunityStaff - Community staff member (CommunityBasic + CommunityStaff groups)
+	RoleCommunityStaff = CommunityBasic | CommunityStaff
 
-	// RoleCommunityOwner - Community owner (COMMUNITY__BASIC + COMMUNITY__STAFF + COMMUNITY__OWNER groups)
-	RoleCommunityOwner = COMMUNITY__BASIC | COMMUNITY__STAFF | COMMUNITY__OWNER
+	// RoleCommunityOwner - Community owner (CommunityBasic + CommunityStaff + CommunityOwner groups)
+	RoleCommunityOwner = CommunityBasic | CommunityStaff | CommunityOwner
 )
+
+var communityRolePermissions = map[string]uint64{
+	RoleCommunityOwnerKey: RoleCommunityOwner,
+	RoleCommunityStaffKey: RoleCommunityStaff,
+	RoleCommunityUserKey:  RoleCommunityUser,
+}
+
+var communityRoleNames = map[string]string{
+	RoleCommunityOwnerKey: "Community Owner",
+	RoleCommunityStaffKey: "Community Staff",
+	RoleCommunityUserKey:  "Community User",
+}
 
 // GetCommunityRolePermissions returns the permission bitmask for a given community role
 func GetCommunityRolePermissions(role string) uint64 {
-	switch role {
-	case RoleCommunityOwnerKey:
-		return RoleCommunityOwner
-	case RoleCommunityStaffKey:
-		return RoleCommunityStaff
-	case RoleCommunityUserKey:
-		return RoleCommunityUser
-	default:
-		return 0 // No permissions for unknown roles
-	}
+	return getRolePermissions(role, communityRolePermissions)
 }
 
 // GetCommunityRoleName returns the human-readable name of a community role
 func GetCommunityRoleName(role string) string {
-	switch role {
-	case RoleCommunityOwnerKey:
-		return "Community Owner"
-	case RoleCommunityStaffKey:
-		return "Community Staff"
-	case RoleCommunityUserKey:
-		return "Community User"
-	default:
-		return "Unknown"
-	}
+	return getRoleName(role, communityRoleNames)
 }
 
 // IsCommunityRoleValid checks if a community role identifier is valid
 func IsCommunityRoleValid(role string) bool {
-	switch role {
-	case RoleCommunityOwnerKey, RoleCommunityStaffKey, RoleCommunityUserKey:
-		return true
-	default:
-		return false
-	}
+	return isRoleValid(role, communityRoleNames)
 }
 
 // CommunityPermissionNames maps each permission bit to its key name (for debugging/logging)
 var CommunityPermissionNames = map[uint64]string{
-	COMMUNITY__MEMBERSHIP_INVITE:  PermCommunityMembershipInvite,
-	COMMUNITY__MEMBERSHIP_DELETE:  PermCommunityMembershipDelete,
-	COMMUNITY__SERVER_ADD:         PermCommunityServerAdd,
-	COMMUNITY__SERVER_EDIT:        PermCommunityServerEdit,
-	COMMUNITY__SERVER_DELETE:      PermCommunityServerDelete,
-	COMMUNITY__MISSIONLIST_ADD:    PermCommunityMissionlistAdd,
-	COMMUNITY__MISSIONLIST_EDIT:   PermCommunityMissionlistEdit,
-	COMMUNITY__GAMEMODELIST_ADD:   PermCommunityGamemodelistAdd,
-	COMMUNITY__GAMEMODELIST_EDIT:  PermCommunityGamemodelistEdit,
-	COMMUNITY__INFO_EDIT:          PermCommunityInfoEdit,
-	COMMUNITY__ANALYTICS:          PermCommunityAnalytics,
-	COMMUNITY__TRANSFER_OWNERSHIP: PermCommunityTransferOwnership,
-	COMMUNITY__SUSPEND:            PermCommunitySuspend,
-	COMMUNITY__AUDIT_VIEW:         PermCommunityAuditView,
-	COMMUNITY__ROLES_VIEW:         PermCommunityRolesView,
-	COMMUNITY__ROLES_EDIT:         PermCommunityRolesEdit,
+	CommunityMembershipInvite:  PermCommunityMembershipInvite,
+	CommunityMembershipDelete:  PermCommunityMembershipDelete,
+	CommunityServerAdd:         PermCommunityServerAdd,
+	CommunityServerEdit:        PermCommunityServerEdit,
+	CommunityServerDelete:      PermCommunityServerDelete,
+	CommunityMissionListAdd:    PermCommunityMissionListAdd,
+	CommunityMissionListEdit:   PermCommunityMissionListEdit,
+	CommunityGamemodeListAdd:   PermCommunityGamemodeListAdd,
+	CommunityGamemodeListEdit:  PermCommunityGamemodeListEdit,
+	CommunityInfoEdit:          PermCommunityInfoEdit,
+	CommunityAnalytics:         PermCommunityAnalytics,
+	CommunityTransferOwnership: PermCommunityTransferOwnership,
+	CommunitySuspend:           PermCommunitySuspend,
+	CommunityAuditView:         PermCommunityAuditView,
+	CommunityRolesView:         PermCommunityRolesView,
+	CommunityRolesEdit:         PermCommunityRolesEdit,
 }
 
 // CommunityPermissionKeyToBit maps permission key names to their bit values (reverse lookup)
@@ -189,10 +201,10 @@ var CommunityPermissionKeyToBit = map[string]uint8{
 	PermCommunityServerAdd:         2,
 	PermCommunityServerEdit:        3,
 	PermCommunityServerDelete:      4,
-	PermCommunityMissionlistAdd:    5,
-	PermCommunityMissionlistEdit:   6,
-	PermCommunityGamemodelistAdd:   7,
-	PermCommunityGamemodelistEdit:  8,
+	PermCommunityMissionListAdd:    5,
+	PermCommunityMissionListEdit:   6,
+	PermCommunityGamemodeListAdd:   7,
+	PermCommunityGamemodeListEdit:  8,
 	PermCommunityInfoEdit:          9,
 	PermCommunityAnalytics:         10,
 	PermCommunityTransferOwnership: 11,
@@ -204,19 +216,10 @@ var CommunityPermissionKeyToBit = map[string]uint8{
 
 // GetCommunityPermissionName returns the key name of a single permission bit
 func GetCommunityPermissionName(permission uint64) string {
-	if name, ok := CommunityPermissionNames[permission]; ok {
-		return name
-	}
-	return "UNKNOWN_PERMISSION"
+	return getPermissionName(permission, CommunityPermissionNames)
 }
 
 // GetAllCommunityPermissionNames returns all permission key names in a bitmask
 func GetAllCommunityPermissionNames(mask uint64) []string {
-	var names []string
-	for perm, name := range CommunityPermissionNames {
-		if mask&perm != 0 {
-			names = append(names, name)
-		}
-	}
-	return names
+	return getAllPermissionNames(mask, CommunityPermissionNames)
 }

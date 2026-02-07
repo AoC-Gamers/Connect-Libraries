@@ -7,6 +7,13 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-02-06
+
+### Changed
+- BREAKING: Permisos renombrados a CamelCase en authz/permissions (sin aliases), manteniendo las claves ALL_CAPS
+- Normalización de MissionList/GamemodeList en TEAM y COMMUNITY
+- Helpers comunes para roles/permisos y orden estable en GetAll*PermissionNames
+
 ## [1.0.1] - 2026-01-27
 
 ### Added
