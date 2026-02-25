@@ -14,6 +14,7 @@ concurrency:
 
 env:
   GO_VERSION: '1.24'
+  FORCE_ALL_LIBRARIES: 'true'
 
 jobs:
   changes:
@@ -35,6 +36,16 @@ jobs:
           set -euo pipefail
 
           LIBRARIES=(apikey audit authz errors middleware migrate nats swagger testhelpers)
+
+          if [[ "${FORCE_ALL_LIBRARIES:-false}" == "true" ]]; then
+            CHANGED_CSV="$(IFS=,; echo "${LIBRARIES[*]}")"
+            CHANGED_JSON="[\"apikey\",\"audit\",\"authz\",\"errors\",\"middleware\",\"migrate\",\"nats\",\"swagger\",\"testhelpers\"]"
+            echo "any_changed=true" >> "$GITHUB_OUTPUT"
+            echo "changed_csv=${CHANGED_CSV}" >> "$GITHUB_OUTPUT"
+            echo "changed_json=${CHANGED_JSON}" >> "$GITHUB_OUTPUT"
+            echo "FORCE_ALL_LIBRARIES=true -> running CI for all libraries"
+            exit 0
+          fi
 
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
