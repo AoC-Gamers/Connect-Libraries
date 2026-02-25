@@ -20,11 +20,13 @@ permissions:
 env:
   GO_VERSION: ${{ vars.GO_VERSION || '1.24' }}
   FORCE_ALL_LIBRARIES: ${{ vars.FORCE_ALL_LIBRARIES || 'false' }}
+  GOLANGCI_LINT_VERSION: ${{ vars.GOLANGCI_LINT_VERSION || 'v2.10.1' }}
+  GOSEC_VERSION: ${{ vars.GOSEC_VERSION || 'v2.23.0' }}
 
 jobs:
   changes:
-    name: Detect Changes
-    runs-on: ubuntu-latest
+    name: Detectar cambios
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-24.04' }}
     outputs:
       any_changed: ${{ steps.detect.outputs.any_changed }}
       changed_json: ${{ steps.detect.outputs.changed_json }}
@@ -34,7 +36,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Detect changed libraries
+      - name: Detectar librerias con cambios
         id: detect
         shell: bash
         run: |
@@ -48,7 +50,7 @@ jobs:
             echo "any_changed=true" >> "$GITHUB_OUTPUT"
             echo "changed_csv=${CHANGED_CSV}" >> "$GITHUB_OUTPUT"
             echo "changed_json=${CHANGED_JSON}" >> "$GITHUB_OUTPUT"
-            echo "FORCE_ALL_LIBRARIES=true -> running CI for all libraries"
+            echo "FORCE_ALL_LIBRARIES=true -> ejecutando CI para todas las librerias"
             exit 0
           fi
 
@@ -77,7 +79,7 @@ jobs:
             echo "any_changed=false" >> "$GITHUB_OUTPUT"
             echo "changed_csv=" >> "$GITHUB_OUTPUT"
             echo "changed_json=[]" >> "$GITHUB_OUTPUT"
-            echo "No library changes detected."
+            echo "No se detectaron cambios en librerias."
             exit 0
           fi
 
@@ -94,54 +96,54 @@ jobs:
           echo "any_changed=true" >> "$GITHUB_OUTPUT"
           echo "changed_csv=${CHANGED_CSV}" >> "$GITHUB_OUTPUT"
           echo "changed_json=${CHANGED_JSON}" >> "$GITHUB_OUTPUT"
-          echo "Changed libraries: ${CHANGED_CSV}"
+          echo "Librerias con cambios: ${CHANGED_CSV}"
 
   no-changes:
-    name: No Library Changes
+    name: Sin cambios en librerias
     needs: [changes]
     if: ${{ needs.changes.outputs.any_changed != 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-24.04' }}
     steps:
-      - name: Skip library CI
-        run: echo "No changes detected in Connect-Libraries modules; skipping lint/test/security jobs."
+      - name: Omitir CI de librerias
+        run: echo "No se detectaron cambios en modulos de Connect-Libraries; se omiten jobs de lint/test/seguridad."
 
   lint:
     name: Lint
     needs: [changes]
     if: ${{ needs.changes.outputs.any_changed == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-24.04' }}
     strategy:
       matrix:
         library: ${{ fromJson(needs.changes.outputs.changed_json) }}
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Go
+    - name: Configurar Go
       uses: actions/setup-go@v5
       with:
         go-version: ${{ env.GO_VERSION }}
         cache-dependency-path: ${{ matrix.library }}/go.sum
 
-    - name: Download dependencies
+    - name: Descargar dependencias
       working-directory: ./${{ matrix.library }}
       run: go mod download
 
-    - name: Verify dependencies
+    - name: Verificar dependencias
       working-directory: ./${{ matrix.library }}
       run: go mod verify
     
     - name: golangci-lint
       uses: golangci/golangci-lint-action@v7
       with:
-        version: v2.10.1
+        version: ${{ env.GOLANGCI_LINT_VERSION }}
         working-directory: ${{ matrix.library }}
         args: --timeout=5m
 
   test:
-    name: Test
+    name: Pruebas
     needs: [changes]
     if: ${{ needs.changes.outputs.any_changed == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-24.04' }}
     strategy:
       matrix:
         library: ${{ fromJson(needs.changes.outputs.changed_json) }}
@@ -149,65 +151,65 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Go
+    - name: Configurar Go
       uses: actions/setup-go@v5
       with:
         go-version: ${{ env.GO_VERSION }}
         cache-dependency-path: ${{ matrix.library }}/go.sum
     
-    - name: Download dependencies
+    - name: Descargar dependencias
       working-directory: ./${{ matrix.library }}
       run: go mod download
     
-    - name: Verify dependencies
+    - name: Verificar dependencias
       working-directory: ./${{ matrix.library }}
       run: go mod verify
     
-    - name: Run tests
+    - name: Ejecutar pruebas
       working-directory: ./${{ matrix.library }}
       run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
 
   security-gosec:
-    name: Security Gosec
+    name: Seguridad Gosec
     needs: [changes]
     if: ${{ needs.changes.outputs.any_changed == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-24.04' }}
     strategy:
       matrix:
         library: ${{ fromJson(needs.changes.outputs.changed_json) }}
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Go
+    - name: Configurar Go
       uses: actions/setup-go@v5
       with:
         go-version: ${{ env.GO_VERSION }}
         cache-dependency-path: ${{ matrix.library }}/go.sum
 
-    - name: Download dependencies
+    - name: Descargar dependencias
       working-directory: ./${{ matrix.library }}
       run: go mod download
 
-    - name: Verify dependencies
+    - name: Verificar dependencias
       working-directory: ./${{ matrix.library }}
       run: go mod verify
 
-    - name: Install gosec
-      run: go install github.com/securego/gosec/v2/cmd/gosec@v2.23.0
+    - name: Instalar gosec
+      run: go install github.com/securego/gosec/v2/cmd/gosec@${{ env.GOSEC_VERSION }}
 
-    - name: Run Gosec Security Scanner
+    - name: Ejecutar escaner de seguridad Gosec
       working-directory: ./${{ matrix.library }}
       run: gosec ./...
 
   security-trivy:
-    name: Security Trivy
+    name: Seguridad Trivy
     needs: [changes]
     if: ${{ needs.changes.outputs.any_changed == 'true' }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-24.04' }}
     steps:
     - uses: actions/checkout@v4
     
-    - name: Run Trivy vulnerability scanner
+    - name: Ejecutar escaner de vulnerabilidades Trivy
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'fs'
@@ -215,22 +217,22 @@ jobs:
         format: 'sarif'
         output: 'trivy-results.sarif'
     
-    - name: Upload Trivy results to GitHub Security
+    - name: Subir resultados de Trivy a GitHub Security
       if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false }}
       uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'trivy-results.sarif'
 
   summary:
-    name: CI Summary
+    name: Resumen de CI
     if: ${{ always() }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-24.04' }}
     needs: [changes, no-changes, lint, test, security-gosec, security-trivy]
     steps:
-      - name: Print summary
+      - name: Imprimir resumen
         shell: bash
         run: |
-          echo "=== Connect-Libraries CI Summary ==="
+          echo "=== Resumen de CI de Connect-Libraries ==="
           echo "any_changed: ${{ needs.changes.outputs.any_changed }}"
           echo "changed_libraries: ${{ needs.changes.outputs.changed_csv }}"
           echo "no-changes: ${{ needs.no-changes.result }}"
