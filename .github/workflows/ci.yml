@@ -18,8 +18,8 @@ permissions:
   security-events: write
 
 env:
-  GO_VERSION: '1.24'
-  FORCE_ALL_LIBRARIES: 'true'
+  GO_VERSION: ${{ vars.GO_VERSION || '1.24' }}
+  FORCE_ALL_LIBRARIES: ${{ vars.FORCE_ALL_LIBRARIES || 'false' }}
 
 jobs:
   changes:
