@@ -6,6 +6,12 @@
 
 Utilidades de testing compartidas para todos los microservicios Connect. Proporciona helpers para crear mocks de base de datos, fixtures y otros recursos de testing comunes con cleanup automático.
 
+## ✅ Prerrequisitos de desarrollo
+
+- Go `1.24.x`
+- `golangci-lint` `v2.10.1`
+- `gosec` `v2.23.0`
+
 ## 📦 Contenido
 
 - **helpers.go** - Helpers principales para testing

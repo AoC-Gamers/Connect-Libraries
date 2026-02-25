@@ -1,5 +1,5 @@
 # Makefile
-.PHONY: help report report-test report-lint report-security clean-reports
+.PHONY: help report test lint gosec deps fmt vet clean clear
 
 LIBRARIES := apikey audit authz errors middleware migrate nats swagger testhelpers
 
@@ -8,9 +8,57 @@ help: ## Mostrar comandos disponibles
 	@echo "================================================"
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ { printf "  %-16s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
-report: report-test report-lint report-security ## Ejecutar test, lint y gosec para todas las librerias
+report: test lint gosec ## Ejecutar test, lint y gosec para todas las librerias
 
-report-test: ## Generar reportes de test en <libreria>/reports/test.log
+deps: ## Descargar y ordenar dependencias en todas las librerias
+	@status=0; \
+	for lib in $(LIBRARIES); do \
+		echo "[DEPS] $$lib"; \
+		if $(MAKE) -C $$lib deps; then \
+			true; \
+		else \
+			status=1; \
+		fi; \
+	done; \
+	exit $$status
+
+fmt: ## Formatear codigo en todas las librerias
+	@status=0; \
+	for lib in $(LIBRARIES); do \
+		echo "[FMT] $$lib"; \
+		if $(MAKE) -C $$lib fmt; then \
+			true; \
+		else \
+			status=1; \
+		fi; \
+	done; \
+	exit $$status
+
+vet: ## Ejecutar go vet en todas las librerias
+	@status=0; \
+	for lib in $(LIBRARIES); do \
+		echo "[VET] $$lib"; \
+		if $(MAKE) -C $$lib vet; then \
+			true; \
+		else \
+			status=1; \
+		fi; \
+	done; \
+	exit $$status
+
+clean: ## Limpiar cache y reportes en todas las librerias
+	@status=0; \
+	for lib in $(LIBRARIES); do \
+		echo "[CLEAN] $$lib"; \
+		if $(MAKE) -C $$lib clean; then \
+			true; \
+		else \
+			status=1; \
+		fi; \
+	done; \
+	exit $$status
+
+test: ## Generar reportes de test en <libreria>/reports/test.log
 	@status=0; \
 	for lib in $(LIBRARIES); do \
 		lib_reports="$$lib/reports"; \
@@ -25,29 +73,29 @@ report-test: ## Generar reportes de test en <libreria>/reports/test.log
 	done; \
 	exit $$status
 
-report-lint: ## Generar reportes de lint en <libreria>/reports/lint.json y lint.log
+lint: ## Generar reportes de lint en <libreria>/reports/lint.json y lint.log
 	@status=0; \
 	for lib in $(LIBRARIES); do \
 		lib_reports="$$lib/reports"; \
 		echo "[LINT] $$lib"; \
 		mkdir -p "$$lib_reports"; \
-		if $(MAKE) -C $$lib lint > "$$lib_reports/lint.log" 2>&1; then \
+		if $(MAKE) -C $$lib lint; then \
 			echo "  OK  -> $$lib_reports/lint.json"; \
 		else \
-			echo "  FAIL -> $$lib_reports/lint.log"; \
+			echo "  FAIL -> $$lib_reports/lint.json"; \
 			status=1; \
 		fi; \
 	done; \
 	exit $$status
 
-report-security: ## Generar reportes de seguridad en <libreria>/reports/gosec.json y gosec.log
+gosec: ## Reproducir gosec de CI para todas las librerias (logs en <libreria>/reports/gosec.log)
 	@status=0; \
 	for lib in $(LIBRARIES); do \
 		lib_reports="$$lib/reports"; \
 		echo "[GOSEC] $$lib"; \
 		mkdir -p "$$lib_reports"; \
-		if $(MAKE) -C $$lib gosec > "$$lib_reports/gosec.log" 2>&1; then \
-			echo "  OK  -> $$lib_reports/gosec.json"; \
+		if $(MAKE) -C $$lib gosec; then \
+			echo "  OK  -> $$lib_reports/gosec.log"; \
 		else \
 			echo "  FAIL -> $$lib_reports/gosec.log"; \
 			status=1; \
@@ -55,7 +103,7 @@ report-security: ## Generar reportes de seguridad en <libreria>/reports/gosec.js
 	done; \
 	exit $$status
 
-clean-reports: ## Eliminar reportes en cada libreria
+clear: ## Eliminar reportes en cada libreria
 	@for lib in $(LIBRARIES); do \
 		rm -rf "$$lib/reports"; \
 		echo "Reportes eliminados: $$lib/reports"; \

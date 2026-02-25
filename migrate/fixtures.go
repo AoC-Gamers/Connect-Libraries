@@ -3,6 +3,7 @@ package migrate
 import (
 	"database/sql"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -44,13 +45,13 @@ func (m *Migrator) ApplyFixtures() error {
 
 // ensureFixturesTable creates the tracking table for fixtures
 func (fm *FixturesManager) ensureFixturesTable() error {
-	query := fmt.Sprintf(`
-		CREATE TABLE IF NOT EXISTS %s.schema_migrations_data (
+	query := `
+		CREATE TABLE IF NOT EXISTS schema_migrations_data (
 			version VARCHAR(50) PRIMARY KEY,
 			name VARCHAR(255) NOT NULL,
 			applied_at TIMESTAMP NOT NULL DEFAULT NOW()
 		)
-	`, fm.schemaName)
+	`
 
 	_, err := fm.db.Exec(query)
 	if err != nil {
@@ -58,7 +59,7 @@ func (fm *FixturesManager) ensureFixturesTable() error {
 	}
 
 	log.Debug().
-		Str("table", fmt.Sprintf("%s.schema_migrations_data", fm.schemaName)).
+		Str("table", "schema_migrations_data").
 		Msg("Fixtures tracking table ensured")
 
 	return nil
@@ -153,9 +154,7 @@ func (fm *FixturesManager) getFixtureFiles() ([]string, error) {
 
 // getAppliedFixtures returns map of already applied fixtures
 func (fm *FixturesManager) getAppliedFixtures() (map[string]bool, error) {
-	query := fmt.Sprintf(`
-		SELECT version FROM %s.schema_migrations_data
-	`, fm.schemaName)
+	query := "SELECT version FROM schema_migrations_data"
 
 	rows, err := fm.db.Query(query)
 	if err != nil {
@@ -177,7 +176,19 @@ func (fm *FixturesManager) getAppliedFixtures() (map[string]bool, error) {
 
 // applyFixtureFile reads and executes a fixture file
 func (fm *FixturesManager) applyFixtureFile(filePath string) error {
-	content, err := os.ReadFile(filePath)
+	fixturesRoot, err := os.OpenRoot(fm.dataDir)
+	if err != nil {
+		return fmt.Errorf("failed to open fixtures root: %w", err)
+	}
+	defer fixturesRoot.Close()
+
+	fixtureFile, err := fixturesRoot.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open fixture file: %w", err)
+	}
+	defer fixtureFile.Close()
+
+	content, err := io.ReadAll(fixtureFile)
 	if err != nil {
 		return fmt.Errorf("failed to read fixture file: %w", err)
 	}
@@ -191,15 +202,13 @@ func (fm *FixturesManager) applyFixtureFile(filePath string) error {
 		Msg("Applying fixture")
 
 	// Execute fixture SQL
+	// #nosec G701 -- fixture SQL is loaded from trusted local fixture files under data root
 	if _, err := fm.db.Exec(string(content)); err != nil {
 		return fmt.Errorf("failed to execute fixture SQL: %w", err)
 	}
 
 	// Record fixture as applied
-	query := fmt.Sprintf(`
-		INSERT INTO %s.schema_migrations_data (version, name, applied_at)
-		VALUES ($1, $2, NOW())
-	`, fm.schemaName)
+	query := "INSERT INTO schema_migrations_data (version, name, applied_at) VALUES ($1, $2, NOW())"
 
 	if _, err := fm.db.Exec(query, version, fileName); err != nil {
 		return fmt.Errorf("failed to record fixture: %w", err)

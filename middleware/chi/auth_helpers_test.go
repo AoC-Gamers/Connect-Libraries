@@ -175,7 +175,7 @@ func TestRequireAndOptionalAuth(t *testing.T) {
 		"exp":               float64(now + 3600),
 	})
 
-	config := authjwt.AuthConfig{JWTSecret: secret, PolicyVersionGlobal: policyVersion}
+	config := authjwt.AuthConfig{SignerMaterial: secret, PolicyVersionGlobal: policyVersion}
 
 	authCalled := false
 	next := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

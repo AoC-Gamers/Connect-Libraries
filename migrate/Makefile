@@ -2,6 +2,7 @@
 .PHONY: help test clean deps fmt vet lint gosec
 
 REPORTS_DIR := reports
+GOSEC_VERSION ?= v2.23.0
 
 help: ## Mostrar comandos disponibles
 	@echo "Connect-Libraries - Comandos de desarrollo"
@@ -42,22 +43,17 @@ lint: ## Ejecutar golangci-lint
 	@echo "Reporte JSON generado en $(REPORTS_DIR)/lint.json"
 
 gosec: ## Ejecutar escaneo de seguridad con gosec
-	@echo "Ejecutando escaneo de seguridad con gosec..."
-	@command -v gosec >/dev/null 2>&1 || { echo "Error: gosec no esta instalado. Instalalo con: scoop install gosec"; exit 1; }
+	@echo "Ejecutando escaneo de seguridad con gosec (nativo)..."
 	@mkdir -p $(REPORTS_DIR)
+	@command -v gosec >/dev/null 2>&1 || { \
+		echo "Error: gosec no esta instalado."; \
+		echo "Instala gosec version $(GOSEC_VERSION) con tu gestor de paquetes preferido."; \
+		exit 1; \
+	}
 	@rc=0; \
-	gosec -fmt=json -out=$(REPORTS_DIR)/gosec.json ./... || rc=$$?; \
-	echo "Reporte JSON generado en $(REPORTS_DIR)/gosec.json"; \
-	if command -v jq >/dev/null 2>&1; then \
-		found=$$(jq -r '.Stats.found // 0' $(REPORTS_DIR)/gosec.json); \
-		files=$$(jq -r '.Stats.files // 0' $(REPORTS_DIR)/gosec.json); \
-		nosec=$$(jq -r '.Stats.nosec // 0' $(REPORTS_DIR)/gosec.json); \
-		printf "Resumen gosec: found=%s files=%s nosec=%s\n" "$$found" "$$files" "$$nosec"; \
-	else \
-		found=$$(grep -o '"rule_id"' $(REPORTS_DIR)/gosec.json | wc -l | tr -d '[:space:]'); \
-		printf "Resumen gosec: found=%s (instala jq para ver mas detalle)\n" "$$found"; \
-	fi; \
+	NO_COLOR=1 gosec ./... 2>&1 | sed -E 's/\x1b\[[0-9;]*m//g' | tee $(REPORTS_DIR)/gosec.log || rc=$$?; \
 	if [ $$rc -ne 0 ]; then \
-		echo "gosec finalizo con errores (exit $$rc). Revisa $(REPORTS_DIR)/gosec.json"; \
+		echo "gosec finalizo con errores (exit $$rc). Revisa $(REPORTS_DIR)/gosec.log"; \
 		exit $$rc; \
-	fi
+	fi; \
+	echo "Reporte generado en $(REPORTS_DIR)/gosec.log"

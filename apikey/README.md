@@ -6,6 +6,12 @@
 
 Sistema de autenticación por API Key para comunicación interna segura entre microservicios del sistema Connect. Proporciona validación automática de claves de servicio con soporte para múltiples entornos (desarrollo/producción) y logging integrado.
 
+## ✅ Prerrequisitos de desarrollo
+
+- Go `1.24.x`
+- `golangci-lint` `v2.10.1`
+- `gosec` `v2.23.0`
+
 ## 📦 Contenido
 
 - **apikey.go** - Tipos y estructuras principales

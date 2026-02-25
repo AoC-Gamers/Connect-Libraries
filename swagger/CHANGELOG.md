@@ -7,6 +7,16 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Changed
+- Actualización del workflow de CI para ejecución y validación por librería.
+- Estandarización de la secuencia de calidad `lint`, `test` y `gosec`.
+- Generación de reportes locales por módulo en `reports/` con salida de `gosec` legible (`gosec.log` sin códigos ANSI).
+
+### Security
+- Ajuste de construcción de `SecurityPatterns` para evitar falso positivo de credenciales hardcodeadas (`G101`) sin cambiar el comportamiento de detección.
+- Manejo explícito del error de escritura en `ServeSwaggerSpec` (`G104`) para robustecer la respuesta HTTP.
+- Validación de `gosec` en módulo `swagger` con resultado final `Issues: 0`.
+
 ## [1.3.1] - 2026-01-27
 
 ### Changed

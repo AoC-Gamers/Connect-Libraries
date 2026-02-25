@@ -5,6 +5,24 @@
 
 🔧 Librerías compartidas y reutilizables para el ecosistema de microservicios Connect Backend.
 
+## ✅ Prerrequisitos
+
+Antes de ejecutar los comandos `make` del repositorio:
+
+- Go `1.24.x`
+- `golangci-lint` `v2.10.1`
+- `gosec` `v2.23.0`
+- `make`
+
+Puedes validar versiones con:
+
+```bash
+go version
+golangci-lint version
+gosec -version
+make --version
+```
+
 ## 📦 Librerías Disponibles
 
 | Librería | Descripción | Versión |
@@ -120,31 +138,33 @@ Como en los backends, ahora puedes generar reportes en un subdirectorio dedicado
 
 ```bash
 # Solo tests (logs por librería)
-make report-test
+make test
 
 # Solo lint (genera lint.json y lint.log por librería)
-make report-lint
+make lint
 
 # Solo seguridad (genera gosec.json y gosec.log por librería)
-make report-security
+make gosec
 
 # Todo junto
 make report
+
+# Limpiar reportes por librería
+make clear
 ```
 
-Salida esperada:
+Salida esperada (por librería):
 
 ```text
-reports/
-    apikey/
-        test.log
-        lint.json
-        lint.log
-        gosec.json
-        gosec.log
-    authz/
-    errors/
-    ...
+apikey/reports/
+    test.log
+    lint.json
+    lint.log
+    gosec.log
+
+authz/reports/
+errors/reports/
+...
 ```
 
 ## 📄 Licencia

@@ -6,6 +6,12 @@
 
 Sistema de manejo de errores estandarizado para todos los microservicios Connect. Implementa respuestas estructuradas siguiendo RFC 7807 (Problem Details for HTTP APIs) con soporte para errores públicos (APIs cliente) e internos (comunicación entre servicios).
 
+## ✅ Prerrequisitos de desarrollo
+
+- Go `1.24.x`
+- `golangci-lint` `v2.10.1`
+- `gosec` `v2.23.0`
+
 ## 📦 Contenido
 
 - **errors.go** - Tipos y estructuras de error principales

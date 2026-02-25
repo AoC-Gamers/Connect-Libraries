@@ -7,6 +7,16 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Changed
+- Actualización del workflow de CI para ejecución y validación por librería.
+- Estandarización de la secuencia de calidad `lint`, `test` y `gosec`.
+- Generación de reportes locales por módulo en `reports/` con salida de `gosec` legible (`gosec.log` sin códigos ANSI).
+
+### Security
+- Endurecimiento de lectura del certificado CA TLS en `config.go` usando `os.OpenRoot` sobre el directorio declarado.
+- Incorporación de helper seguro para lectura de archivos (`readFileFromDeclaredDir`) con sanitización de ruta.
+- Resolución de hallazgos `gosec` en NATS (`G304` y `G703`) manteniendo compatibilidad del flujo de conexión TLS.
+
 ## [1.0.1] - 2026-01-27
 
 ### Changed

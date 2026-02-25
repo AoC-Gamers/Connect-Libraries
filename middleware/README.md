@@ -6,6 +6,12 @@
 
 Middlewares HTTP reutilizables para autenticación, autorización y protección de APIs en todos los microservicios Connect. Proporciona middlewares estándar para JWT, validación de roles/permisos, API keys y CORS con soporte multi-framework.
 
+## ✅ Prerrequisitos de desarrollo
+
+- Go `1.24.x`
+- `golangci-lint` `v2.10.1`
+- `gosec` `v2.23.0`
+
 ## 📦 Contenido
 
 ### `chi/`

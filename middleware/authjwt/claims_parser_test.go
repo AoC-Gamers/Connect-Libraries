@@ -112,8 +112,8 @@ func TestNewAuthConfig(t *testing.T) {
 	t.Setenv("POLICY_VERSION", "11")
 	config := NewAuthConfig("jwt-secret")
 
-	if config.JWTSecret != "jwt-secret" {
-		t.Fatalf("unexpected secret %s", config.JWTSecret)
+	if config.SignerMaterial != "jwt-secret" {
+		t.Fatalf("unexpected signer material %s", config.SignerMaterial)
 	}
 	if config.PolicyVersionGlobal != 11 {
 		t.Fatalf("expected policy 11, got %d", config.PolicyVersionGlobal)

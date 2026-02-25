@@ -3,6 +3,7 @@ package migrate
 import (
 	"database/sql"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -23,8 +24,9 @@ type Config struct {
 
 // Migrator handles database migrations
 type Migrator struct {
-	config Config
-	db     *sql.DB
+	config    Config
+	schemaSQL string
+	db        *sql.DB
 }
 
 // New creates a new Migrator instance
@@ -35,12 +37,17 @@ func New(config Config) (*Migrator, error) {
 	if config.SchemaName == "" {
 		return nil, fmt.Errorf("schema name is required")
 	}
+	schemaSQL, err := quoteIdentifier(config.SchemaName)
+	if err != nil {
+		return nil, fmt.Errorf("invalid schema name: %w", err)
+	}
 	if config.MigrationsDir == "" {
 		config.MigrationsDir = "migrations_sql"
 	}
 
 	return &Migrator{
-		config: config,
+		config:    config,
+		schemaSQL: schemaSQL,
 	}, nil
 }
 
@@ -89,6 +96,10 @@ func (m *Migrator) Run() error {
 		return err
 	}
 
+	if err := m.setSearchPath(); err != nil {
+		return err
+	}
+
 	// Create migrations tracking table
 	if err := m.createMigrationsTable(); err != nil {
 		return err
@@ -119,7 +130,8 @@ func (m *Migrator) Run() error {
 
 // ensureSchema creates the schema if it doesn't exist
 func (m *Migrator) ensureSchema() error {
-	query := fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", m.config.SchemaName)
+	// #nosec G202 -- schema identifier is strictly validated by quoteIdentifier() in New()
+	query := "CREATE SCHEMA IF NOT EXISTS " + m.schemaSQL
 	if _, err := m.db.Exec(query); err != nil {
 		return fmt.Errorf("failed to create schema: %w", err)
 	}
@@ -127,14 +139,23 @@ func (m *Migrator) ensureSchema() error {
 	return nil
 }
 
+func (m *Migrator) setSearchPath() error {
+	searchPath := m.config.SchemaName + ",public"
+	if _, err := m.db.Exec(`SELECT set_config('search_path', $1, false)`, searchPath); err != nil {
+		return fmt.Errorf("failed to set search_path: %w", err)
+	}
+
+	return nil
+}
+
 // createMigrationsTable creates the migrations tracking table
 func (m *Migrator) createMigrationsTable() error {
-	query := fmt.Sprintf(`
-		CREATE TABLE IF NOT EXISTS %s.schema_migrations (
+	query := `
+		CREATE TABLE IF NOT EXISTS schema_migrations (
 			version VARCHAR(255) PRIMARY KEY,
 			applied_at TIMESTAMP DEFAULT NOW()
 		)
-	`, m.config.SchemaName)
+	`
 
 	if _, err := m.db.Exec(query); err != nil {
 		return fmt.Errorf("failed to create migrations table: %w", err)
@@ -145,30 +166,22 @@ func (m *Migrator) createMigrationsTable() error {
 
 // applyMigrations reads and applies all pending migrations
 func (m *Migrator) applyMigrations() (int, int, error) {
-	// Check if migrations directory exists
-	if _, err := os.Stat(m.config.MigrationsDir); os.IsNotExist(err) {
-		return 0, 0, fmt.Errorf("migrations directory not found: %s", m.config.MigrationsDir)
-	}
-
-	// Read migration files
-	files, err := filepath.Glob(filepath.Join(m.config.MigrationsDir, "*.sql"))
+	files, migrationsRoot, err := m.getSortedMigrationFiles()
 	if err != nil {
-		return 0, 0, fmt.Errorf("failed to read migration files: %w", err)
+		return 0, 0, err
 	}
+	defer migrationsRoot.Close()
 
 	if len(files) == 0 {
 		log.Warn().Msg("⚠️  No migration files found")
 		return 0, 0, nil
 	}
 
-	// Sort files by name
-	sort.Strings(files)
-
 	appliedCount := 0
 	skippedCount := 0
 
 	for _, file := range files {
-		applied, err := m.applySingleMigration(file)
+		applied, err := m.applySingleMigration(file, migrationsRoot)
 		if err != nil {
 			return appliedCount, skippedCount, err
 		}
@@ -189,13 +202,46 @@ func (m *Migrator) applyMigrations() (int, int, error) {
 	return appliedCount, skippedCount, nil
 }
 
+func (m *Migrator) getSortedMigrationFiles() ([]string, *os.Root, error) {
+	if _, err := os.Stat(m.config.MigrationsDir); os.IsNotExist(err) {
+		return nil, nil, fmt.Errorf("migrations directory not found: %s", m.config.MigrationsDir)
+	}
+
+	migrationsRoot, err := os.OpenRoot(m.config.MigrationsDir)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to open migrations root: %w", err)
+	}
+
+	entries, err := os.ReadDir(m.config.MigrationsDir)
+	if err != nil {
+		if closeErr := migrationsRoot.Close(); closeErr != nil {
+			log.Warn().Err(closeErr).Msg("failed to close migrations root")
+		}
+		return nil, nil, fmt.Errorf("failed to read migration files: %w", err)
+	}
+
+	files := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		if filepath.Ext(entry.Name()) != ".sql" {
+			continue
+		}
+		files = append(files, entry.Name())
+	}
+
+	sort.Strings(files)
+	return files, migrationsRoot, nil
+}
+
 // applySingleMigration applies a single migration file if not already applied
-func (m *Migrator) applySingleMigration(file string) (bool, error) {
+func (m *Migrator) applySingleMigration(file string, migrationsRoot *os.Root) (bool, error) {
 	basename := filepath.Base(file)
 
 	// Check if already applied
 	var exists bool
-	checkSQL := fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM %s.schema_migrations WHERE version = $1)", m.config.SchemaName)
+	checkSQL := "SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE version = $1)"
 	if err := m.db.QueryRow(checkSQL, basename).Scan(&exists); err != nil {
 		return false, fmt.Errorf("failed to check migration status for %s: %w", basename, err)
 	}
@@ -207,18 +253,25 @@ func (m *Migrator) applySingleMigration(file string) (bool, error) {
 
 	// Read file content
 	log.Debug().Msgf("Applying: %s", basename)
-	content, err := os.ReadFile(file)
+	fileHandle, err := migrationsRoot.Open(file)
+	if err != nil {
+		return false, fmt.Errorf("failed to open file %s: %w", basename, err)
+	}
+	defer fileHandle.Close()
+
+	content, err := io.ReadAll(fileHandle)
 	if err != nil {
 		return false, fmt.Errorf("failed to read file %s: %w", basename, err)
 	}
 
 	// Execute SQL
+	// #nosec G701 -- migration SQL is loaded from trusted local migration files under migrations root
 	if _, err := m.db.Exec(string(content)); err != nil {
 		return false, fmt.Errorf("migration failed for %s: %w", basename, err)
 	}
 
 	// Mark as applied
-	insertSQL := fmt.Sprintf("INSERT INTO %s.schema_migrations (version) VALUES ($1)", m.config.SchemaName)
+	insertSQL := "INSERT INTO schema_migrations (version) VALUES ($1)"
 	if _, err := m.db.Exec(insertSQL, basename); err != nil {
 		return false, fmt.Errorf("failed to mark migration as applied for %s: %w", basename, err)
 	}

@@ -4,7 +4,9 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"io"
 	"os"
+	"path/filepath"
 	"time"
 
 	natsio "github.com/nats-io/nats.go"
@@ -141,7 +143,7 @@ func createTLSConfig(certFile, keyFile, caFile string) (*tls.Config, error) {
 		return nil, fmt.Errorf("failed to load client cert/key: %w", err)
 	}
 
-	caCert, err := os.ReadFile(caFile)
+	caCert, err := readFileFromDeclaredDir(caFile)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read CA cert: %w", err)
 	}
@@ -156,6 +158,39 @@ func createTLSConfig(certFile, keyFile, caFile string) (*tls.Config, error) {
 		RootCAs:      caCertPool,
 		MinVersion:   tls.VersionTLS12,
 	}, nil
+}
+
+func readFileFromDeclaredDir(filePath string) ([]byte, error) {
+	if filePath == "" {
+		return nil, fmt.Errorf("file path is required")
+	}
+
+	cleanPath := filepath.Clean(filePath)
+	fileName := filepath.Base(cleanPath)
+	dirPath := filepath.Dir(cleanPath)
+
+	if fileName == "." || fileName == string(filepath.Separator) {
+		return nil, fmt.Errorf("invalid file path: %s", filePath)
+	}
+
+	root, err := os.OpenRoot(dirPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open root dir: %w", err)
+	}
+	defer root.Close()
+
+	file, err := root.Open(fileName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	content, err := io.ReadAll(file)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file: %w", err)
+	}
+
+	return content, nil
 }
 
 // getEnvOrDefault retorna el valor de una variable de entorno o un default

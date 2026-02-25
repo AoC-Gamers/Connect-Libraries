@@ -6,7 +6,7 @@ import (
 
 // AuthConfig configuración común para autenticación JWT
 type AuthConfig struct {
-	JWTSecret           string
+	SignerMaterial      string
 	PolicyVersionGlobal int
 }
 
@@ -14,7 +14,7 @@ type AuthConfig struct {
 // Uses LoadPolicyVersion() to read from POLICY_VERSION env var
 func NewAuthConfig(jwtSecret string) AuthConfig {
 	return AuthConfig{
-		JWTSecret:           jwtSecret,
+		SignerMaterial:      jwtSecret,
 		PolicyVersionGlobal: authconfig.LoadPolicyVersion(),
 	}
 }
@@ -23,7 +23,7 @@ func NewAuthConfig(jwtSecret string) AuthConfig {
 // Useful during migration period to support both old and new variable names
 func NewAuthConfigWithFallback(jwtSecret string, fallbackVars ...string) AuthConfig {
 	return AuthConfig{
-		JWTSecret:           jwtSecret,
+		SignerMaterial:      jwtSecret,
 		PolicyVersionGlobal: authconfig.LoadPolicyVersionWithFallback(fallbackVars...),
 	}
 }

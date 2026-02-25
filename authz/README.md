@@ -6,6 +6,12 @@
 
 Biblioteca de autorización que define roles, permisos y políticas de acceso utilizadas en todo el sistema Connect. Proporciona constantes y utilidades para implementar control de acceso basado en roles (RBAC).
 
+## ✅ Prerrequisitos de desarrollo
+
+- Go `1.24.x`
+- `golangci-lint` `v2.10.1`
+- `gosec` `v2.23.0`
+
 ## 📦 Contenido
 
 ### `roles/`

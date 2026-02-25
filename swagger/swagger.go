@@ -62,6 +62,8 @@ func ServeSwaggerSpec(d *detector.Detector) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Write(data)
+		if _, err := w.Write(data); err != nil {
+			return
+		}
 	}
 }

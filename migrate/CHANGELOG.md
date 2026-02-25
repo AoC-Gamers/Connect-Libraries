@@ -7,6 +7,17 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Changed
+- Actualización del workflow de CI para ejecución y validación por librería.
+- Estandarización de la secuencia de calidad `lint`, `test` y `gosec`.
+- Generación de reportes locales por módulo en `reports/` con salida de `gosec` legible (`gosec.log` sin códigos ANSI).
+
+### Security
+- Endurecimiento de lectura de archivos SQL usando `os.OpenRoot` para acotar el acceso a `migrations_sql` y `data_sql`.
+- Validación estricta de identificadores SQL (schema) antes de construir DDL.
+- Refactor de consultas de tracking para evitar SQL dinámico innecesario (uso de `search_path` y queries constantes).
+- Resolución de hallazgos `gosec` en `migrator.go` y `fixtures.go` (`G201`, `G202`, `G304`, `G701`) manteniendo el comportamiento del migrador.
+
 ## [1.0.1] - 2026-01-27
 
 ### Changed

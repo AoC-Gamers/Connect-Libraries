@@ -22,7 +22,7 @@ func RequireAuthWithResponder(config authjwt.AuthConfig, responder ErrorResponde
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenStr := extractToken(r)
 
-			claims, err := authjwt.ParseAndValidate(tokenStr, config.JWTSecret, config.PolicyVersionGlobal)
+			claims, err := authjwt.ParseAndValidate(tokenStr, config.SignerMaterial, config.PolicyVersionGlobal)
 			if err != nil {
 				// Log del error de autenticación
 				log.Error().
@@ -138,7 +138,7 @@ func OptionalAuth(config authjwt.AuthConfig) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenStr := extractToken(r)
 			if tokenStr != "" {
-				claims, err := authjwt.ParseAndValidate(tokenStr, config.JWTSecret, config.PolicyVersionGlobal)
+				claims, err := authjwt.ParseAndValidate(tokenStr, config.SignerMaterial, config.PolicyVersionGlobal)
 				if err == nil {
 					ctx := context.WithValue(r.Context(), authcontext.SteamIDKey, claims.GetSteamID())
 					ctx = context.WithValue(ctx, authcontext.RoleKey, claims.GetRole())

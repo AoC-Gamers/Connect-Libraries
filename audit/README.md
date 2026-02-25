@@ -2,6 +2,12 @@
 
 Biblioteca compartida para gestión de auditoría en los servicios de Connect.
 
+## ✅ Prerrequisitos de desarrollo
+
+- Go `1.24.x`
+- `golangci-lint` `v2.10.1`
+- `gosec` `v2.23.0`
+
 ## Estructura
 
 ```

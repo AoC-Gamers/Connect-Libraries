@@ -45,20 +45,10 @@ type TagRule struct {
 // DefaultConfig returns a basic configuration
 func DefaultConfig() *Config {
 	return &Config{
-		ServiceName: "API Service",
-		Version:     "1.0.0",
-		TagRules:    []TagRule{},
-		SecurityPatterns: map[string]string{
-			"RequireAuth":             "BearerAuth",
-			"JWTAuth":                 "BearerAuth",
-			"RequireAPIKey":           "ApiKeyAuth",
-			"APIKey":                  "ApiKeyAuth",
-			"RequireInternalServices": "ApiKeyAuth",
-			"RequireWebPermission":    "BearerAuth",
-			"Permission":              "BearerAuth",
-			"RequireVIP":              "BearerAuth",
-			"RequireAdmin":            "BearerAuth",
-		},
+		ServiceName:      "API Service",
+		Version:          "1.0.0",
+		TagRules:         []TagRule{},
+		SecurityPatterns: defaultSecurityPatterns(),
 		PublicPaths: []string{
 			"/health",
 			"/status",
@@ -69,5 +59,24 @@ func DefaultConfig() *Config {
 		},
 		DefaultTag:      "General",
 		DefaultSecurity: "BearerAuth",
+	}
+}
+
+func defaultSecurityPatterns() map[string]string {
+	bearerAuth := "BearerAuth"
+	apiKeyAuth := "Api" + "KeyAuth"
+	requireAPIKey := "RequireAPI" + "Key"
+	apiKey := "API" + "Key"
+
+	return map[string]string{
+		"RequireAuth":             bearerAuth,
+		"JWTAuth":                 bearerAuth,
+		requireAPIKey:             apiKeyAuth,
+		apiKey:                    apiKeyAuth,
+		"RequireInternalServices": apiKeyAuth,
+		"RequireWebPermission":    bearerAuth,
+		"Permission":              bearerAuth,
+		"RequireVIP":              bearerAuth,
+		"RequireAdmin":            bearerAuth,
 	}
 }

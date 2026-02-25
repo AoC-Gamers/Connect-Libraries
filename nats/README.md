@@ -6,6 +6,12 @@
 
 Cliente NATS/JetStream estandarizado para comunicación asíncrona entre microservicios Connect. Proporciona configuración unificada, autenticación múltiple y reconexión automática.
 
+## ✅ Prerrequisitos de desarrollo
+
+- Go `1.24.x`
+- `golangci-lint` `v2.10.1`
+- `gosec` `v2.23.0`
+
 ## 📦 Contenido
 
 - **config.go** - Configuración de conexión NATS
