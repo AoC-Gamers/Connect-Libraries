@@ -16,7 +16,7 @@ env:
 jobs:
   release:
     name: Crear release
-    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-24.04' }}
+    runs-on: ${{ vars.CI_RUNNER || 'latest' }}
     steps:
     - uses: actions/checkout@v4
       with:
