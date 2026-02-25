@@ -97,7 +97,11 @@ func RequireConnectAPIKeyWithResponder(responder ErrorResponder) func(http.Handl
 	if err != nil {
 		zlog.Warn().Err(err).Msg("⚠️ Failed to load Connect API keys from environment")
 		zlog.Info().Msg("💡 Make sure your .env file contains: AUTH_API_KEY, CORE_API_KEY, LOBBY_API_KEY, RT_API_KEY")
-		validator, _ = LoadConnectAPIKeysPermissive()
+		validator, err = LoadConnectAPIKeysPermissive()
+		if err != nil {
+			zlog.Warn().Err(err).Msg("⚠️ Failed to load Connect API keys in permissive mode")
+			validator = NewValidator(make(map[string]string))
+		}
 	}
 
 	return RequireAPIKeyWithResponder(validator, responder)

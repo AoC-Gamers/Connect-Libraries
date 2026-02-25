@@ -8,7 +8,7 @@ package roles
 const (
 	COMMUNITY_STAFF = "community_staff" // Community Staff
 	COMMUNITY_OWNER = "community_owner" // Community Owner
-	COMMUNITY_USER = "community_user" // Community Member
+	COMMUNITY_USER  = "community_user"  // Community Member
 )
 
 // COMMUNITY Role Definitions
@@ -18,21 +18,21 @@ var (
 		Name:        COMMUNITY_STAFF,
 		Label:       "Community Staff",
 		Description: "Community moderator with management capabilities",
-		Groups:      []string{ "COMMUNITY__BASIC", "COMMUNITY__STAFF" },
+		Groups:      []string{"COMMUNITY__BASIC", "COMMUNITY__STAFF"},
 	}
 	COMMUNITYCommunityOwner = Role{
 		Scope:       "COMMUNITY",
 		Name:        COMMUNITY_OWNER,
 		Label:       "Community Owner",
 		Description: "Community owner with full administrative control",
-		Groups:      []string{ "COMMUNITY__BASIC", "COMMUNITY__STAFF", "COMMUNITY__OWNER" },
+		Groups:      []string{"COMMUNITY__BASIC", "COMMUNITY__STAFF", "COMMUNITY__OWNER"},
 	}
 	COMMUNITYCommunityUser = Role{
 		Scope:       "COMMUNITY",
 		Name:        COMMUNITY_USER,
 		Label:       "Community Member",
 		Description: "Basic community member with participation rights",
-		Groups:      []string{ "COMMUNITY__BASIC" },
+		Groups:      []string{"COMMUNITY__BASIC"},
 	}
 )
 

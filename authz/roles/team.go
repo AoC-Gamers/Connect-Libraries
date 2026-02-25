@@ -6,7 +6,7 @@ package roles
 
 // TEAM Scope Role Constants
 const (
-	TEAM_USER = "team_user" // Team Member
+	TEAM_USER  = "team_user"  // Team Member
 	TEAM_STAFF = "team_staff" // Team Staff
 	TEAM_OWNER = "team_owner" // Team Owner
 )
@@ -18,21 +18,21 @@ var (
 		Name:        TEAM_USER,
 		Label:       "Team Member",
 		Description: "Basic team member with participation rights",
-		Groups:      []string{ "TEAM__BASIC" },
+		Groups:      []string{"TEAM__BASIC"},
 	}
 	TEAMTeamStaff = Role{
 		Scope:       "TEAM",
 		Name:        TEAM_STAFF,
 		Label:       "Team Staff",
 		Description: "Team moderator with management capabilities",
-		Groups:      []string{ "TEAM__BASIC", "TEAM__STAFF" },
+		Groups:      []string{"TEAM__BASIC", "TEAM__STAFF"},
 	}
 	TEAMTeamOwner = Role{
 		Scope:       "TEAM",
 		Name:        TEAM_OWNER,
 		Label:       "Team Owner",
 		Description: "Team owner with full administrative control",
-		Groups:      []string{ "TEAM__BASIC", "TEAM__STAFF", "TEAM__OWNER" },
+		Groups:      []string{"TEAM__BASIC", "TEAM__STAFF", "TEAM__OWNER"},
 	}
 )
 

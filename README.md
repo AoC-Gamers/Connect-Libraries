@@ -114,6 +114,39 @@ connect-libraries/
 
 > **Nota**: Cada biblioteca mantiene su propio CHANGELOG.md con su historial de versiones independiente.
 
+## 📊 Reportes en subdirectorio
+
+Como en los backends, ahora puedes generar reportes en un subdirectorio dedicado desde la raíz de `Connect-Libraries`:
+
+```bash
+# Solo tests (logs por librería)
+make report-test
+
+# Solo lint (genera lint.json y lint.log por librería)
+make report-lint
+
+# Solo seguridad (genera gosec.json y gosec.log por librería)
+make report-security
+
+# Todo junto
+make report
+```
+
+Salida esperada:
+
+```text
+reports/
+    apikey/
+        test.log
+        lint.json
+        lint.log
+        gosec.json
+        gosec.log
+    authz/
+    errors/
+    ...
+```
+
 ## 📄 Licencia
 
 AoC Gamers © 2026

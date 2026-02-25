@@ -4,7 +4,10 @@ import (
 	"reflect"
 	"strings"
 	"time"
+	"unicode"
 )
+
+const swaggerTypeInteger = "integer"
 
 // goTypeToSwaggerType convierte un tipo de Go a tipo Swagger/OpenAPI
 func goTypeToSwaggerType(t reflect.Type) string {
@@ -17,9 +20,9 @@ func goTypeToSwaggerType(t reflect.Type) string {
 	case reflect.String:
 		return "string"
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return "integer"
+		return swaggerTypeInteger
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return "integer"
+		return swaggerTypeInteger
 	case reflect.Float32, reflect.Float64:
 		return "number"
 	case reflect.Bool:
@@ -122,7 +125,7 @@ func generateParamDescription(paramName string) string {
 
 	// Capitalizar primera palabra
 	if len(words) > 0 {
-		words[0] = strings.Title(words[0])
+		words[0] = capitalizeParamWord(words[0])
 	}
 
 	description := strings.Join(words, " ")
@@ -162,6 +165,15 @@ func splitParamName(name string) []string {
 	}
 
 	return words
+}
+
+func capitalizeParamWord(value string) string {
+	if value == "" {
+		return value
+	}
+	runes := []rune(value)
+	runes[0] = unicode.ToUpper(runes[0])
+	return string(runes)
 }
 
 // MergeParams combina múltiples listas de parámetros eliminando duplicados

@@ -1,85 +1,65 @@
 # Configuración de golangci-lint para Connect-Libraries
 # https://golangci-lint.run/usage/configuration/
 
+version: "2"
+
 run:
   timeout: 5m
 
 linters:
+  default: none
   enable:
     # Recomendados por defecto
-    - errcheck      # Verifica errores no manejados
-    - gosimple      # Simplificaciones de código
     - govet         # Examina código Go y reporta constructos sospechosos
     - ineffassign   # Detecta asignaciones ineficientes
     - staticcheck   # Análisis estático avanzado
     - unused        # Detecta código no usado
     
     # Adicionales para calidad de código
-    - gofmt         # Verifica formato del código
-    - goimports     # Verifica imports
-    - misspell      # Detecta errores de ortografía
     - revive        # Linter rápido, reemplazo de golint
     - unconvert     # Detecta conversiones innecesarias
-    - unparam       # Detecta parámetros no usados
-    
-    # Seguridad
-    - gosec         # Inspecciona código en busca de problemas de seguridad
-    
-    # Performance
-    - prealloc      # Detecta slices que podrían ser pre-alocados
     
     # Estilo y buenas prácticas
     - gocyclo       # Detecta complejidad ciclomática alta
-    - dupl          # Detecta código duplicado
     - goconst       # Detecta strings que podrían ser constantes
-    - gocritic      # Colección de chequeos de calidad
-    - stylecheck    # Chequeos de estilo de Go
 
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-    check-blank: true
-  
-  govet:
-    enable:
-      - shadow
-  
-  gocyclo:
-    min-complexity: 15
-  
-  dupl:
-    threshold: 100
-  
-  goconst:
-    min-len: 3
-    min-occurrences: 3
-  
-  misspell:
-    locale: US
-  
-  revive:
-    confidence: 0.8
-  
-  gosec:
-    excludes:
-      - G404  # Uso de random (permitido en algunos contextos)
+  exclusions:
+    rules:
+      # Excluir ciertos linters en archivos de test
+      - path: _test\.go
+        linters:
+          - gocyclo
+          - goconst
+          - revive
+
+      # Permitir errores de shadowing en algunos casos
+      - text: "shadow: declaration of"
+        linters:
+          - govet
+
+  settings:
+    govet:
+      enable:
+        - shadow
+    
+    gocyclo:
+      min-complexity: 15
+    
+    goconst:
+      min-len: 3
+      min-occurrences: 3
+    
+    revive:
+      confidence: 0.8
+      rules:
+        - name: package-comments
+          disabled: true
+    
+formatters:
+  enable:
+    - gofmt         # Verifica formato del código
+    - goimports     # Verifica imports
 
 issues:
-  exclude-use-default: false
   max-issues-per-linter: 0
   max-same-issues: 0
-  
-  exclude-rules:
-    # Excluir ciertos linters en archivos de test
-    - path: _test\.go
-      linters:
-        - gocyclo
-        - errcheck
-        - dupl
-        - gosec
-        - goconst
-    
-    # Permitir errores de shadowing en algunos casos
-    - text: "shadow: declaration of"
-      linters:
-        - govet

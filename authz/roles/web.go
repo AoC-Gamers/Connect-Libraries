@@ -6,7 +6,7 @@ package roles
 
 // WEB Scope Role Constants
 const (
-	WEB_USER = "web_user" // Web User
+	WEB_USER  = "web_user"  // Web User
 	WEB_STAFF = "web_staff" // Web Staff
 	WEB_OWNER = "web_owner" // Web Owner
 )
@@ -18,21 +18,21 @@ var (
 		Name:        WEB_USER,
 		Label:       "Web User",
 		Description: "Basic web platform user with read access",
-		Groups:      []string{ "WEB__BASIC" },
+		Groups:      []string{"WEB__BASIC"},
 	}
 	WEBWebStaff = Role{
 		Scope:       "WEB",
 		Name:        WEB_STAFF,
 		Label:       "Web Staff",
 		Description: "Staff member with moderation capabilities",
-		Groups:      []string{ "WEB__BASIC", "WEB__STAFF" },
+		Groups:      []string{"WEB__BASIC", "WEB__STAFF"},
 	}
 	WEBWebOwner = Role{
 		Scope:       "WEB",
 		Name:        WEB_OWNER,
 		Label:       "Web Owner",
 		Description: "Platform owner with full administrative access",
-		Groups:      []string{ "WEB__BASIC", "WEB__STAFF", "WEB__OWNER" },
+		Groups:      []string{"WEB__BASIC", "WEB__STAFF", "WEB__OWNER"},
 	}
 )
 

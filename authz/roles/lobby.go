@@ -8,7 +8,7 @@ package roles
 const (
 	LOBBY_STAFF = "lobby_staff" // Lobby Staff
 	LOBBY_OWNER = "lobby_owner" // Lobby Owner
-	LOBBY_USER = "lobby_user" // Lobby User
+	LOBBY_USER  = "lobby_user"  // Lobby User
 )
 
 // LOBBY Role Definitions
@@ -18,21 +18,21 @@ var (
 		Name:        LOBBY_STAFF,
 		Label:       "Lobby Staff",
 		Description: "Lobby moderator with management capabilities",
-		Groups:      []string{ "LOBBY__BASIC", "LOBBY__STAFF" },
+		Groups:      []string{"LOBBY__BASIC", "LOBBY__STAFF"},
 	}
 	LOBBYLobbyOwner = Role{
 		Scope:       "LOBBY",
 		Name:        LOBBY_OWNER,
 		Label:       "Lobby Owner",
 		Description: "Lobby owner with full administrative control",
-		Groups:      []string{ "LOBBY__BASIC", "LOBBY__STAFF", "LOBBY__OWNER" },
+		Groups:      []string{"LOBBY__BASIC", "LOBBY__STAFF", "LOBBY__OWNER"},
 	}
 	LOBBYLobbyUser = Role{
 		Scope:       "LOBBY",
 		Name:        LOBBY_USER,
 		Label:       "Lobby User",
 		Description: "Basic lobby user with game participation rights",
-		Groups:      []string{ "LOBBY__BASIC" },
+		Groups:      []string{"LOBBY__BASIC"},
 	}
 )
 

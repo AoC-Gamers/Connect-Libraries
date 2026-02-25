@@ -3,13 +3,14 @@ package detector
 import (
 	"fmt"
 	"strings"
+	"unicode"
 )
 
 // generateSummary creates a summary for the endpoint
 func (d *Detector) generateSummary(method, path string) string {
 	// Clean path for summary
-	cleanPath := strings.Replace(path, "{", "", -1)
-	cleanPath = strings.Replace(cleanPath, "}", "", -1)
+	cleanPath := strings.ReplaceAll(path, "{", "")
+	cleanPath = strings.ReplaceAll(cleanPath, "}", "")
 
 	resource := extractResource(path)
 
@@ -63,9 +64,18 @@ func extractResource(path string) string {
 		// Get the last meaningful part (before parameters)
 		for i := len(parts) - 1; i >= 0; i-- {
 			if !strings.Contains(parts[i], "{") && parts[i] != "" {
-				return strings.Title(parts[i])
+				return capitalize(parts[i])
 			}
 		}
 	}
 	return "Resource"
+}
+
+func capitalize(value string) string {
+	if value == "" {
+		return value
+	}
+	runes := []rune(value)
+	runes[0] = unicode.ToUpper(runes[0])
+	return string(runes)
 }

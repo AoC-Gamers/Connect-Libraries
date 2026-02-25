@@ -2,6 +2,7 @@ package apikey
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -68,7 +69,9 @@ func respondError(w http.ResponseWriter, status int, code ErrorCode, message, de
 
 	w.Header().Set(responderHeaderContentType, responderMimeJSON)
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(resp)
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("failed to encode error response: %v", err)
+	}
 }
 
 func respondWithDetail(w http.ResponseWriter, status int, code ErrorCode, message, detail string) {

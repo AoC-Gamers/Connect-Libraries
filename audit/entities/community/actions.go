@@ -7,17 +7,17 @@ const (
 	TableName = "audit.community_audit"
 
 	// Actions - Acciones de auditoría para comunidades
-	ActionCreated              = "COMMUNITY_CREATED"
-	ActionUpdated              = "COMMUNITY_UPDATED"
-	ActionDeleted              = "COMMUNITY_DELETED"
-	ActionSuspended            = "SUSPEND"
-	ActionActivated            = "ACTIVATE"
-	ActionSettingsUpdated      = "COMMUNITY_SETTINGS_UPDATED"
-	ActionOwnerTransferred     = "FORCE_TRANSFER"
-	ActionServerAdded          = "SERVER_ADDED"
-	ActionServerUpdated        = "SERVER_UPDATED"
-	ActionServerRemoved        = "SERVER_REMOVED"
-	ActionMissionConfigUpdated = "MISSION_CONFIG_UPDATED"
+	ActionCreated               = "COMMUNITY_CREATED"
+	ActionUpdated               = "COMMUNITY_UPDATED"
+	ActionDeleted               = "COMMUNITY_DELETED"
+	ActionSuspended             = "SUSPEND"
+	ActionActivated             = "ACTIVATE"
+	ActionSettingsUpdated       = "COMMUNITY_SETTINGS_UPDATED"
+	ActionOwnerTransferred      = "FORCE_TRANSFER"
+	ActionServerAdded           = "SERVER_ADDED"
+	ActionServerUpdated         = "SERVER_UPDATED"
+	ActionServerRemoved         = "SERVER_REMOVED"
+	ActionMissionConfigUpdated  = "MISSION_CONFIG_UPDATED"
 	ActionGamemodeConfigUpdated = "GAMEMODE_CONFIG_UPDATED"
 )
 

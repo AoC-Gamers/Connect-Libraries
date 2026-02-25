@@ -103,9 +103,12 @@ func generateMissingKeys(result *InitResult, loadedKeys map[string]string) {
 		service := getServiceFromEnvVar(envVar)
 		if service != "" {
 			generatedKey := fmt.Sprintf("dev-%s-key-%d", service, len(service)*12345)
-			os.Setenv(envVar, generatedKey)
-			loadedKeys[generatedKey] = "connect-" + service
-			result.GeneratedKeys = append(result.GeneratedKeys, envVar)
+			if err := os.Setenv(envVar, generatedKey); err == nil {
+				loadedKeys[generatedKey] = "connect-" + service
+				result.GeneratedKeys = append(result.GeneratedKeys, envVar)
+			} else {
+				remainingMissing = append(remainingMissing, envVar)
+			}
 		} else {
 			remainingMissing = append(remainingMissing, envVar)
 		}

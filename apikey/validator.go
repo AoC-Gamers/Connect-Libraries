@@ -57,11 +57,9 @@ func (v *Validator) ValidateKey(key string) (string, bool) {
 
 	if !exists {
 		// Log solo cuando falla la validación
-		maskedKey := key
+		maskedKey := "***"
 		if len(key) > 8 {
 			maskedKey = key[:4] + "..." + key[len(key)-4:]
-		} else {
-			maskedKey = "***"
 		}
 
 		log.Error().

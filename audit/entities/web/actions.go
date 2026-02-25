@@ -7,19 +7,19 @@ const (
 	TableName = "audit.web_audit"
 
 	// Actions - Acciones de auditoría para operaciones web/sistema
-	ActionUserLogin            = "USER_LOGIN"
-	ActionUserLogout           = "USER_LOGOUT"
-	ActionUserRegistered       = "USER_REGISTERED"
-	ActionPasswordChanged      = "PASSWORD_CHANGED"
-	ActionEmailChanged         = "EMAIL_CHANGED"
-	ActionSystemConfigUpdated  = "SYSTEM_CONFIG_UPDATED"
-	ActionPermissionGranted    = "PERMISSION_GRANTED"
-	ActionPermissionRevoked    = "PERMISSION_REVOKED"
-	ActionRoleAssigned         = "ROLE_ASSIGNED"
-	ActionRoleRemoved          = "ROLE_REMOVED"
-	ActionAPIKeyCreated        = "API_KEY_CREATED"
-	ActionAPIKeyRevoked        = "API_KEY_REVOKED"
-	ActionSecurityAlert        = "SECURITY_ALERT"
+	ActionUserLogin           = "USER_LOGIN"
+	ActionUserLogout          = "USER_LOGOUT"
+	ActionUserRegistered      = "USER_REGISTERED"
+	ActionPasswordChanged     = "PASSWORD_CHANGED"
+	ActionEmailChanged        = "EMAIL_CHANGED"
+	ActionSystemConfigUpdated = "SYSTEM_CONFIG_UPDATED"
+	ActionPermissionGranted   = "PERMISSION_GRANTED"
+	ActionPermissionRevoked   = "PERMISSION_REVOKED"
+	ActionRoleAssigned        = "ROLE_ASSIGNED"
+	ActionRoleRemoved         = "ROLE_REMOVED"
+	ActionAPIKeyCreated       = "API_KEY_CREATED"
+	ActionAPIKeyRevoked       = "API_KEY_REVOKED"
+	ActionSecurityAlert       = "SECURITY_ALERT"
 )
 
 // validActions contiene todas las acciones válidas para web audit

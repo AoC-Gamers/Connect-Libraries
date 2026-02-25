@@ -56,7 +56,7 @@ func (d *Detector) ScanRouter(r chi.Router) error {
 
 	walkFunc := func(method string, route string, handler http.Handler, middlewares ...func(http.Handler) http.Handler) error {
 		// Clean up route path
-		route = strings.Replace(route, "/*/", "/", -1)
+		route = strings.ReplaceAll(route, "/*/", "/")
 
 		// Skip internal routes
 		if d.shouldSkipRoute(route) {
