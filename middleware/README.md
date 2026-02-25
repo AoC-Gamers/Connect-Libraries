@@ -1,6 +1,6 @@
 # Middleware
 
-**Módulo:** `github.com/AoC-Gamers/connect-libraries/middleware`
+**Módulo:** `github.com/AoC-Gamers/connect-libraries/middleware/v2`
 
 ## 📋 Descripción
 
@@ -25,7 +25,7 @@ Middlewares para framework Chi (usado en Connect-Auth):
 ### Con Chi (Connect-Auth)
 
 ```go
-import "github.com/AoC-Gamers/connect-libraries/middleware/chi"
+import "github.com/AoC-Gamers/connect-libraries/middleware/v2/chi"
 
 // Autenticación JWT
 r.Use(chimw.RequireAuth(cfg))

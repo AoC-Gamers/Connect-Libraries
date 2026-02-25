@@ -7,11 +7,14 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-02-25
+
 ### Changed
 - Actualización del workflow de CI para ejecución y validación por librería.
 - Estandarización de la secuencia de calidad `lint`, `test` y `gosec`.
 - Generación de reportes locales por módulo en `reports/` con salida de `gosec` legible (`gosec.log` sin códigos ANSI).
 - `authjwt.AuthConfig`: renombrado de `JWTSecret` a `SignerMaterial` para evitar falso positivo `G117` sin suppressions.
+- Cambio de módulo a `github.com/AoC-Gamers/connect-libraries/middleware/v2` por Semantic Import Versioning.
 
 ## [1.2.1] - 2026-01-27
 

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-02-25
+
 ### Changed
 - Actualización del workflow de CI para ejecución y validación por librería.
 - Estandarización de la secuencia de calidad `lint`, `test` y `gosec`.

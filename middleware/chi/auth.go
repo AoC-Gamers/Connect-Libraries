@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/AoC-Gamers/connect-libraries/middleware/authcontext"
-	"github.com/AoC-Gamers/connect-libraries/middleware/authjwt"
+	"github.com/AoC-Gamers/connect-libraries/middleware/v2/authcontext"
+	"github.com/AoC-Gamers/connect-libraries/middleware/v2/authjwt"
 	"github.com/rs/zerolog/log"
 )
 

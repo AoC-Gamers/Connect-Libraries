@@ -1,4 +1,4 @@
-module github.com/AoC-Gamers/connect-libraries/middleware
+module github.com/AoC-Gamers/connect-libraries/middleware/v2
 
 go 1.24.0
 

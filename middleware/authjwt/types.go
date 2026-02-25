@@ -1,7 +1,7 @@
 package authjwt
 
 import (
-	"github.com/AoC-Gamers/connect-libraries/middleware/authconfig"
+	"github.com/AoC-Gamers/connect-libraries/middleware/v2/authconfig"
 )
 
 // AuthConfig configuración común para autenticación JWT

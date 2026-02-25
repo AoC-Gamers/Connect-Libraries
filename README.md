@@ -67,6 +67,45 @@ Cada biblioteca tiene su propio ciclo de versiones con tags en el formato `<libr
 - `errors/v1.0.0`, `errors/v1.0.1`, `errors/v1.1.0`, ...
 - etc.
 
+### Cadena de dependencia para releases
+
+Para evitar romper el flujo de integración en los servicios, aplica esta guía antes de publicar versiones.
+
+#### Bibliotecas independientes (entre si)
+
+Estas bibliotecas no tienen `require` internos entre módulos de `Connect-Libraries`, por lo que se pueden versionar de forma independiente:
+
+- `apikey`
+- `audit`
+- `authz/v2`
+- `errors`
+- `middleware/v2`
+- `migrate`
+- `nats`
+- `swagger`
+- `testhelpers`
+
+#### Bibliotecas dependientes (de adopcion en servicios)
+
+Aunque sean independientes dentro de este repo, sí dependen de adopción en `Connect-Auth`, `Connect-Core`, `Connect-Lobby` y `Connect-RT`:
+
+- Cambios `major` (ej. `middleware/v2`) requieren actualizar `go.mod` e imports en consumidores.
+- Cambios `minor/patch` requieren solo actualización de versión en `go.mod` de consumidores.
+
+#### Orden recomendado de publicacion
+
+1. Publicar primero bibliotecas sin breaking changes (`patch`/`minor`).
+2. Publicar bibliotecas con breaking changes (`major`) en release separado.
+3. Esperar disponibilidad del tag en el proxy de Go.
+4. Actualizar consumidores por fases (un servicio a la vez), validar CI y luego continuar.
+
+#### Regla obligatoria para `major` en Go
+
+Cuando una biblioteca pasa de `v1` a `v2+`, debe incluir el sufijo en el módulo e imports:
+
+- `module github.com/AoC-Gamers/connect-libraries/<lib>/v2`
+- Imports: `github.com/AoC-Gamers/connect-libraries/<lib>/v2/...`
+
 ### Crear nueva versión de una biblioteca
 
 ```bash
