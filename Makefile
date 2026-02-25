@@ -1,7 +1,6 @@
 # Makefile
 .PHONY: help report report-test report-lint report-security clean-reports
 
-REPORTS_DIR ?= reports
 LIBRARIES := apikey audit authz errors middleware migrate nats swagger testhelpers
 
 help: ## Mostrar comandos disponibles
@@ -11,51 +10,53 @@ help: ## Mostrar comandos disponibles
 
 report: report-test report-lint report-security ## Ejecutar test, lint y gosec para todas las librerias
 
-report-test: ## Generar reportes de test en reports/<libreria>/test.log
-	@mkdir -p $(REPORTS_DIR)
+report-test: ## Generar reportes de test en <libreria>/reports/test.log
 	@status=0; \
 	for lib in $(LIBRARIES); do \
+		lib_reports="$$lib/reports"; \
 		echo "[TEST] $$lib"; \
-		mkdir -p $(REPORTS_DIR)/$$lib; \
-		if $(MAKE) -C $$lib test > $(REPORTS_DIR)/$$lib/test.log 2>&1; then \
-			echo "  OK  -> $(REPORTS_DIR)/$$lib/test.log"; \
+		mkdir -p "$$lib_reports"; \
+		if $(MAKE) -C $$lib test > "$$lib_reports/test.log" 2>&1; then \
+			echo "  OK  -> $$lib_reports/test.log"; \
 		else \
-			echo "  FAIL -> $(REPORTS_DIR)/$$lib/test.log"; \
+			echo "  FAIL -> $$lib_reports/test.log"; \
 			status=1; \
 		fi; \
 	done; \
 	exit $$status
 
-report-lint: ## Generar reportes de lint en reports/<libreria>/lint.json y lint.log
-	@mkdir -p $(REPORTS_DIR)
+report-lint: ## Generar reportes de lint en <libreria>/reports/lint.json y lint.log
 	@status=0; \
 	for lib in $(LIBRARIES); do \
+		lib_reports="$$lib/reports"; \
 		echo "[LINT] $$lib"; \
-		mkdir -p $(REPORTS_DIR)/$$lib; \
-		if $(MAKE) -C $$lib lint REPORTS_DIR=../$(REPORTS_DIR)/$$lib > $(REPORTS_DIR)/$$lib/lint.log 2>&1; then \
-			echo "  OK  -> $(REPORTS_DIR)/$$lib/lint.json"; \
+		mkdir -p "$$lib_reports"; \
+		if $(MAKE) -C $$lib lint > "$$lib_reports/lint.log" 2>&1; then \
+			echo "  OK  -> $$lib_reports/lint.json"; \
 		else \
-			echo "  FAIL -> $(REPORTS_DIR)/$$lib/lint.log"; \
+			echo "  FAIL -> $$lib_reports/lint.log"; \
 			status=1; \
 		fi; \
 	done; \
 	exit $$status
 
-report-security: ## Generar reportes de seguridad en reports/<libreria>/gosec.json y gosec.log
-	@mkdir -p $(REPORTS_DIR)
+report-security: ## Generar reportes de seguridad en <libreria>/reports/gosec.json y gosec.log
 	@status=0; \
 	for lib in $(LIBRARIES); do \
+		lib_reports="$$lib/reports"; \
 		echo "[GOSEC] $$lib"; \
-		mkdir -p $(REPORTS_DIR)/$$lib; \
-		if $(MAKE) -C $$lib gosec REPORTS_DIR=../$(REPORTS_DIR)/$$lib > $(REPORTS_DIR)/$$lib/gosec.log 2>&1; then \
-			echo "  OK  -> $(REPORTS_DIR)/$$lib/gosec.json"; \
+		mkdir -p "$$lib_reports"; \
+		if $(MAKE) -C $$lib gosec > "$$lib_reports/gosec.log" 2>&1; then \
+			echo "  OK  -> $$lib_reports/gosec.json"; \
 		else \
-			echo "  FAIL -> $(REPORTS_DIR)/$$lib/gosec.log"; \
+			echo "  FAIL -> $$lib_reports/gosec.log"; \
 			status=1; \
 		fi; \
 	done; \
 	exit $$status
 
-clean-reports: ## Eliminar reportes agregados de la raiz
-	@rm -rf $(REPORTS_DIR)
-	@echo "Reportes eliminados: $(REPORTS_DIR)"
+clean-reports: ## Eliminar reportes en cada libreria
+	@for lib in $(LIBRARIES); do \
+		rm -rf "$$lib/reports"; \
+		echo "Reportes eliminados: $$lib/reports"; \
+	done
