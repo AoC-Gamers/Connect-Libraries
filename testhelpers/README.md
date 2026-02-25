@@ -49,7 +49,7 @@ Crea un servidor Redis en memoria usando miniredis y retorna un cliente estánda
 
 **Ejemplo:**
 ```go
-import th "github.com/AoC-Gamers/Connect-Backend/libraries/testhelpers"
+import th "github.com/AoC-Gamers/connect-libraries/testhelpers"
 
 func TestCaching(t *testing.T) {
     client, mrs, cleanup := th.NewMiniredisClient(t)
@@ -69,7 +69,7 @@ Crea un servidor HTTP de prueba que simula el endpoint de permisos de Connect-Au
 
 **Ejemplo:**
 ```go
-import th "github.com/AoC-Gamers/Connect-Backend/libraries/testhelpers"
+import th "github.com/AoC-Gamers/connect-libraries/testhelpers"
 
 func TestPermissions(t *testing.T) {
     // Servidor que siempre retorna hasPermission: true
@@ -88,7 +88,7 @@ func TestPermissions(t *testing.T) {
 Importa directamente desde `libraries/testhelpers`:
 
 ```go
-import th "github.com/AoC-Gamers/Connect-Backend/libraries/testhelpers"
+import th "github.com/AoC-Gamers/connect-libraries/testhelpers"
 ```
 
 ### Opción 2: Wrapper interno (para módulos con tipos internos)
@@ -100,7 +100,7 @@ Si tu módulo necesita adaptar tipos públicos a wrappers internos, crea un `int
 package testhelpers
 
 import (
-    lib "github.com/AoC-Gamers/Connect-Backend/libraries/testhelpers"
+    lib "github.com/AoC-Gamers/connect-libraries/testhelpers"
     "github.com/tu-modulo/internal/redis"
 )
 
@@ -122,10 +122,10 @@ Agrega la librería como dependencia:
 
 ```go.mod
 require (
-    github.com/AoC-Gamers/Connect-Backend/libraries/testhelpers v0.0.0-00010101000000-000000000000
+    github.com/AoC-Gamers/connect-libraries/testhelpers v0.0.0-00010101000000-000000000000
 )
 
-replace github.com/AoC-Gamers/Connect-Backend/libraries/testhelpers => ../libraries/testhelpers
+replace github.com/AoC-Gamers/connect-libraries/testhelpers => ../Connect-Libraries/testhelpers
 ```
 
 ## Ventajas de esta arquitectura

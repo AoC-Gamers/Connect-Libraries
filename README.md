@@ -1,5 +1,8 @@
 # Connect Libraries
 
+[![CI](https://github.com/AoC-Gamers/connect-libraries/actions/workflows/ci.yml/badge.svg)](https://github.com/AoC-Gamers/connect-libraries/actions/workflows/ci.yml)
+[![Release](https://github.com/AoC-Gamers/connect-libraries/actions/workflows/release.yml/badge.svg)](https://github.com/AoC-Gamers/connect-libraries/actions/workflows/release.yml)
+
 🔧 Librerías compartidas y reutilizables para el ecosistema de microservicios Connect Backend.
 
 ## 📦 Librerías Disponibles

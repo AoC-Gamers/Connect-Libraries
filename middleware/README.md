@@ -45,11 +45,6 @@ r.Use(chimw.RequireAPIKey(apiKeyValidator))
 - ✅ Context injection consistente
 - ✅ Token extraction automática (headers, cookies)
 - ✅ Manejo de errores estandarizado
-import "github.com/AoC-Gamers/Connect-Backend/connect-middleware/http"
-
-handler = httpmw.JWTAuth(config)(handler)
-handler = httpmw.RequireRoles("admin")(handler)
-```
 
 ## 🧩 Respuestas de error personalizadas
 

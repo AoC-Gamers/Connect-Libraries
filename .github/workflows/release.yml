@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - '*/v*.*.*'
 
 permissions:
   contents: write
@@ -18,28 +18,47 @@ jobs:
         fetch-depth: 0
     
     - name: Extract version from tag
-      id: version
-      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      id: tag
+      run: |
+        TAG="${GITHUB_REF#refs/tags/}"
+        LIBRARY="${TAG%%/v*}"
+        VERSION="${TAG##*/v}"
+
+        echo "TAG=${TAG}" >> "$GITHUB_OUTPUT"
+        echo "LIBRARY=${LIBRARY}" >> "$GITHUB_OUTPUT"
+        echo "VERSION=${VERSION}" >> "$GITHUB_OUTPUT"
     
     - name: Extract changelog
       id: changelog
       run: |
-        VERSION=${{ steps.version.outputs.VERSION }}
-        echo "Extracting changelog for version $VERSION"
+        LIBRARY=${{ steps.tag.outputs.LIBRARY }}
+        VERSION=${{ steps.tag.outputs.VERSION }}
+        CHANGELOG_PATH="${LIBRARY}/CHANGELOG.md"
+
+        echo "Extracting changelog for ${LIBRARY} version ${VERSION}"
         
-        # Extract section from CHANGELOG.md
-        sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '$d' > release-notes.md
+        if [ ! -f "${CHANGELOG_PATH}" ]; then
+          echo "Release ${LIBRARY}/v${VERSION}" > release-notes.md
+          echo "" >> release-notes.md
+          echo "No CHANGELOG found at ${CHANGELOG_PATH}." >> release-notes.md
+          exit 0
+        fi
+
+        # Extract section from library CHANGELOG.md
+        sed -n "/## \[$VERSION\]/,/## \[/p" "${CHANGELOG_PATH}" | sed '$d' > release-notes.md
         
         # If empty, use generic message
         if [ ! -s release-notes.md ]; then
-          echo "Release $VERSION" > release-notes.md
+          echo "Release ${LIBRARY}/v${VERSION}" > release-notes.md
           echo "" >> release-notes.md
-          echo "See [CHANGELOG.md](https://github.com/AoC-Gamers/connect-libraries/blob/main/CHANGELOG.md) for details." >> release-notes.md
+          echo "See [${CHANGELOG_PATH}](https://github.com/AoC-Gamers/connect-libraries/blob/main/${CHANGELOG_PATH}) for details." >> release-notes.md
         fi
     
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
+        tag_name: ${{ steps.tag.outputs.TAG }}
+        name: ${{ steps.tag.outputs.LIBRARY }}/v${{ steps.tag.outputs.VERSION }}
         body_path: release-notes.md
         draft: false
         prerelease: false
@@ -49,5 +68,4 @@ jobs:
     
     - name: Notify success
       run: |
-        echo "✅ Release v${{ steps.version.outputs.VERSION }} published successfully"
-        echo "📦 All 10 libraries are now available at this version"
+        echo "✅ Release ${{ steps.tag.outputs.LIBRARY }}/v${{ steps.tag.outputs.VERSION }} published successfully"

@@ -98,7 +98,7 @@ if conn != nil {
 ### Connect-Auth
 
 ```go
-import connectnats "github.com/AoC-Gamers/Connect-Backend/libraries/connect-nats"
+import connectnats "github.com/AoC-Gamers/connect-libraries/nats"
 
 func initNATSPublisher(cfg *config.Config) *natsx.Publisher {
     natsCfg := &connectnats.Config{

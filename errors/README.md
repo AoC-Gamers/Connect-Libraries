@@ -164,7 +164,7 @@ errors.RespondTokenExpired(w)
 ### Connect-Auth
 
 ```go
-import errors "github.com/AoC-Gamers/Connect-Backend/libraries/connect-errors"
+import errors "github.com/AoC-Gamers/connect-libraries/errors"
 
 func (h *AuthzHandler) GetMyCapabilities(w http.ResponseWriter, r *http.Request) {
     // ... código existente ...
@@ -184,7 +184,7 @@ func (h *AuthzHandler) GetMyCapabilities(w http.ResponseWriter, r *http.Request)
 ### Connect-Core
 
 ```go
-import errors "github.com/AoC-Gamers/Connect-Backend/libraries/connect-errors"
+import errors "github.com/AoC-Gamers/connect-libraries/errors"
 
 func (h *MissionHandler) GetMission(w http.ResponseWriter, r *http.Request) {
     mission, err := h.service.GetByName(name)

@@ -9,7 +9,7 @@ package authz
 
 import (
     "net/http"
-    errors "github.com/AoC-Gamers/Connect-Backend/libraries/connect-errors"
+    errors "github.com/AoC-Gamers/connect-libraries/errors"
 )
 
 func (h *AuthzHandler) GetMyCapabilities(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +55,7 @@ package mission
 
 import (
     "net/http"
-    errors "github.com/AoC-Gamers/Connect-Backend/libraries/connect-errors"
+    errors "github.com/AoC-Gamers/connect-libraries/errors"
 )
 
 func (h *MissionHandler) CreateMission(w http.ResponseWriter, r *http.Request) {
@@ -166,7 +166,7 @@ package lobby
 
 import (
     "net/http"
-    errors "github.com/AoC-Gamers/Connect-Backend/libraries/connect-errors"
+    errors "github.com/AoC-Gamers/connect-libraries/errors"
 )
 
 func (h *LobbyHandler) CreateLobby(w http.ResponseWriter, r *http.Request) {
@@ -195,7 +195,7 @@ package realtime
 
 import (
     "net/http"
-    errors "github.com/AoC-Gamers/Connect-Backend/libraries/connect-errors"
+    errors "github.com/AoC-Gamers/connect-libraries/errors"
 )
 
 func (h *RTHandler) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
