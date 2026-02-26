@@ -2,6 +2,8 @@
 .PHONY: help test clean deps fmt vet lint gosec
 
 REPORTS_DIR := reports
+GO_VERSION ?= 1.26
+GOLANGCI_LINT_VERSION ?= 2.10
 GOSEC_VERSION ?= v2.23.0
 
 help: ## Mostrar comandos disponibles
@@ -33,7 +35,16 @@ vet: ## Ejecutar go vet
 
 lint: ## Ejecutar golangci-lint
 	@echo "Ejecutando golangci-lint..."
-	@command -v golangci-lint >/dev/null 2>&1 || { echo "Error: golangci-lint no esta instalado. Instalalo con: scoop install golangci-lint"; exit 1; }
+	@command -v golangci-lint >/dev/null 2>&1 || { echo "Error: golangci-lint no esta instalado. Instalalo con la version $(GOLANGCI_LINT_VERSION)."; exit 1; }
+	@installed=$$(golangci-lint version 2>/dev/null | head -n1); \
+	required="$(GOLANGCI_LINT_VERSION)"; required=$${required#v}; \
+	installed_version=$$(echo "$$installed" | sed -nE 's/.*version[[:space:]]+v?([0-9]+(\.[0-9]+){1,2}).*/\1/p' | head -n1); \
+	[ -n "$$installed_version" ] || { echo "Error: no se pudo detectar la version instalada de golangci-lint."; exit 1; }; \
+	case "$$installed_version" in \
+		$$required|$$required.*) ;; \
+		*) echo "Error: se requiere golangci-lint $$required.x (instalada $$installed_version)."; exit 1 ;; \
+	esac; \
+	echo "$$installed" | grep -q "built with go$(GO_VERSION)" || { echo "Error: se requiere golangci-lint compilado con go$(GO_VERSION)."; exit 1; }
 	@mkdir -p $(REPORTS_DIR)
 	@if golangci-lint run --help 2>&1 | grep -q -- "--output.json.path"; then \
 		golangci-lint run --timeout=5m --output.json.path $(REPORTS_DIR)/lint.json; \
@@ -45,11 +56,18 @@ lint: ## Ejecutar golangci-lint
 gosec: ## Ejecutar escaneo de seguridad con gosec
 	@echo "Ejecutando escaneo de seguridad con gosec (nativo)..."
 	@mkdir -p $(REPORTS_DIR)
-	@command -v gosec >/dev/null 2>&1 || { \
-		echo "Error: gosec no esta instalado."; \
-		echo "Instala gosec version $(GOSEC_VERSION) con tu gestor de paquetes preferido."; \
-		exit 1; \
-	}
+	@command -v gosec >/dev/null 2>&1 || { echo "Error: gosec no esta instalado. Instalalo con la version $(GOSEC_VERSION)."; exit 1; }
+	@installed=$$(gosec -version 2>&1); \
+	required="$(GOSEC_VERSION)"; required=$${required#v}; \
+	installed_version=$$(echo "$$installed" | grep -Eo 'v?[0-9]+\.[0-9]+(\.[0-9]+)?' | head -n1 | sed 's/^v//'); \
+	if [ -n "$$installed_version" ]; then \
+		case "$$installed_version" in \
+			$$required|$$required.*) ;; \
+			*) echo "Error: se requiere gosec $$required.x (instalada $$installed_version)."; exit 1 ;; \
+		esac; \
+	else \
+		echo "Aviso: no se pudo detectar version numerica de gosec; se omite validacion de version."; \
+	fi
 	@rc=0; \
 	NO_COLOR=1 gosec ./... 2>&1 | sed -E 's/\x1b\[[0-9;]*m//g' | tee $(REPORTS_DIR)/gosec.log || rc=$$?; \
 	if [ $$rc -ne 0 ]; then \

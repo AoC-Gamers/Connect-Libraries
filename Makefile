@@ -2,6 +2,9 @@
 .PHONY: help report test lint gosec deps fmt vet clean clear
 
 LIBRARIES := apikey audit authz errors middleware migrate nats swagger testhelpers
+GO_VERSION ?= 1.26
+GOLANGCI_LINT_VERSION ?= 2.10
+GOSEC_VERSION ?= v2.23.0
 
 help: ## Mostrar comandos disponibles
 	@echo "Connect-Libraries - Reportes por subdirectorio"
@@ -79,7 +82,7 @@ lint: ## Generar reportes de lint en <libreria>/reports/lint.json y lint.log
 		lib_reports="$$lib/reports"; \
 		echo "[LINT] $$lib"; \
 		mkdir -p "$$lib_reports"; \
-		if $(MAKE) -C $$lib lint; then \
+		if $(MAKE) -C $$lib lint GO_VERSION=$(GO_VERSION) GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION); then \
 			echo "  OK  -> $$lib_reports/lint.json"; \
 		else \
 			echo "  FAIL -> $$lib_reports/lint.json"; \
@@ -94,7 +97,7 @@ gosec: ## Reproducir gosec de CI para todas las librerias (logs en <libreria>/re
 		lib_reports="$$lib/reports"; \
 		echo "[GOSEC] $$lib"; \
 		mkdir -p "$$lib_reports"; \
-		if $(MAKE) -C $$lib gosec; then \
+		if $(MAKE) -C $$lib gosec GOSEC_VERSION=$(GOSEC_VERSION); then \
 			echo "  OK  -> $$lib_reports/gosec.log"; \
 		else \
 			echo "  FAIL -> $$lib_reports/gosec.log"; \
