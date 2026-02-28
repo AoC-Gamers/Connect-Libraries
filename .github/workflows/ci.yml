@@ -18,10 +18,7 @@ permissions:
   security-events: write
 
 env:
-  GO_VERSION: ${{ vars.GO_VERSION || 'latest' }}
   FORCE_ALL_LIBRARIES: ${{ vars.FORCE_ALL_LIBRARIES || 'false' }}
-  GOLANGCI_LINT_VERSION: ${{ vars.GOLANGCI_LINT_VERSION || 'latest' }}
-  GOSEC_VERSION: ${{ vars.GOSEC_VERSION|| 'latest' }}
 
 jobs:
   changes:
@@ -121,8 +118,16 @@ jobs:
     - name: Configurar Go
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ env.GO_VERSION }}
+        go-version-file: ${{ matrix.library }}/go.mod
+        cache: true
         cache-dependency-path: ${{ matrix.library }}/go.sum
+
+    - name: Instalar herramientas de CI
+      working-directory: ./${{ matrix.library }}
+      run: |
+        set -euo pipefail
+        export PATH="$(go env GOPATH)/bin:$PATH"
+        make install-tools
 
     - name: Descargar dependencias
       working-directory: ./${{ matrix.library }}
@@ -132,12 +137,12 @@ jobs:
       working-directory: ./${{ matrix.library }}
       run: go mod verify
     
-    - name: golangci-lint
-      uses: golangci/golangci-lint-action@v7
-      with:
-        version: ${{ env.GOLANGCI_LINT_VERSION }}
-        working-directory: ${{ matrix.library }}
-        args: --timeout=5m
+    - name: Lint
+      working-directory: ./${{ matrix.library }}
+      run: |
+        set -euo pipefail
+        export PATH="$(go env GOPATH)/bin:$PATH"
+        make lint
 
   test:
     name: Pruebas
@@ -154,7 +159,8 @@ jobs:
     - name: Configurar Go
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ env.GO_VERSION }}
+        go-version-file: ${{ matrix.library }}/go.mod
+        cache: true
         cache-dependency-path: ${{ matrix.library }}/go.sum
     
     - name: Descargar dependencias
@@ -167,76 +173,6 @@ jobs:
     
     - name: Ejecutar pruebas
       working-directory: ./${{ matrix.library }}
-      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
-
-  security-gosec:
-    name: Seguridad Gosec
-    needs: [changes]
-    if: ${{ needs.changes.outputs.any_changed == 'true' }}
-    runs-on: ${{ vars.CI_RUNNER || 'latest' }}
-    strategy:
-      matrix:
-        library: ${{ fromJson(needs.changes.outputs.changed_json) }}
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Configurar Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ env.GO_VERSION }}
-        cache-dependency-path: ${{ matrix.library }}/go.sum
-
-    - name: Descargar dependencias
-      working-directory: ./${{ matrix.library }}
-      run: go mod download
-
-    - name: Verificar dependencias
-      working-directory: ./${{ matrix.library }}
-      run: go mod verify
-
-    - name: Instalar gosec
-      run: go install github.com/securego/gosec/v2/cmd/gosec@${{ env.GOSEC_VERSION }}
-
-    - name: Ejecutar escaner de seguridad Gosec
-      working-directory: ./${{ matrix.library }}
-      run: gosec ./...
-
-  security-trivy:
-    name: Seguridad Trivy
-    needs: [changes]
-    if: ${{ needs.changes.outputs.any_changed == 'true' }}
-    runs-on: ${{ vars.CI_RUNNER || 'latest' }}
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Ejecutar escaner de vulnerabilidades Trivy
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-    
-    - name: Subir resultados de Trivy a GitHub Security
-      if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false }}
-      uses: github/codeql-action/upload-sarif@v4
-      with:
-        sarif_file: 'trivy-results.sarif'
-
-  summary:
-    name: Resumen de CI
-    if: ${{ always() }}
-    runs-on: ${{ vars.CI_RUNNER || 'latest' }}
-    needs: [changes, no-changes, lint, test, security-gosec, security-trivy]
-    steps:
-      - name: Imprimir resumen
-        shell: bash
-        run: |
-          echo "=== Resumen de CI de Connect-Libraries ==="
-          echo "any_changed: ${{ needs.changes.outputs.any_changed }}"
-          echo "changed_libraries: ${{ needs.changes.outputs.changed_csv }}"
-          echo "no-changes: ${{ needs.no-changes.result }}"
-          echo "lint: ${{ needs.lint.result }}"
-          echo "test: ${{ needs.test.result }}"
-          echo "security-gosec: ${{ needs.security-gosec.result }}"
-          echo "security-trivy: ${{ needs.security-trivy.result }}"
+      run: |
+        set -euo pipefail
+        make test

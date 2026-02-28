@@ -3,14 +3,12 @@ name: Release
 on:
   push:
     tags:
-      - '*/v*.*.*'
+      - "*/v*.*.*"
 
 permissions:
   contents: write
 
 env:
-  RELEASE_DRAFT: ${{ vars.RELEASE_DRAFT || 'false' }}
-  RELEASE_PRERELEASE: ${{ vars.RELEASE_PRERELEASE || 'false' }}
   RELEASE_GENERATE_NOTES: ${{ vars.RELEASE_GENERATE_NOTES || 'true' }}
 
 jobs:
@@ -18,59 +16,55 @@ jobs:
     name: Crear release
     runs-on: ${{ vars.CI_RUNNER || 'latest' }}
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    
-    - name: Extraer version del tag
-      id: tag
-      run: |
-        TAG="${GITHUB_REF#refs/tags/}"
-        LIBRARY="${TAG%%/v*}"
-        VERSION="${TAG##*/v}"
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-        echo "TAG=${TAG}" >> "$GITHUB_OUTPUT"
-        echo "LIBRARY=${LIBRARY}" >> "$GITHUB_OUTPUT"
-        echo "VERSION=${VERSION}" >> "$GITHUB_OUTPUT"
-    
-    - name: Extraer changelog
-      id: changelog
-      run: |
-        LIBRARY=${{ steps.tag.outputs.LIBRARY }}
-        VERSION=${{ steps.tag.outputs.VERSION }}
-        CHANGELOG_PATH="${LIBRARY}/CHANGELOG.md"
+      - name: Extraer version del tag
+        id: tag
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          LIBRARY="${TAG%%/v*}"
+          VERSION="${TAG##*/v}"
 
-        echo "Extrayendo changelog para ${LIBRARY} version ${VERSION}"
-        
-        if [ ! -f "${CHANGELOG_PATH}" ]; then
-          echo "Lanzamiento ${LIBRARY}/v${VERSION}" > release-notes.md
-          echo "" >> release-notes.md
-          echo "No se encontro CHANGELOG en ${CHANGELOG_PATH}." >> release-notes.md
-          exit 0
-        fi
+          echo "TAG=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "LIBRARY=${LIBRARY}" >> "$GITHUB_OUTPUT"
+          echo "VERSION=${VERSION}" >> "$GITHUB_OUTPUT"
 
-        # Extraer seccion del CHANGELOG de la libreria
-        sed -n "/## \[$VERSION\]/,/## \[/p" "${CHANGELOG_PATH}" | sed '$d' > release-notes.md
-        
-        # Si queda vacio, usar mensaje generico
-        if [ ! -s release-notes.md ]; then
-          echo "Lanzamiento ${LIBRARY}/v${VERSION}" > release-notes.md
-          echo "" >> release-notes.md
-          echo "Ver [${CHANGELOG_PATH}](https://github.com/AoC-Gamers/connect-libraries/blob/main/${CHANGELOG_PATH}) para mas detalles." >> release-notes.md
-        fi
-    
-    - name: Crear release en GitHub
-      uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ steps.tag.outputs.TAG }}
-        name: ${{ steps.tag.outputs.LIBRARY }}/v${{ steps.tag.outputs.VERSION }}
-        body_path: release-notes.md
-        draft: ${{ env.RELEASE_DRAFT }}
-        prerelease: ${{ env.RELEASE_PRERELEASE }}
-        generate_release_notes: ${{ env.RELEASE_GENERATE_NOTES }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Notificar exito
-      run: |
-        echo "✅ Release ${{ steps.tag.outputs.LIBRARY }}/v${{ steps.tag.outputs.VERSION }} publicada correctamente"
+      - name: Extraer notas de changelog
+        id: changelog
+        run: |
+          LIBRARY=${{ steps.tag.outputs.LIBRARY }}
+          VERSION=${{ steps.tag.outputs.VERSION }}
+          CHANGELOG_PATH="${LIBRARY}/CHANGELOG.md"
+
+          echo "Extrayendo changelog para ${LIBRARY} version ${VERSION}"
+
+          if [ ! -f "${CHANGELOG_PATH}" ]; then
+            echo "Lanzamiento ${LIBRARY}/v${VERSION}" > release-notes.md
+            echo "" >> release-notes.md
+            echo "No se encontro CHANGELOG en ${CHANGELOG_PATH}." >> release-notes.md
+            exit 0
+          fi
+
+          sed -n "/## \[${VERSION}\]/,/## \[/p" "${CHANGELOG_PATH}" | sed '$d' > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "Lanzamiento ${LIBRARY}/v${VERSION}" > release-notes.md
+            echo "" >> release-notes.md
+            echo "Ver [${CHANGELOG_PATH}](https://github.com/AoC-Gamers/connect-libraries/blob/main/${CHANGELOG_PATH}) para mas detalles." >> release-notes.md
+          fi
+
+      - name: Crear release en GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
+          name: ${{ steps.tag.outputs.LIBRARY }}/v${{ steps.tag.outputs.VERSION }}
+          body_path: release-notes.md
+          generate_release_notes: ${{ env.RELEASE_GENERATE_NOTES }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notificar exito
+        run: |
+          echo "Release ${{ steps.tag.outputs.LIBRARY }}/v${{ steps.tag.outputs.VERSION }} publicada correctamente"

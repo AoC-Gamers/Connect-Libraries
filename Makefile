@@ -1,5 +1,6 @@
 # Makefile
-.PHONY: help report test lint gosec deps fmt vet clean clear
+SHELL := /bin/bash
+.PHONY: help report test lint gosec deps fmt vet clean clear install-tools check-go-version
 
 LIBRARIES := apikey audit authz errors middleware migrate nats swagger testhelpers
 GO_VERSION ?= 1.26
@@ -9,9 +10,33 @@ GOSEC_VERSION ?= v2.23.0
 help: ## Mostrar comandos disponibles
 	@echo "Connect-Libraries - Reportes por subdirectorio"
 	@echo "================================================"
+	@echo "  install-tools instala golangci-lint y gosec en todas las librerias"
+	@echo "  check-go-version valida version minima de Go requerida"
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ { printf "  %-16s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 report: test lint gosec ## Ejecutar test, lint y gosec para todas las librerias
+
+check-go-version: ## Validar version minima de Go
+	@echo "Validando version de Go..."
+	@installed=$$(go version 2>/dev/null | sed -nE 's/^go version go([0-9]+(\.[0-9]+){1,2}).*/\1/p'); \
+	[ -n "$$installed" ] || { echo "Error: no se pudo detectar la version de Go instalada."; exit 1; }; \
+	required="$(GO_VERSION)"; required=$${required#v}; \
+	case "$$installed" in \
+		$$required|$$required.*) ;; \
+		*) echo "Error: se requiere Go $$required.x (instalada $$installed)."; exit 1 ;; \
+	esac
+
+install-tools: check-go-version ## Instalar herramientas de CI/desarrollo en todas las librerias
+	@status=0; \
+	for lib in $(LIBRARIES); do \
+		echo "[TOOLS] $$lib"; \
+		if $(MAKE) -C $$lib install-tools GO_VERSION=$(GO_VERSION) GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION) GOSEC_VERSION=$(GOSEC_VERSION); then \
+			true; \
+		else \
+			status=1; \
+		fi; \
+	done; \
+	exit $$status
 
 deps: ## Descargar y ordenar dependencias en todas las librerias
 	@status=0; \

@@ -1,0 +1,110 @@
+name: Security
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+
+env:
+  CI_RUNNER: ${{ vars.CI_RUNNER || 'latest' }}
+  TRIVY_SEVERITY: CRITICAL,HIGH
+  NANCY_VERSION: latest
+
+jobs:
+  gosec:
+    name: Gosec
+    runs-on: ${{ vars.CI_RUNNER || 'latest' }}
+    strategy:
+      matrix:
+        library: [apikey, audit, authz, errors, middleware, migrate, nats, swagger, testhelpers]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ matrix.library }}/go.mod
+          cache: true
+          cache-dependency-path: ${{ matrix.library }}/go.sum
+
+      - name: Instalar herramientas de CI
+        working-directory: ./${{ matrix.library }}
+        run: |
+          set -euo pipefail
+          export PATH="$(go env GOPATH)/bin:$PATH"
+          make install-tools
+
+      - name: Ejecutar Gosec
+        working-directory: ./${{ matrix.library }}
+        run: |
+          set -euo pipefail
+          export PATH="$(go env GOPATH)/bin:$PATH"
+          make gosec
+
+  trivy:
+    name: Trivy
+    runs-on: ${{ vars.CI_RUNNER || 'latest' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ejecutar Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: ${{ env.TRIVY_SEVERITY }}
+
+      - name: Subir resultados SARIF de Trivy
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  nancy:
+    name: Nancy
+    runs-on: ${{ vars.CI_RUNNER || 'latest' }}
+    env:
+      OSSINDEX_USERNAME: ${{ secrets.OSSINDEX_USERNAME }}
+      OSSINDEX_TOKEN: ${{ secrets.OSSINDEX_TOKEN }}
+    strategy:
+      matrix:
+        library: [apikey, audit, authz, errors, middleware, migrate, nats, swagger, testhelpers]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: ${{ matrix.library }}/go.mod
+          cache: true
+          cache-dependency-path: ${{ matrix.library }}/go.sum
+
+      - name: Instalar herramientas de CI
+        working-directory: ./${{ matrix.library }}
+        run: |
+          set -euo pipefail
+          export PATH="$(go env GOPATH)/bin:$PATH"
+          make install-tools
+          go install github.com/sonatype-nexus-community/nancy@${{ env.NANCY_VERSION }}
+
+      - name: Ejecutar Nancy (OSS Index autenticado)
+        if: ${{ env.OSSINDEX_USERNAME != '' && env.OSSINDEX_TOKEN != '' }}
+        working-directory: ./${{ matrix.library }}
+        run: |
+          go list -json -deps ./... | nancy sleuth \
+            --skip-update-check \
+            --username "$OSSINDEX_USERNAME" \
+            --token "$OSSINDEX_TOKEN"
+
+      - name: Omitir Nancy (faltan credenciales OSS Index)
+        if: ${{ env.OSSINDEX_USERNAME == '' || env.OSSINDEX_TOKEN == '' }}
+        working-directory: ./${{ matrix.library }}
+        run: |
+          echo "OSSINDEX_USERNAME/OSSINDEX_TOKEN no estan configurados. Se omite Nancy para evitar errores OSS Index 401."
