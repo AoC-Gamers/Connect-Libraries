@@ -1,7 +1,6 @@
 module github.com/AoC-Gamers/connect-libraries/testhelpers
 
-go 1.24
-
+go 1.26.0
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/alicebob/miniredis/v2 v2.36.1

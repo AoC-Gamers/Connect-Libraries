@@ -1,7 +1,6 @@
 module github.com/AoC-Gamers/connect-libraries/migrate
 
-go 1.24.0
-
+go 1.26.0
 require (
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/rs/zerolog v1.34.0
