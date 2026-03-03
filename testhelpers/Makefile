@@ -1,6 +1,6 @@
 # Makefile
 SHELL := /bin/bash
-.PHONY: help test clean deps install-tools check-go-version fmt vet lint gosec
+.PHONY: help test clean deps check-go-version fmt vet lint gosec go-tools
 
 MODULE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 REPORTS_DIR := $(MODULE_DIR)reports
@@ -11,7 +11,7 @@ GOSEC_VERSION ?= 2.23
 help: ## Mostrar comandos disponibles
 	@echo "Connect-Libraries - Comandos de desarrollo"
 	@echo "=========================================="
-	@echo "  install-tools instala golangci-lint y gosec en versiones definidas"
+	@echo "  go-tools instala golangci-lint y gosec en versiones definidas"
 	@echo "  check-go-version valida version minima de Go requerida"
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ { printf "  %-12s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
@@ -39,7 +39,7 @@ check-go-version: ## Validar version minima de Go
 		*) echo "Error: se requiere Go $$required.x (instalada $$installed)."; exit 1 ;; \
 	esac
 
-install-tools: check-go-version ## Instalar herramientas de CI/desarrollo
+go-tools: check-go-version ## Instalar herramientas de CI/desarrollo
 	@echo "Instalando herramientas de desarrollo..."
 	@set -euo pipefail; \
 	lint_version="$(GOLANGCI_LINT_VERSION)"; lint_version=$${lint_version#v}; \
