@@ -1,0 +1,14 @@
+{
+  "libraries": [
+    { "name": "apikey", "path": "apikey", "ci": true, "security": true, "release": true },
+    { "name": "audit", "path": "audit", "ci": true, "security": true, "release": true },
+    { "name": "authz", "path": "authz", "ci": true, "security": true, "release": true },
+    { "name": "errors", "path": "errors", "ci": true, "security": true, "release": true },
+    { "name": "middleware", "path": "middleware", "ci": true, "security": true, "release": true },
+    { "name": "migrate", "path": "migrate", "ci": true, "security": true, "release": true },
+    { "name": "nats", "path": "nats", "ci": true, "security": true, "release": true },
+    { "name": "settingsruntime", "path": "settingsruntime", "ci": true, "security": true, "release": true },
+    { "name": "swagger", "path": "swagger", "ci": true, "security": true, "release": true },
+    { "name": "testhelpers", "path": "testhelpers", "ci": true, "security": true, "release": true }
+  ]
+}

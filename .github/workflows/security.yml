@@ -17,12 +17,35 @@ env:
   NANCY_VERSION: latest
 
 jobs:
+  catalog:
+    name: Cargar catalogo de librerias
+    runs-on: ${{ vars.CI_RUNNER || 'latest' }}
+    outputs:
+      security_json: ${{ steps.catalog.outputs.security_json }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Leer librerias security desde catalogo
+        id: catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          CATALOG_FILE=".github/libraries.json"
+          [[ -f "$CATALOG_FILE" ]] || { echo "No existe $CATALOG_FILE"; exit 1; }
+
+          SECURITY_JSON="$(jq -c '[.libraries[] | select(.security == true) | .path]' "$CATALOG_FILE")"
+          [[ "$SECURITY_JSON" != "[]" ]] || { echo "No hay librerias security en $CATALOG_FILE"; exit 1; }
+
+          echo "security_json=${SECURITY_JSON}" >> "$GITHUB_OUTPUT"
+          echo "Librerias security: ${SECURITY_JSON}"
+
   gosec:
     name: Gosec
+    needs: [catalog]
     runs-on: ${{ vars.CI_RUNNER || 'latest' }}
     strategy:
       matrix:
-        library: [apikey, audit, authz, errors, middleware, migrate, nats, swagger, testhelpers]
+        library: ${{ fromJson(needs.catalog.outputs.security_json) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -38,7 +61,11 @@ jobs:
         run: |
           set -euo pipefail
           export PATH="$(go env GOPATH)/bin:$PATH"
-          make install-tools
+          make go-tools
+
+      - name: Descargar dependencias
+        working-directory: ./${{ matrix.library }}
+        run: make deps
 
       - name: Ejecutar Gosec
         working-directory: ./${{ matrix.library }}
@@ -69,13 +96,14 @@ jobs:
 
   nancy:
     name: Nancy
+    needs: [catalog]
     runs-on: ${{ vars.CI_RUNNER || 'latest' }}
     env:
       OSSINDEX_USERNAME: ${{ secrets.OSSINDEX_USERNAME }}
       OSSINDEX_TOKEN: ${{ secrets.OSSINDEX_TOKEN }}
     strategy:
       matrix:
-        library: [apikey, audit, authz, errors, middleware, migrate, nats, swagger, testhelpers]
+        library: ${{ fromJson(needs.catalog.outputs.security_json) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -91,7 +119,8 @@ jobs:
         run: |
           set -euo pipefail
           export PATH="$(go env GOPATH)/bin:$PATH"
-          make install-tools
+          make go-tools
+          make deps
           go install github.com/sonatype-nexus-community/nancy@${{ env.NANCY_VERSION }}
 
       - name: Ejecutar Nancy (OSS Index autenticado)
