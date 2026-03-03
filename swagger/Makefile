@@ -2,7 +2,8 @@
 SHELL := /bin/bash
 .PHONY: help test clean deps install-tools check-go-version fmt vet lint gosec
 
-REPORTS_DIR := reports
+MODULE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+REPORTS_DIR := $(MODULE_DIR)reports
 GO_VERSION ?= 1.26
 GOLANGCI_LINT_VERSION ?= 2.10
 GOSEC_VERSION ?= 2.23
